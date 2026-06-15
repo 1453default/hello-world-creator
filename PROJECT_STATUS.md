@@ -121,8 +121,17 @@ _None — awaiting next-phase instruction._
 
 ## 🐛 Known Issues
 - Seeded products have no images — phone-icon placeholder shown on cards.
+- New signups receive `staff` role only; admin role must be granted manually via SQL until Phase 11 (`INSERT INTO public.user_roles (user_id, role) VALUES ('<uuid>', 'admin')`).
+
+## 📌 Next Steps
+1. **Phase 5 — Brands CRUD** at `/admin/brands` (list/create/edit/delete + logo upload to `brand-logos` bucket).
+2. **Phase 5 — Products CRUD** at `/admin/products` (per-brand models, specs, multi-image upload).
+3. **Phase 6 — Inventory list & add-unit form** at `/admin/inventory` with IMEI uniqueness validation and status transitions.
+4. **Phase 6 — Inventory status flows**: mark sold / available / scrap with optimistic updates and audit trail prep.
+5. **Phase 7 — POS** at `/admin/pos` (search by IMEI, cart, customer attach, payment method, atomic bill creation).
 
 ## 📌 Notes
 - Currency: ₹ (INR)
 - Shop: Mahaboob Mobiles, Samata Colony, Toli Chowki, Hyderabad 500008
 - WhatsApp: +91 90004 64640
+- Admin entry: sign in at `/auth`, then visit `/admin`.
