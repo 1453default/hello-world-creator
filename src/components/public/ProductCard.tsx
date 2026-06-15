@@ -35,11 +35,11 @@ export function ProductCard({ product, index = 0 }: { product: P; index?: number
           </div>
         )}
         <div className="absolute top-2 left-2 flex gap-1.5">
-          <span className="rounded-md bg-card/90 backdrop-blur px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
+          <span className="rounded-md border border-black/10 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground shadow-sm">
             {conditionLabel[product.condition] ?? product.condition}
           </span>
           {product.is_featured && (
-            <span className="rounded-md bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
+            <span className="rounded-md bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm">
               Featured
             </span>
           )}

@@ -2,9 +2,9 @@
 
 > **Single source of truth.** Updated automatically after every task, module, component, page, DB change, or bug fix.
 
-**Last updated:** 2026-06-15 (All phases complete — ready to publish)
+**Last updated:** 2026-06-15 (Receipt system + image uploads + customer history)
 **Stack:** TanStack Start v1 + React 19 + Vite 7 + Tailwind v4 + Lovable Cloud (Supabase)
-**Phase progress:** 14 / 14 complete
+**Phase progress:** 14 / 14 complete + receipt/image enhancements
 
 ---
 
@@ -67,12 +67,23 @@ _None — awaiting next-phase instruction._
 - [x] `/admin/audit` — recent bill activity feed
 - [x] Seeded 6 brands + 20 sample mobile products + 22 inventory units
 
-## 🚧 In Progress
-_None._
+## ✅ Receipt & UX Enhancements (2026-06-15)
+- [x] Logo re-uploaded to CDN with correct project id — displays in admin, public layout, auth page, receipt
+- [x] Dedicated standalone **Receipt route** `/_authenticated/receipt/$id` — renders only the invoice (no sidebar/topbar/admin shell), A4 print-friendly, `?print=1` auto-opens print dialog
+- [x] Bills page: per-row **View Receipt** + **Print Receipt** actions (open in new tab, isolated)
+- [x] POS auto-opens the new receipt page after a successful sale
+- [x] `product-images` Supabase Storage bucket + RLS (public read, staff write)
+- [x] `ProductImagesManager` component — multi-file upload, set primary, delete, in Product create/edit dialog
+- [x] Catalog `.chip` / status pills given solid contrast & 1.5px borders for mobile + dark mode visibility
+- [x] `ProductCard` condition badge swapped from translucent backdrop to solid white-on-shadow
+- [x] Customers page — expandable inline accordion showing first/last purchase, full history with **bill #, date, product, IMEI, qty, unit/total price, payment method**, plus Receipt link per bill
 
-## 📌 Next Steps
-- Publish to production via the Publish button.
-- Optional polish: per-product image upload to Supabase Storage, dedicated `audit_log` table with triggers, CSV export on Reports.
+## 📌 Routes added
+- `/_authenticated/receipt/$id` (standalone receipt, auth-gated, no admin shell)
+
+## 📌 Database tables touched
+- `storage.objects` (new RLS policies for `product-images` bucket only)
+- Existing tables read: `bills`, `bill_items`, `inventory_units`, `products`, `brands`, `product_images`
 
 ## 📌 Notes
 - Currency: ₹ (INR)

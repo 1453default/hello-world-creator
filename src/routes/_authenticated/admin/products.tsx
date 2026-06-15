@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/admin-utils";
 import { formatINR } from "@/lib/shop";
+import { ProductImagesManager } from "@/components/admin/ProductImagesManager";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   head: () => ({ meta: [{ title: "Products · Admin" }] }),
@@ -193,11 +194,11 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
     condition: product?.condition ?? "good",
     selling_price: product?.selling_price ?? 0,
     description: product?.description ?? "",
-    image_url: "",
     is_featured: product?.is_featured ?? false,
     is_listed: product?.is_listed ?? true,
   });
   const [saving, setSaving] = useState(false);
+  const [createdId, setCreatedId] = useState<string | null>(product?.id ?? null);
 
   function set<K extends keyof typeof form>(k: K, v: typeof form[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -221,18 +222,17 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         is_featured: form.is_featured,
         is_listed: form.is_listed,
       };
-      if (product) {
-        const { error } = await supabase.from("products").update(payload).eq("id", product.id);
+      if (createdId) {
+        const { error } = await supabase.from("products").update(payload).eq("id", createdId);
         if (error) throw error;
+        toast.success("Updated");
+        onSaved();
       } else {
         const { data, error } = await supabase.from("products").insert(payload).select("id").single();
         if (error) throw error;
-        if (form.image_url && data) {
-          await supabase.from("product_images").insert({ product_id: data.id, url: form.image_url, is_primary: true, display_order: 0 });
-        }
+        setCreatedId(data.id);
+        toast.success("Created — now add images");
       }
-      toast.success(product ? "Updated" : "Created");
-      onSaved();
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -243,10 +243,10 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
   return (
     <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/60 p-4" onClick={onClose}>
       <form onClick={(e) => e.stopPropagation()} onSubmit={save} className="my-8 w-full max-w-2xl space-y-4 rounded-xl border border-admin-border bg-admin-surface p-6">
-        <h2 className="font-display text-lg font-bold">{product ? "Edit" : "New"} Product</h2>
+        <h2 className="font-display text-lg font-bold">{product || createdId ? "Edit" : "New"} Product</h2>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Name">
-            <input value={form.name} onChange={(e) => { set("name", e.target.value); if (!product) set("slug", slugify(e.target.value)); }} required className="admin-input" />
+            <input value={form.name} onChange={(e) => { set("name", e.target.value); if (!product && !createdId) set("slug", slugify(e.target.value)); }} required className="admin-input" />
           </Field>
           <Field label="Slug">
             <input value={form.slug} onChange={(e) => set("slug", e.target.value)} className="admin-input font-mono text-sm" />
@@ -273,18 +273,22 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         <Field label="Description">
           <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
         </Field>
-        {!product && (
-          <Field label="Image URL (optional)">
-            <input value={form.image_url} onChange={(e) => set("image_url", e.target.value)} className="admin-input" placeholder="https://…" />
-          </Field>
+        {createdId ? (
+          <div className="rounded-lg border border-admin-border bg-admin-surface-2 p-3">
+            <ProductImagesManager productId={createdId} />
+          </div>
+        ) : (
+          <div className="rounded-md border border-dashed border-admin-border bg-admin-surface-2 p-3 text-xs text-admin-muted">
+            Save the product first, then upload images.
+          </div>
         )}
         <div className="flex gap-4">
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_listed} onChange={(e) => set("is_listed", e.target.checked)} /> Listed (live on site)</label>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => set("is_featured", e.target.checked)} /> Featured</label>
         </div>
         <div className="flex justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="h-9 rounded-md border border-admin-border px-4 text-sm">Cancel</button>
-          <button disabled={saving} className="h-9 rounded-md bg-amber px-4 text-sm font-bold text-ink disabled:opacity-50">{saving ? "Saving…" : "Save"}</button>
+          <button type="button" onClick={onClose} className="h-9 rounded-md border border-admin-border px-4 text-sm">{createdId ? "Done" : "Cancel"}</button>
+          <button disabled={saving} className="h-9 rounded-md bg-amber px-4 text-sm font-bold text-ink disabled:opacity-50">{saving ? "Saving…" : createdId ? "Save Changes" : "Create"}</button>
         </div>
       </form>
     </div>
