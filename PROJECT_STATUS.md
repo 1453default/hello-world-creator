@@ -29,8 +29,9 @@
 - [x] `/phone/$slug` — Product detail page (`src/routes/phone.$slug.tsx`)
 - [x] `/search` — Search route (`src/routes/search.tsx`)
 - [x] `/contact` — Contact page w/ Maps embed, WhatsApp, phone (`src/routes/contact.tsx`)
-- [x] `/auth` — Login / signup page (`src/routes/auth.tsx`)
-- [x] Google OAuth provider configured
+- [x] `/auth` — Sign-in only (signup removed); Email + Password; clean professional UI; placeholders "Enter your email" / "Enter your password"; no credentials shown
+- [x] Default admin seeded automatically via idempotent `/api/public/bootstrap-admin` (server-only credentials in `src/lib/bootstrap-admin.server.ts`, never in client bundle)
+- [x] Mobile-first reactbits-style **Dock** navigation (`src/components/public/Dock.tsx`) replaces bottom-tab bar + WhatsApp FAB
 - [x] `ProductCard` component
 - [x] SEO head() on every public route (title, description, og)
 
