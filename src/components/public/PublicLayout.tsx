@@ -1,17 +1,17 @@
 import { type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Phone, Home, Search, Tag, MapPin, MessageCircle } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Phone } from "lucide-react";
 import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
 import { SHOP_PHONE, whatsappLink } from "@/lib/shop";
+import { Dock } from "@/components/public/Dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicHeader />
-      <main className="flex-1 pb-24 md:pb-12">{children}</main>
+      <main className="flex-1 pb-28 md:pb-12">{children}</main>
       <PublicFooter />
-      <BottomNav />
-      <WhatsAppFAB />
+      <Dock />
     </div>
   );
 }
@@ -104,48 +104,3 @@ function PublicFooter() {
   );
 }
 
-function BottomNav() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const items = [
-    { to: "/", label: "Home", icon: Home, exact: true },
-    { to: "/catalog", label: "Catalog", icon: Tag, exact: false },
-    { to: "/search", label: "Search", icon: Search, exact: false },
-    { to: "/contact", label: "Visit", icon: MapPin, exact: false },
-  ] as const;
-  return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden border-t border-border bg-background/95 backdrop-blur">
-      <div className="grid grid-cols-4">
-        {items.map((it) => {
-          const active = it.exact ? pathname === it.to : pathname.startsWith(it.to);
-          const Icon = it.icon;
-          return (
-            <Link
-              key={it.to}
-              to={it.to}
-              className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition ${
-                active ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              <Icon className="h-5 w-5" />
-              {it.label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
-function WhatsAppFAB() {
-  return (
-    <a
-      href={whatsappLink("Hi! I'd like to enquire about a phone.")}
-      target="_blank"
-      rel="noopener"
-      aria-label="Chat on WhatsApp"
-      className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-whatsapp text-white shadow-lg shadow-emerald/20 hover:bg-whatsapp-dark transition active:scale-95"
-    >
-      <MessageCircle className="h-6 w-6" strokeWidth={2.25} />
-    </a>
-  );
-}
