@@ -19,6 +19,7 @@ import { Route as PhoneSlugRouteImport } from './routes/phone.$slug'
 import { Route as BrandSlugRouteImport } from './routes/brand.$slug'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -69,6 +70,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
+  id: '/api/public/bootstrap-admin',
+  path: '/api/public/bootstrap-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/brand/$slug'
     | '/phone/$slug'
+    | '/api/public/bootstrap-admin'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/brand/$slug'
     | '/phone/$slug'
+    | '/api/public/bootstrap-admin'
     | '/admin'
   id:
     | '__root__'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/brand/$slug'
     | '/phone/$slug'
+    | '/api/public/bootstrap-admin'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -149,6 +161,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
+  ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/bootstrap-admin': {
+      id: '/api/public/bootstrap-admin'
+      path: '/api/public/bootstrap-admin'
+      fullPath: '/api/public/bootstrap-admin'
+      preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,
+  ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
