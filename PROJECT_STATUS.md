@@ -2,9 +2,9 @@
 
 > **Single source of truth.** Updated automatically after every task, module, component, page, DB change, or bug fix.
 
-**Last updated:** 2026-06-15 (All phases complete — ready to publish)
+**Last updated:** 2026-06-15 (Receipt system + image uploads + customer history)
 **Stack:** TanStack Start v1 + React 19 + Vite 7 + Tailwind v4 + Lovable Cloud (Supabase)
-**Phase progress:** 14 / 14 complete
+**Phase progress:** 14 / 14 complete + receipt/image enhancements
 
 ---
 
