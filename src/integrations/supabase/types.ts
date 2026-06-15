@@ -344,7 +344,21 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      product_available_counts: {
+        Row: {
+          available_count: number | null
+          product_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_units_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
