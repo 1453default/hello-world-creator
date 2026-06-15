@@ -2,9 +2,9 @@
 
 > **Single source of truth.** Updated automatically after every task, module, component, page, DB change, or bug fix.
 
-**Last updated:** 2026-06-15
+**Last updated:** 2026-06-15 (Phase 4 complete)
 **Stack:** TanStack Start v1 + React 19 + Vite 7 + Tailwind v4 + Lovable Cloud (Supabase)
-**Phase progress:** 3 / 14 complete
+**Phase progress:** 4 / 14 complete
 
 ---
 
@@ -34,6 +34,16 @@
 - [x] `ProductCard` component
 - [x] SEO head() on every public route (title, description, og)
 
+### Phase 4 — Admin Shell
+- [x] `_authenticated/route.tsx` layout gate (`ssr:false`, redirects unauth users to `/auth`)
+- [x] `useCurrentUser` hook reads `user_roles` and exposes `isAdmin`
+- [x] `/admin` route with sidebar + topbar shell (`src/components/admin/AdminLayout.tsx`)
+- [x] Mobile drawer sidebar (Framer Motion slide-in)
+- [x] Admin topbar (user email, role, sign out → `/auth`)
+- [x] `/admin` dashboard with live KPI cards (available units, bills today, revenue today, products)
+- [x] Quick-action cards linking to next-phase routes
+- [x] Admin-only nav items hidden for staff (`adminOnly` flag)
+
 ---
 
 ## 🚧 In Progress
@@ -42,12 +52,6 @@ _None — awaiting next-phase instruction._
 ---
 
 ## ⏳ Pending
-
-### Phase 4 — Admin Shell
-- [ ] `_authenticated` layout gate (redirects unauth users to `/auth`)
-- [ ] Admin role check (`has_role(auth.uid(), 'admin')`)
-- [ ] `/admin` dashboard layout with sidebar nav
-- [ ] Admin topbar (user menu, logout, shop name)
 
 ### Phase 5 — Brand & Model Management
 - [ ] `/admin/brands` CRUD (list, create, edit, delete, logo upload)
@@ -117,8 +121,17 @@ _None — awaiting next-phase instruction._
 
 ## 🐛 Known Issues
 - Seeded products have no images — phone-icon placeholder shown on cards.
+- New signups receive `staff` role only; admin role must be granted manually via SQL until Phase 11 (`INSERT INTO public.user_roles (user_id, role) VALUES ('<uuid>', 'admin')`).
+
+## 📌 Next Steps
+1. **Phase 5 — Brands CRUD** at `/admin/brands` (list/create/edit/delete + logo upload to `brand-logos` bucket).
+2. **Phase 5 — Products CRUD** at `/admin/products` (per-brand models, specs, multi-image upload).
+3. **Phase 6 — Inventory list & add-unit form** at `/admin/inventory` with IMEI uniqueness validation and status transitions.
+4. **Phase 6 — Inventory status flows**: mark sold / available / scrap with optimistic updates and audit trail prep.
+5. **Phase 7 — POS** at `/admin/pos` (search by IMEI, cart, customer attach, payment method, atomic bill creation).
 
 ## 📌 Notes
 - Currency: ₹ (INR)
 - Shop: Mahaboob Mobiles, Samata Colony, Toli Chowki, Hyderabad 500008
 - WhatsApp: +91 90004 64640
+- Admin entry: sign in at `/auth`, then visit `/admin`.
