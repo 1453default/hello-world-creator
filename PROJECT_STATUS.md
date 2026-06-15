@@ -2,9 +2,9 @@
 
 > **Single source of truth.** Updated automatically after every task, module, component, page, DB change, or bug fix.
 
-**Last updated:** 2026-06-15
+**Last updated:** 2026-06-15 (Phase 4 complete)
 **Stack:** TanStack Start v1 + React 19 + Vite 7 + Tailwind v4 + Lovable Cloud (Supabase)
-**Phase progress:** 3 / 14 complete
+**Phase progress:** 4 / 14 complete
 
 ---
 
@@ -34,6 +34,16 @@
 - [x] `ProductCard` component
 - [x] SEO head() on every public route (title, description, og)
 
+### Phase 4 — Admin Shell
+- [x] `_authenticated/route.tsx` layout gate (`ssr:false`, redirects unauth users to `/auth`)
+- [x] `useCurrentUser` hook reads `user_roles` and exposes `isAdmin`
+- [x] `/admin` route with sidebar + topbar shell (`src/components/admin/AdminLayout.tsx`)
+- [x] Mobile drawer sidebar (Framer Motion slide-in)
+- [x] Admin topbar (user email, role, sign out → `/auth`)
+- [x] `/admin` dashboard with live KPI cards (available units, bills today, revenue today, products)
+- [x] Quick-action cards linking to next-phase routes
+- [x] Admin-only nav items hidden for staff (`adminOnly` flag)
+
 ---
 
 ## 🚧 In Progress
@@ -42,12 +52,6 @@ _None — awaiting next-phase instruction._
 ---
 
 ## ⏳ Pending
-
-### Phase 4 — Admin Shell
-- [ ] `_authenticated` layout gate (redirects unauth users to `/auth`)
-- [ ] Admin role check (`has_role(auth.uid(), 'admin')`)
-- [ ] `/admin` dashboard layout with sidebar nav
-- [ ] Admin topbar (user menu, logout, shop name)
 
 ### Phase 5 — Brand & Model Management
 - [ ] `/admin/brands` CRUD (list, create, edit, delete, logo upload)
