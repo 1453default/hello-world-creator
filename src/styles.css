@@ -199,6 +199,23 @@
   border: 1px solid color-mix(in oklch, var(--amber) 35%, transparent);
 }
 
+@utility admin-input {
+  display: block;
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--admin-surface-2);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  outline: none;
+  font-size: 0.875rem;
+  transition: border-color 0.15s;
+}
+@utility admin-input:focus {
+  border-color: var(--amber);
+}
+
 /* Print styles for receipt */
 @media print {
   .no-print { display: none !important; }
