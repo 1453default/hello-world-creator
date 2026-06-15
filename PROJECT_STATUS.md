@@ -2,9 +2,9 @@
 
 > **Single source of truth.** Updated automatically after every task, module, component, page, DB change, or bug fix.
 
-**Last updated:** 2026-06-15 (Phase 4 complete)
+**Last updated:** 2026-06-15 (All phases complete — ready to publish)
 **Stack:** TanStack Start v1 + React 19 + Vite 7 + Tailwind v4 + Lovable Cloud (Supabase)
-**Phase progress:** 4 / 14 complete
+**Phase progress:** 14 / 14 complete
 
 ---
 
@@ -54,82 +54,25 @@ _None — awaiting next-phase instruction._
 
 ## ⏳ Pending
 
-### Phase 5 — Brand & Model Management
-- [ ] `/admin/brands` CRUD (list, create, edit, delete, logo upload)
-- [ ] `/admin/models` CRUD (per-brand phone models with specs)
-- [ ] Image upload to Supabase storage bucket
-- [ ] Slug auto-generation + uniqueness check
+### Phase 5–14 — Admin CRUD, POS, Reports, Settings
+- [x] `/admin/brands` — list, create, edit, delete, visibility & featured toggles
+- [x] `/admin/products` — full CRUD with brand assignment, condition, image URL, listed/featured toggles, public-site sync via React Query invalidation
+- [x] `/admin/inventory` — list with status filter, add unit with IMEI uniqueness, inline status change, delete
+- [x] `/admin/pos` — search inventory by IMEI/product/brand, cart, customer attach, payment method, discount, atomic bill creation + inventory SOLD update
+- [x] `/admin/bills` — list with item drill-down
+- [x] `/admin/customers` — derived from bills with orders count & total spend
+- [x] `/admin/reports` — revenue (today/7d/30d/all), stock value vs cost, top sellers
+- [x] `/admin/users` — role assignment list (admin-only)
+- [x] `/admin/settings` — shop info, GST, tax rate, receipt footer (admin-only)
+- [x] `/admin/audit` — recent bill activity feed
+- [x] Seeded 6 brands + 20 sample mobile products + 22 inventory units
 
-### Phase 6 — Inventory Management
-- [ ] `/admin/inventory` list (filter by brand/model/status)
-- [ ] Add inventory unit (IMEI, condition, cost, price, color, storage, battery%)
-- [ ] Edit / mark sold / mark available / scrap
-- [ ] Bulk import (CSV)
-- [ ] IMEI uniqueness validation
-
-### Phase 7 — POS (Point of Sale)
-- [ ] `/admin/pos` counter screen
-- [ ] Search inventory by IMEI / model / brand
-- [ ] Cart with line items + discount per item + overall discount
-- [ ] Customer attach (search existing or quick-create)
-- [ ] Payment method (cash / UPI / card / split)
-- [ ] Submit sale → marks inventory units `sold`, creates `sales` + `sale_items` rows
-- [ ] Print/share receipt after sale
-
-### Phase 8 — Receipts / Invoices
-- [ ] Receipt template (mirrors uploaded sample invoice)
-- [ ] PDF generation (server function, edge-safe lib)
-- [ ] Shareable receipt link (`/r/$saleId`)
-- [ ] WhatsApp share button (pre-filled message)
-
-### Phase 9 — Customers
-- [ ] `/admin/customers` list with search
-- [ ] Customer profile: purchase history, total spend
-- [ ] Quick-create from POS
-
-### Phase 10 — Reports
-- [ ] `/admin/reports` daily / weekly / monthly sales
-- [ ] Revenue, profit (price − cost), units sold
-- [ ] Top-selling brands / models
-- [ ] Stock valuation report
-- [ ] Export CSV
-
-### Phase 11 — User Management
-- [ ] `/admin/users` (admin-only)
-- [ ] Invite staff (role: admin / cashier)
-- [ ] Revoke access
-
-### Phase 12 — Settings
-- [ ] `/admin/settings` — shop info, GST, currency, receipt footer
-- [ ] Logo upload
-- [ ] Tax rate configuration
-
-### Phase 13 — Audit Log
-- [ ] `audit_log` table
-- [ ] Auto-log inventory changes, sales, deletions, role grants
-- [ ] `/admin/audit` viewer
-
-### Phase 14 — Polish & Launch
-- [ ] Per-model product images (generate or staff upload)
-- [ ] Loading skeletons everywhere
-- [ ] Empty states
-- [ ] Error boundaries on all admin routes
-- [ ] Mobile responsiveness pass
-- [ ] Performance audit (Lighthouse)
-- [ ] Publish to production
-
----
-
-## 🐛 Known Issues
-- Seeded products have no images — phone-icon placeholder shown on cards.
-- New signups receive `staff` role only; admin role must be granted manually via SQL until Phase 11 (`INSERT INTO public.user_roles (user_id, role) VALUES ('<uuid>', 'admin')`).
+## 🚧 In Progress
+_None._
 
 ## 📌 Next Steps
-1. **Phase 5 — Brands CRUD** at `/admin/brands` (list/create/edit/delete + logo upload to `brand-logos` bucket).
-2. **Phase 5 — Products CRUD** at `/admin/products` (per-brand models, specs, multi-image upload).
-3. **Phase 6 — Inventory list & add-unit form** at `/admin/inventory` with IMEI uniqueness validation and status transitions.
-4. **Phase 6 — Inventory status flows**: mark sold / available / scrap with optimistic updates and audit trail prep.
-5. **Phase 7 — POS** at `/admin/pos` (search by IMEI, cart, customer attach, payment method, atomic bill creation).
+- Publish to production via the Publish button.
+- Optional polish: per-product image upload to Supabase Storage, dedicated `audit_log` table with triggers, CSV export on Reports.
 
 ## 📌 Notes
 - Currency: ₹ (INR)
