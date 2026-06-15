@@ -87,6 +87,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "USED MOBILES" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "USED MOBILES — Pre-Owned Smartphones, Hyderabad" },
+      { name: "twitter:title", content: "USED MOBILES — Pre-Owned Smartphones, Hyderabad" },
+      { name: "description", content: "Generates HTML files with \"Hello World\" code." },
+      { property: "og:description", content: "Generates HTML files with \"Hello World\" code." },
+      { name: "twitter:description", content: "Generates HTML files with \"Hello World\" code." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3179cb3-cf50-49e8-a5f0-9dbe117c3d48/id-preview-52bc6dd0--75a9d074-60d0-4899-9b55-f8c9cb9ed766.lovable.app-1781528561144.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3179cb3-cf50-49e8-a5f0-9dbe117c3d48/id-preview-52bc6dd0--75a9d074-60d0-4899-9b55-f8c9cb9ed766.lovable.app-1781528561144.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
