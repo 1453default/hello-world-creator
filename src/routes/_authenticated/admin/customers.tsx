@@ -80,9 +80,8 @@ function CustomersPage() {
               customers.map((c) => {
                 const open = expanded === c.key;
                 return (
-                  <>
+                  <Fragment key={c.key}>
                     <tr
-                      key={c.key}
                       onClick={() => setExpanded(open ? null : c.key)}
                       className={`cursor-pointer hover:bg-admin-surface-2/50 ${open ? "bg-admin-surface-2" : ""}`}
                     >
@@ -96,13 +95,13 @@ function CustomersPage() {
                       <td className="px-4 py-3 text-admin-muted">{new Date(c.last).toLocaleDateString()}</td>
                     </tr>
                     {open && (
-                      <tr key={c.key + "-detail"}>
+                      <tr>
                         <td colSpan={6} className="bg-admin-surface-2/40 px-4 py-4">
                           <CustomerDetail customer={c} />
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 );
               })
             )}
