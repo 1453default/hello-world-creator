@@ -1,17 +1,17 @@
 import { type ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Phone, Home, Search, Tag, MapPin, MessageCircle } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Phone } from "lucide-react";
 import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
 import { SHOP_PHONE, whatsappLink } from "@/lib/shop";
+import { Dock } from "@/components/public/Dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <PublicHeader />
-      <main className="flex-1 pb-24 md:pb-12">{children}</main>
+      <main className="flex-1 pb-28 md:pb-12">{children}</main>
       <PublicFooter />
-      <BottomNav />
-      <WhatsAppFAB />
+      <Dock />
     </div>
   );
 }
