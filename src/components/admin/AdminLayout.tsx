@@ -22,7 +22,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
 
-const NAV = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+  adminOnly?: boolean;
+};
+
+const NAV: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/brands", label: "Brands", icon: Tags },
   { to: "/admin/products", label: "Products", icon: Smartphone },
@@ -34,7 +42,7 @@ const NAV = [
   { to: "/admin/users", label: "Users", icon: Users, adminOnly: true },
   { to: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
   { to: "/admin/audit", label: "Audit Log", icon: ScrollText, adminOnly: true },
-] as const;
+];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
