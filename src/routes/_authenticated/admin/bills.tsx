@@ -58,21 +58,42 @@ function BillsPage() {
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Payment</th>
               <th className="px-4 py-3">Total</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-admin-border">
             {isLoading ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-admin-muted">Loading…</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-admin-muted">Loading…</td></tr>
             ) : bills.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-admin-muted">No bills yet.</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-admin-muted">No bills yet.</td></tr>
             ) : (
               bills.map((b) => (
-                <tr key={b.id} onClick={() => setSelected(b.id === selected ? null : b.id)} className={`cursor-pointer hover:bg-admin-surface-2/50 ${selected === b.id ? "bg-admin-surface-2" : ""}`}>
-                  <td className="px-4 py-3 font-mono text-xs">{b.bill_number}</td>
-                  <td className="px-4 py-3">{b.customer_name ?? "—"}<div className="text-xs text-admin-muted">{b.customer_phone}</div></td>
+                <tr key={b.id} className={`hover:bg-admin-surface-2/50 ${selected === b.id ? "bg-admin-surface-2" : ""}`}>
+                  <td onClick={() => setSelected(b.id === selected ? null : b.id)} className="cursor-pointer px-4 py-3 font-mono text-xs">{b.bill_number}</td>
+                  <td onClick={() => setSelected(b.id === selected ? null : b.id)} className="cursor-pointer px-4 py-3">{b.customer_name ?? "—"}<div className="text-xs text-admin-muted">{b.customer_phone}</div></td>
                   <td className="px-4 py-3 text-admin-muted">{new Date(b.created_at).toLocaleString()}</td>
                   <td className="px-4 py-3"><span className="rounded bg-admin-surface-2 px-2 py-1 text-xs">{b.payment_method ?? "—"}</span></td>
                   <td className="px-4 py-3 font-num font-bold text-amber">{formatINR(b.grand_total)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      to="/receipt/$id"
+                      params={{ id: b.id }}
+                      target="_blank"
+                      title="View Receipt"
+                      className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-admin-surface-2 hover:text-admin-text"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                    <a
+                      href={`/receipt/${b.id}?print=1`}
+                      target="_blank"
+                      rel="noopener"
+                      title="Print Receipt"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-admin-surface-2 hover:text-amber"
+                    >
+                      <Printer className="h-4 w-4" />
+                    </a>
+                  </td>
                 </tr>
               ))
             )}
