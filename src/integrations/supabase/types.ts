@@ -14,94 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
-      audit_logs: {
-        Row: {
-          action: string
-          created_at: string
-          entity_id: string | null
-          entity_type: string
-          id: string
-          new_data: Json | null
-          old_data: Json | null
-          user_id: string | null
-        }
-        Insert: {
-          action: string
-          created_at?: string
-          entity_id?: string | null
-          entity_type: string
-          id?: string
-          new_data?: Json | null
-          old_data?: Json | null
-          user_id?: string | null
-        }
-        Update: {
-          action?: string
-          created_at?: string
-          entity_id?: string | null
-          entity_type?: string
-          id?: string
-          new_data?: Json | null
-          old_data?: Json | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "audit_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       bill_items: {
         Row: {
           bill_id: string
           created_at: string
+          description: string | null
           id: string
           inventory_unit_id: string | null
+          line_total: number
           product_id: string | null
           quantity: number
-          snapshot_brand_name: string | null
-          snapshot_color: string | null
-          snapshot_condition: string | null
-          snapshot_imei: string | null
-          snapshot_product_name: string
-          snapshot_storage: string | null
-          total_price: number
           unit_price: number
         }
         Insert: {
           bill_id: string
           created_at?: string
+          description?: string | null
           id?: string
           inventory_unit_id?: string | null
+          line_total?: number
           product_id?: string | null
           quantity?: number
-          snapshot_brand_name?: string | null
-          snapshot_color?: string | null
-          snapshot_condition?: string | null
-          snapshot_imei?: string | null
-          snapshot_product_name: string
-          snapshot_storage?: string | null
-          total_price: number
-          unit_price: number
+          unit_price?: number
         }
         Update: {
           bill_id?: string
           created_at?: string
+          description?: string | null
           id?: string
           inventory_unit_id?: string | null
+          line_total?: number
           product_id?: string | null
           quantity?: number
-          snapshot_brand_name?: string | null
-          snapshot_color?: string | null
-          snapshot_condition?: string | null
-          snapshot_imei?: string | null
-          snapshot_product_name?: string
-          snapshot_storage?: string | null
-          total_price?: number
           unit_price?: number
         }
         Relationships: [
@@ -130,7 +74,7 @@ export type Database = {
       }
       bills: {
         Row: {
-          bill_number: string
+          bill_number: string | null
           created_at: string
           created_by: string | null
           customer_name: string | null
@@ -138,14 +82,14 @@ export type Database = {
           discount: number
           grand_total: number
           id: string
-          notes: string | null
-          payment_method: Database["public"]["Enums"]["payment_method"]
-          status: Database["public"]["Enums"]["bill_status"]
+          payment_method: string | null
+          status: string
           subtotal: number
+          tax: number
           updated_at: string
         }
         Insert: {
-          bill_number: string
+          bill_number?: string | null
           created_at?: string
           created_by?: string | null
           customer_name?: string | null
@@ -153,14 +97,14 @@ export type Database = {
           discount?: number
           grand_total?: number
           id?: string
-          notes?: string | null
-          payment_method?: Database["public"]["Enums"]["payment_method"]
-          status?: Database["public"]["Enums"]["bill_status"]
+          payment_method?: string | null
+          status?: string
           subtotal?: number
+          tax?: number
           updated_at?: string
         }
         Update: {
-          bill_number?: string
+          bill_number?: string | null
           created_at?: string
           created_by?: string | null
           customer_name?: string | null
@@ -168,21 +112,13 @@ export type Database = {
           discount?: number
           grand_total?: number
           id?: string
-          notes?: string | null
-          payment_method?: Database["public"]["Enums"]["payment_method"]
-          status?: Database["public"]["Enums"]["bill_status"]
+          payment_method?: string | null
+          status?: string
           subtotal?: number
+          tax?: number
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "bills_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       brands: {
         Row: {
@@ -222,45 +158,36 @@ export type Database = {
       }
       inventory_units: {
         Row: {
-          condition: Database["public"]["Enums"]["condition_type"]
+          cost_price: number | null
           created_at: string
           id: string
           imei: string | null
-          imei2: string | null
           notes: string | null
           product_id: string
-          purchase_price: number | null
-          selling_price: number
-          status: Database["public"]["Enums"]["inventory_status"]
-          unit_code: string | null
+          serial: string | null
+          status: string
           updated_at: string
         }
         Insert: {
-          condition?: Database["public"]["Enums"]["condition_type"]
+          cost_price?: number | null
           created_at?: string
           id?: string
           imei?: string | null
-          imei2?: string | null
           notes?: string | null
           product_id: string
-          purchase_price?: number | null
-          selling_price: number
-          status?: Database["public"]["Enums"]["inventory_status"]
-          unit_code?: string | null
+          serial?: string | null
+          status?: string
           updated_at?: string
         }
         Update: {
-          condition?: Database["public"]["Enums"]["condition_type"]
+          cost_price?: number | null
           created_at?: string
           id?: string
           imei?: string | null
-          imei2?: string | null
           notes?: string | null
           product_id?: string
-          purchase_price?: number | null
-          selling_price?: number
-          status?: Database["public"]["Enums"]["inventory_status"]
-          unit_code?: string | null
+          serial?: string | null
+          status?: string
           updated_at?: string
         }
         Relationships: [
@@ -311,9 +238,9 @@ export type Database = {
       products: {
         Row: {
           brand_id: string | null
-          category: string
+          category: string | null
           color: string | null
-          condition: Database["public"]["Enums"]["condition_type"]
+          condition: string
           created_at: string
           description: string | null
           id: string
@@ -322,7 +249,6 @@ export type Database = {
           is_listed: boolean
           model: string | null
           name: string
-          purchase_price: number | null
           ram: string | null
           selling_price: number
           slug: string
@@ -331,9 +257,9 @@ export type Database = {
         }
         Insert: {
           brand_id?: string | null
-          category?: string
+          category?: string | null
           color?: string | null
-          condition?: Database["public"]["Enums"]["condition_type"]
+          condition?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -342,7 +268,6 @@ export type Database = {
           is_listed?: boolean
           model?: string | null
           name: string
-          purchase_price?: number | null
           ram?: string | null
           selling_price?: number
           slug: string
@@ -351,9 +276,9 @@ export type Database = {
         }
         Update: {
           brand_id?: string | null
-          category?: string
+          category?: string | null
           color?: string | null
-          condition?: Database["public"]["Enums"]["condition_type"]
+          condition?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -362,7 +287,6 @@ export type Database = {
           is_listed?: boolean
           model?: string | null
           name?: string
-          purchase_price?: number | null
           ram?: string | null
           selling_price?: number
           slug?: string
@@ -381,61 +305,37 @@ export type Database = {
       }
       shop_settings: {
         Row: {
-          id: string
           key: string
           updated_at: string
           value: string | null
         }
         Insert: {
-          id?: string
           key: string
           updated_at?: string
           value?: string | null
         }
         Update: {
-          id?: string
           key?: string
           updated_at?: string
           value?: string | null
         }
         Relationships: []
       }
-      user_profiles: {
-        Row: {
-          created_at: string
-          full_name: string | null
-          id: string
-          is_active: boolean
-          last_login: string | null
-        }
-        Insert: {
-          created_at?: string
-          full_name?: string | null
-          id: string
-          is_active?: boolean
-          last_login?: string | null
-        }
-        Update: {
-          created_at?: string
-          full_name?: string | null
-          id?: string
-          is_active?: boolean
-          last_login?: string | null
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
+          created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
+          created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
@@ -454,18 +354,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "super_admin" | "admin" | "staff"
-      bill_status: "DRAFT" | "COMPLETED" | "CANCELLED"
-      condition_type: "like_new" | "good" | "fair" | "poor"
-      inventory_status:
-        | "AVAILABLE"
-        | "RESERVED"
-        | "SOLD"
-        | "DEFECTIVE"
-        | "DELETED"
-      payment_method: "CASH" | "UPI" | "CARD" | "BANK_TRANSFER" | "EMI"
+      app_role: "admin" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -593,17 +485,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["super_admin", "admin", "staff"],
-      bill_status: ["DRAFT", "COMPLETED", "CANCELLED"],
-      condition_type: ["like_new", "good", "fair", "poor"],
-      inventory_status: [
-        "AVAILABLE",
-        "RESERVED",
-        "SOLD",
-        "DEFECTIVE",
-        "DELETED",
-      ],
-      payment_method: ["CASH", "UPI", "CARD", "BANK_TRANSFER", "EMI"],
+      app_role: ["admin", "staff"],
     },
   },
 } as const
