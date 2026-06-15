@@ -131,6 +131,12 @@ function POSPage() {
       qc.invalidateQueries({ queryKey: ["admin", "bills"] });
       qc.invalidateQueries({ queryKey: ["admin", "dashboard-kpis"] });
       qc.invalidateQueries({ queryKey: ["products", "all"] });
+      // Open dedicated receipt in a new tab
+      try {
+        window.open(`/receipt/${bill.id}`, "_blank", "noopener");
+      } catch {
+        /* noop */
+      }
     },
     onError: (e: Error) => toast.error(e.message),
   });
