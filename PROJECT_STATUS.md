@@ -133,6 +133,6 @@ _None — awaiting next-phase instruction._
 
 ## 📌 Notes
 - Currency: ₹ (INR)
-- Shop: Mahaboob Mobiles, Samata Colony, Toli Chowki, Hyderabad 500008
+- Shop: Used Mobiles, Samata Colony, Toli Chowki, Hyderabad 500008
 - WhatsApp: +91 90004 64640
 - Admin entry: sign in at `/auth`, then visit `/admin`.

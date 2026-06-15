@@ -174,7 +174,7 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
           <Menu className="h-4 w-4" />
         </button>
         <div className="text-xs text-admin-muted">
-          Mahaboob Mobiles · Toli Chowki
+          Used Mobiles · Toli Chowki
         </div>
       </div>
       <div className="flex items-center gap-3">
