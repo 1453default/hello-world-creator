@@ -283,6 +283,17 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
           <Field label="Color"><input value={form.color} onChange={(e) => set("color", e.target.value)} className="admin-input" /></Field>
           <Field label="Selling Price (₹)"><input type="number" value={form.selling_price} onChange={(e) => set("selling_price", Number(e.target.value))} className="admin-input" /></Field>
         </div>
+        {!createdId && (
+          <div className="grid grid-cols-2 gap-3 rounded-lg border border-amber/20 bg-amber/5 p-3">
+            <Field label="IMEI (initial unit, optional)">
+              <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+            </Field>
+            <Field label="Cost Price (₹, optional)">
+              <input type="number" value={form.cost_price} onChange={(e) => set("cost_price", e.target.value === "" ? "" : Number(e.target.value))} className="admin-input" />
+            </Field>
+            <p className="col-span-2 text-[11px] text-admin-muted">An AVAILABLE inventory unit will be created automatically so the product appears in stock.</p>
+          </div>
+        )}
         <Field label="Description">
           <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
         </Field>
