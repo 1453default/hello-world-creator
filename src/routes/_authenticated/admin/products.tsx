@@ -232,8 +232,18 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
       } else {
         const { data, error } = await supabase.from("products").insert(payload).select("id").single();
         if (error) throw error;
+        // Auto-create one inventory unit so the new product shows as AVAILABLE
+        // (without this, the catalog renders it as "Sold Out" because available_count === 0).
+        const { error: invErr } = await supabase.from("inventory_units").insert({
+          product_id: data.id,
+          imei: form.imei.trim() || null,
+          cost_price: form.cost_price === "" ? null : Number(form.cost_price),
+          status: "AVAILABLE",
+        });
+        if (invErr) throw invErr;
         setCreatedId(data.id);
-        toast.success("Created — now add images");
+        qc.invalidateQueries({ queryKey: ["admin", "inventory"] });
+        toast.success("Product created with 1 inventory unit — add images");
       }
     } catch (e) {
       toast.error((e as Error).message);
