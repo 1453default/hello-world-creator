@@ -5,6 +5,8 @@ export const SHOP_PHONE = "090004 64640";
 export const SHOP_WHATSAPP = "919000464640";
 export const SHOP_WHATSAPP_DISPLAY = "+91 90004 64640";
 export const SHOP_MAPS_URL = "https://maps.app.goo.gl/VKzkLwhPNbta42Ae9";
+export const SHOP_INSTAGRAM = "https://www.instagram.com/thereal_used_mobiles";
+export const SHOP_INSTAGRAM_HANDLE = "@thereal_used_mobiles";
 export const SHOP_ADDRESS =
   "Hyder Manzil, 7 Tombs Rd, beside Al Ameen Meat Mart, Samata Colony, Toli Chowki, Hyderabad, Telangana 500008";
 export const SHOP_HOURS = "Mon–Sat: 10:00 AM – 8:00 PM";

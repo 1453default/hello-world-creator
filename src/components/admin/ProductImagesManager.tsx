@@ -3,13 +3,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, Star, Trash2, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveImageUrl } from "@/lib/catalog";
 
 type Img = { id: string; url: string; is_primary: boolean; display_order: number };
 
 const BUCKET = "product-images";
 
-function publicUrl(path: string) {
-  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+function proxyUrl(path: string) {
+  // Served through our public image proxy so private buckets render for anonymous visitors.
+  return `/api/public/img/${BUCKET}/${path}`;
 }
 
 export function ProductImagesManager({ productId }: { productId: string }) {
@@ -42,7 +44,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
           .from(BUCKET)
           .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
         if (upErr) throw upErr;
-        const url = publicUrl(path);
+        const url = proxyUrl(path);
         const { error: insErr } = await supabase.from("product_images").insert({
           product_id: productId,
           url,
@@ -120,7 +122,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {images.map((img) => (
             <div key={img.id} className="group relative aspect-square overflow-hidden rounded-md border border-admin-border bg-admin-surface-2">
-              <img src={img.url} alt="" className="h-full w-full object-cover" />
+              <img src={resolveImageUrl(img.url)} alt="" className="h-full w-full object-cover" />
               {img.is_primary && (
                 <span className="absolute left-1 top-1 rounded bg-amber px-1.5 py-0.5 text-[9px] font-bold text-ink">
                   Primary

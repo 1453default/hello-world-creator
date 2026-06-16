@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Phone } from "lucide-react";
+import { Phone, Instagram } from "lucide-react";
 import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
-import { SHOP_PHONE, whatsappLink } from "@/lib/shop";
+import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, whatsappLink } from "@/lib/shop";
 import { Dock } from "@/components/public/Dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
@@ -94,6 +94,9 @@ function PublicFooter() {
           </a>
           <a href={whatsappLink()} target="_blank" rel="noopener" className="block text-sm text-foreground hover:text-primary font-num">
             WhatsApp · {SHOP_PHONE}
+          </a>
+          <a href={SHOP_INSTAGRAM} target="_blank" rel="noopener" className="mt-1 inline-flex items-center gap-1.5 text-sm text-foreground hover:text-primary">
+            <Instagram className="h-4 w-4" /> {SHOP_INSTAGRAM_HANDLE}
           </a>
         </div>
       </div>

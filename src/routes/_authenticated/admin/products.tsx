@@ -184,6 +184,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const qc = useQueryClient();
   const [form, setForm] = useState({
     name: product?.name ?? "",
     slug: product?.slug ?? "",
@@ -196,6 +197,8 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
     description: product?.description ?? "",
     is_featured: product?.is_featured ?? false,
     is_listed: product?.is_listed ?? true,
+    imei: "",
+    cost_price: "" as number | "",
   });
   const [saving, setSaving] = useState(false);
   const [createdId, setCreatedId] = useState<string | null>(product?.id ?? null);
@@ -230,8 +233,18 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
       } else {
         const { data, error } = await supabase.from("products").insert(payload).select("id").single();
         if (error) throw error;
+        // Auto-create one inventory unit so the new product shows as AVAILABLE
+        // (without this, the catalog renders it as "Sold Out" because available_count === 0).
+        const { error: invErr } = await supabase.from("inventory_units").insert({
+          product_id: data.id,
+          imei: form.imei.trim() || null,
+          cost_price: form.cost_price === "" ? null : Number(form.cost_price),
+          status: "AVAILABLE",
+        });
+        if (invErr) throw invErr;
         setCreatedId(data.id);
-        toast.success("Created — now add images");
+        qc.invalidateQueries({ queryKey: ["admin", "inventory"] });
+        toast.success("Product created with 1 inventory unit — add images");
       }
     } catch (e) {
       toast.error((e as Error).message);
@@ -270,6 +283,17 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
           <Field label="Color"><input value={form.color} onChange={(e) => set("color", e.target.value)} className="admin-input" /></Field>
           <Field label="Selling Price (₹)"><input type="number" value={form.selling_price} onChange={(e) => set("selling_price", Number(e.target.value))} className="admin-input" /></Field>
         </div>
+        {!createdId && (
+          <div className="grid grid-cols-2 gap-3 rounded-lg border border-amber/20 bg-amber/5 p-3">
+            <Field label="IMEI (initial unit, optional)">
+              <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+            </Field>
+            <Field label="Cost Price (₹, optional)">
+              <input type="number" value={form.cost_price} onChange={(e) => set("cost_price", e.target.value === "" ? "" : Number(e.target.value))} className="admin-input" />
+            </Field>
+            <p className="col-span-2 text-[11px] text-admin-muted">An AVAILABLE inventory unit will be created automatically so the product appears in stock.</p>
+          </div>
+        )}
         <Field label="Description">
           <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
         </Field>
