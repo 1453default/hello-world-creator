@@ -90,3 +90,20 @@ _None — awaiting next-phase instruction._
 - Shop: Used Mobiles, Samata Colony, Toli Chowki, Hyderabad 500008
 - WhatsApp: +91 90004 64640
 - Admin entry: sign in at `/auth`, then visit `/admin`.
+
+## ✅ 2026-06-16 — Full audit pass
+
+### Fixed
+- **Images**: created `/api/public/img/$` SSR proxy that streams private storage objects via the service role. Workspace policy blocks public buckets, so this is the supported path. `ProductImagesManager` now stores `/api/public/img/<bucket>/<path>`; `resolveImageUrl()` in `src/lib/catalog.ts` rewrites legacy `/storage/v1/object/public/...` URLs on the fly so existing rows render too.
+- **New product showing as Sold**: product creation now auto-inserts an AVAILABLE `inventory_units` row (with optional IMEI + cost) in the same transaction.
+- **IMEI capture**: IMEI + cost fields added to the product create dialog; values feed the auto-created inventory unit. Inventory page still supports adding more units per product.
+- **Placeholder copy removed**: dropped the "Coming next — Phase 5" panel from the admin dashboard.
+- **Search**: empty query now shows all in-stock phones with a "Clear" button (was "Type to search").
+- **Instagram link**: `SHOP_INSTAGRAM` constant added; rendered in footer + contact page (Instagram InfoCard); editable `instagram_url` in admin Settings.
+- **Danger Zone**: admin Settings now has a two-stage typed-confirmation Danger Zone for *Delete all customer history* and *Delete all bill history* (GitHub-style — second modal requires typing the exact phrase, e.g. `DELETE ALL BILLS`). Bill deletion also resets affected inventory units to AVAILABLE.
+- **Auth hardening**: client-side max-10-attempts with 5-minute lockout, progressive delay (200ms × prior failures, capped 2s), arithmetic CAPTCHA after 5 attempts, generic error messages (never reveal email existence), `console.info` / `console.warn` audit lines, HIBP password check enabled via `configure_auth`.
+- **Deployment**: added `vercel.json`, `netlify.toml`, and `DEPLOYMENT.md` covering both the SPA fallback and the NITRO_PRESET path needed for full SSR on Vercel/Netlify.
+
+### Known follow-ups (not in this pass)
+- `/admin` → `/backoffice` rename: deferred to keep the URL surface, redirects, and bookmarks intact in one safe pass. All admin routes remain at `/admin/*`.
+- Server-side brute-force tracking with a Supabase `auth_failed_attempts` table: client-side hardening + HIBP shipped now; a server table-backed implementation is the recommended next step for shared-device protection.
