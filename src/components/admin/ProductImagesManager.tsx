@@ -122,7 +122,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {images.map((img) => (
             <div key={img.id} className="group relative aspect-square overflow-hidden rounded-md border border-admin-border bg-admin-surface-2">
-              <img src={img.url} alt="" className="h-full w-full object-cover" />
+              <img src={resolveImageUrl(img.url)} alt="" className="h-full w-full object-cover" />
               {img.is_primary && (
                 <span className="absolute left-1 top-1 rounded bg-amber px-1.5 py-0.5 text-[9px] font-bold text-ink">
                   Primary
