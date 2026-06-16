@@ -1,0 +1,14 @@
+//#region node_modules/.nitro/vite/services/ssr/assets/used-mobiles-logo.png.asset-TWj9XZzS.js
+var used_mobiles_logo_png_asset_default = {
+	version: 1,
+	asset_id: "c6915cd4-efb8-4d6f-8dc5-8e524468deca",
+	project_id: "75a9d074-60d0-4899-9b55-f8c9cb9ed766",
+	url: "/__l5e/assets-v1/c6915cd4-efb8-4d6f-8dc5-8e524468deca/used-mobiles-logo.png",
+	r2_key: "a/v1/75a9d074-60d0-4899-9b55-f8c9cb9ed766/c6915cd4-efb8-4d6f-8dc5-8e524468deca/used-mobiles-logo.png",
+	original_filename: "used-mobiles-logo.png",
+	size: 527144,
+	content_type: "image/png",
+	created_at: "2026-06-15T14:31:25Z"
+};
+//#endregion
+export { used_mobiles_logo_png_asset_default as t };

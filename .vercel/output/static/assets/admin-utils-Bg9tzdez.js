@@ -1,0 +1,1 @@
+function e(e){return e.toLowerCase().trim().replace(/[^a-z0-9]+/g,`-`).replace(/^-+|-+$/g,``).slice(0,80)}function t(){let e=new Date;return`INV-${`${e.getFullYear()}${String(e.getMonth()+1).padStart(2,`0`)}${String(e.getDate()).padStart(2,`0`)}`}-${Math.floor(1e3+Math.random()*9e3)}`}export{e as n,t};
