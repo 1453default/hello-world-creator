@@ -184,6 +184,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const qc = useQueryClient();
   const [form, setForm] = useState({
     name: product?.name ?? "",
     slug: product?.slug ?? "",
