@@ -43,7 +43,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
           .from(BUCKET)
           .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
         if (upErr) throw upErr;
-        const url = publicUrl(path);
+        const url = proxyUrl(path);
         const { error: insErr } = await supabase.from("product_images").insert({
           product_id: productId,
           url,
