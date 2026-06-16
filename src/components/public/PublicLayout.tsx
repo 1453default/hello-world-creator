@@ -95,6 +95,9 @@ function PublicFooter() {
           <a href={whatsappLink()} target="_blank" rel="noopener" className="block text-sm text-foreground hover:text-primary font-num">
             WhatsApp · {SHOP_PHONE}
           </a>
+          <a href={SHOP_INSTAGRAM} target="_blank" rel="noopener" className="mt-1 inline-flex items-center gap-1.5 text-sm text-foreground hover:text-primary">
+            <Instagram className="h-4 w-4" /> {SHOP_INSTAGRAM_HANDLE}
+          </a>
         </div>
       </div>
       <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
