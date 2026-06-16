@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime-DVpe7PXp.js";import{t}from"./routes-R7z5FkuT.js";var n=e(),r=({error:e})=>(0,n.jsx)(t,{message:e.message});export{r as errorComponent};

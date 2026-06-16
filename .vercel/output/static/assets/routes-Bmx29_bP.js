@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime-DVpe7PXp.js";import{t}from"./routes-R7z5FkuT.js";var n=e(),r=()=>(0,n.jsx)(t,{message:`Page not found.`});export{r as notFoundComponent};
