@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Phone } from "lucide-react";
+import { Phone, Instagram } from "lucide-react";
 import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
-import { SHOP_PHONE, whatsappLink } from "@/lib/shop";
+import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, whatsappLink } from "@/lib/shop";
 import { Dock } from "@/components/public/Dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
