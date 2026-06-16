@@ -96,15 +96,6 @@ function DashboardPage() {
         <QuickAction to="/admin/brands" icon={Tags} title="Brands" desc="Logos, ordering, visibility" />
       </section>
 
-      <section className="rounded-xl border border-admin-border bg-admin-surface p-6">
-        <div className="text-xs uppercase tracking-[0.16em] text-admin-muted">Coming next</div>
-        <h2 className="mt-1 font-display text-lg font-semibold text-admin-text">
-          Phase 5 — Brand & Model Management
-        </h2>
-        <p className="mt-1 max-w-prose text-sm text-admin-muted">
-          CRUD for brands and phone models with logo upload, slug generation, and image storage.
-        </p>
-      </section>
     </div>
   );
 }
