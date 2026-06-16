@@ -33,7 +33,7 @@ function SearchPage() {
 
   const results = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return [];
+    if (!term) return products; // empty query → show all
     return products.filter((p) => {
       const hay = `${p.name} ${p.brand?.name ?? ""} ${p.storage ?? ""} ${p.color ?? ""}`.toLowerCase();
       return hay.includes(term);
@@ -53,12 +53,21 @@ function SearchPage() {
             placeholder="iPhone 13, Samsung S23, OnePlus…"
             className="flex-1 min-w-0 bg-transparent outline-none text-[15px]"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="rounded-md px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
         <p className="mt-4 text-sm text-muted-foreground">
           {query.trim()
             ? `${results.length} ${results.length === 1 ? "result" : "results"} for "${query}"`
-            : "Type to search."}
+            : `Showing all ${results.length} phones in stock.`}
         </p>
 
         <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
