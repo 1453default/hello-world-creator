@@ -67,6 +67,11 @@ function ContactPage() {
             <InfoCard icon={<Clock className="h-5 w-5" />} title="Hours">
               {SHOP_HOURS}
             </InfoCard>
+            <InfoCard icon={<Instagram className="h-5 w-5" />} title="Instagram">
+              <a href={SHOP_INSTAGRAM} target="_blank" rel="noopener" className="text-foreground hover:text-primary">
+                {SHOP_INSTAGRAM_HANDLE}
+              </a>
+            </InfoCard>
 
             <a
               href={whatsappLink("Hi USED MOBILES! I'd like to enquire.")}
