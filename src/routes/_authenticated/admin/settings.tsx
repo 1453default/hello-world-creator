@@ -97,11 +97,9 @@ function DangerZone() {
           description="Removes every customer record. Inventory and product data are kept. This cannot be undone."
           phrase="DELETE ALL CUSTOMERS"
           action={async () => {
-            // bill_items + bills + inventory_units (status SOLD) records are kept;
-            // we only blank the customer columns on bills.
             const { error } = await supabase
               .from("bills")
-              .update({ customer_name: null, customer_phone: null, customer_email: null })
+              .update({ customer_name: null, customer_phone: null } as never)
               .not("id", "is", null);
             if (error) throw error;
           }}
