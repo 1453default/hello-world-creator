@@ -8,8 +8,9 @@ type Img = { id: string; url: string; is_primary: boolean; display_order: number
 
 const BUCKET = "product-images";
 
-function publicUrl(path: string) {
-  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+function proxyUrl(path: string) {
+  // Served through our public image proxy so private buckets render for anonymous visitors.
+  return `/api/public/img/${BUCKET}/${path}`;
 }
 
 export function ProductImagesManager({ productId }: { productId: string }) {
