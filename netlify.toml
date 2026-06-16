@@ -1,0 +1,10 @@
+[build]
+  command = "vite build"
+  publish = ".output/public"
+
+# SSR routes are served by Nitro at runtime; for static export deployments
+# we also fall back to index.html so client-side routing still works.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
