@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { MapPin, Phone, Clock, MessageCircle, Instagram } from "lucide-react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import {
   SHOP_ADDRESS,
   SHOP_HOURS,
+  SHOP_INSTAGRAM,
+  SHOP_INSTAGRAM_HANDLE,
   SHOP_MAPS_URL,
   SHOP_PHONE,
   whatsappLink,
