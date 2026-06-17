@@ -186,10 +186,10 @@ function ProductsPage() {
                   <td className="px-4 py-3 text-right">
                     <Link to="/phone/$slug" params={{ slug: p.slug }} target="_blank" className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-admin-surface-2"><ExternalLink className="h-4 w-4" /></Link>
                     <button onClick={() => { setEditing(p); setOpen(true); }} className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-admin-surface-2 hover:text-admin-text"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => confirm(`Delete ${p.name}?`) && del.mutate(p.id)} className="inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-ruby/20 hover:text-ruby"><Trash2 className="h-4 w-4" /></button>
+                    <button onClick={() => confirm(`Delete ${p.name}?${isSold ? "\n\nNote: this product has SOLD units — sold history will be preserved." : ""}`) && del.mutate(p.id)} className="inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-ruby/20 hover:text-ruby"><Trash2 className="h-4 w-4" /></button>
                   </td>
                 </tr>
-              ))
+              );})
             )}
           </tbody>
         </table>
