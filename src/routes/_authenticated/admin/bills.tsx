@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Eye, Printer } from "lucide-react";
+import { Eye, Printer, Download } from "lucide-react";
+import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
+import { exportToXLSX } from "@/lib/xlsx-export";
 
 export const Route = createFileRoute("/_authenticated/admin/bills")({
   head: () => ({ meta: [{ title: "Bills · Admin" }] }),
