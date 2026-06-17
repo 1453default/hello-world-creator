@@ -19,9 +19,9 @@ export function PublicLayout({ children }: { children: ReactNode }) {
 function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex min-w-0 items-center gap-2">
-          <img src={logoAsset.url} alt="USED MOBILES" className="h-10 w-10 shrink-0 object-contain" />
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4">
+        <Link to="/" className="flex min-w-0 items-center gap-2.5">
+          <img src={logoAsset.url} alt="USED MOBILES" className="h-12 w-12 md:h-14 md:w-14 shrink-0 object-contain" onError={(e) => ((e.currentTarget.style.display = "none"))} />
           <div className="min-w-0">
             <div className="font-display text-base font-extrabold leading-none tracking-tight text-foreground">
               USED MOBILES
