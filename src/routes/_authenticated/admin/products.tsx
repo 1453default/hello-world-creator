@@ -41,11 +41,23 @@ function ProductsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, brand:brands(name)")
+        .select("*, brand:brands(name), inventory:inventory_units(id,status)")
         .eq("is_deleted", false)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as (Product & { brand: { name: string } | null })[];
+      type Row = Product & {
+        brand: { name: string } | null;
+        inventory: { id: string; status: string }[] | null;
+      };
+      return ((data ?? []) as Row[]).map((p) => {
+        const inv = p.inventory ?? [];
+        return {
+          ...p,
+          available_count: inv.filter((u) => u.status === "AVAILABLE").length,
+          sold_count: inv.filter((u) => u.status === "SOLD").length,
+          total_count: inv.length,
+        };
+      });
     },
   });
 
