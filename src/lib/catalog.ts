@@ -37,15 +37,16 @@ const PRODUCT_SELECT = `
 
 export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  // Rewrite legacy Supabase Storage public URLs to our public image proxy
-  // (the bucket is private; the proxy serves bytes via the service role).
+  // Legacy Supabase Storage URLs → public image proxy (the bucket is private).
   const m = url.match(/\/storage\/v1\/object\/(?:public|sign)\/([^/]+)\/([^?]+)/);
   if (m) return `/api/public/img/${m[1]}/${m[2]}`;
   return url;
 }
 
-function shapeProduct(row: any): ProductCard {
+function shapeProduct(row: any): ProductCard & { sold_count: number } {
   const inv = (row.inventory ?? []) as { status: string }[];
+  const available_count = inv.filter((u) => u.status === "AVAILABLE").length;
+  const sold_count = inv.filter((u) => u.status === "SOLD").length;
   return {
     ...row,
     selling_price: Number(row.selling_price),
@@ -55,7 +56,8 @@ function shapeProduct(row: any): ProductCard {
         (a: ProductImage, b: ProductImage) =>
           Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order,
       ),
-    available_count: inv.filter((u) => u.status === "AVAILABLE").length,
+    available_count,
+    sold_count,
   };
 }
 
