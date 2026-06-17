@@ -136,7 +136,10 @@ function ProductsPage() {
             ) : filtered.length === 0 ? (
               <tr><td colSpan={6} className="px-4 py-8 text-center text-admin-muted">No products.</td></tr>
             ) : (
-              filtered.map((p) => (
+              filtered.map((p) => {
+                const isSold = p.total_count > 0 && p.available_count === 0;
+                const lowStock = p.available_count > 0 && p.available_count <= 1;
+                return (
                 <tr key={p.id} className="hover:bg-admin-surface-2/50">
                   <td className="px-4 py-3">
                     <div className="font-semibold">{p.name}</div>
@@ -146,7 +149,25 @@ function ProductsPage() {
                   <td className="px-4 py-3 text-admin-muted">{p.storage ?? "—"}</td>
                   <td className="px-4 py-3 font-num font-semibold">{formatINR(p.selling_price)}</td>
                   <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap items-center gap-1">
+                      {isSold ? (
+                        <span className="inline-flex items-center rounded bg-ruby/20 px-2 py-1 text-xs font-bold uppercase tracking-wider text-ruby">
+                          Sold
+                        </span>
+                      ) : lowStock ? (
+                        <span className="inline-flex items-center rounded bg-amber/20 px-2 py-1 text-xs font-bold uppercase tracking-wider text-amber">
+                          Low · {p.available_count}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded bg-emerald/20 px-2 py-1 text-xs font-semibold text-emerald">
+                          {p.available_count} avl
+                        </span>
+                      )}
+                      {p.sold_count > 0 && (
+                        <span className="inline-flex items-center rounded bg-admin-surface-2 px-2 py-1 text-[10px] text-admin-muted">
+                          {p.sold_count} sold
+                        </span>
+                      )}
                       <button
                         onClick={() => toggle.mutate({ id: p.id, patch: { is_listed: !p.is_listed } })}
                         className={`inline-flex items-center gap-1 rounded px-2 py-1 text-xs ${p.is_listed ? "bg-emerald/20 text-emerald" : "bg-admin-surface-2 text-admin-muted"}`}
