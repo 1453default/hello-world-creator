@@ -86,7 +86,15 @@ export const allProductsQuery = queryOptions({
       .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []).map(shapeProduct);
+    // Sort available products first, then sold products at the bottom (stable by created_at desc within each group)
+    return (data ?? [])
+      .map(shapeProduct)
+      .sort((a, b) => {
+        const aSold = a.available_count === 0 ? 1 : 0;
+        const bSold = b.available_count === 0 ? 1 : 0;
+        if (aSold !== bSold) return aSold - bSold;
+        return 0;
+      });
   },
   staleTime: 30_000,
 });
