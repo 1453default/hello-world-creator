@@ -26,6 +26,7 @@ export type ProductCard = {
   brand: { name: string; slug: string } | null;
   images: ProductImage[];
   available_count: number;
+  sold_count: number;
 };
 
 const PRODUCT_SELECT = `
