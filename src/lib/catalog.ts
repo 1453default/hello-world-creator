@@ -26,6 +26,7 @@ export type ProductCard = {
   brand: { name: string; slug: string } | null;
   images: ProductImage[];
   available_count: number;
+  sold_count: number;
 };
 
 const PRODUCT_SELECT = `
@@ -37,15 +38,16 @@ const PRODUCT_SELECT = `
 
 export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  // Rewrite legacy Supabase Storage public URLs to our public image proxy
-  // (the bucket is private; the proxy serves bytes via the service role).
+  // Legacy Supabase Storage URLs → public image proxy (the bucket is private).
   const m = url.match(/\/storage\/v1\/object\/(?:public|sign)\/([^/]+)\/([^?]+)/);
   if (m) return `/api/public/img/${m[1]}/${m[2]}`;
   return url;
 }
 
-function shapeProduct(row: any): ProductCard {
+function shapeProduct(row: any): ProductCard & { sold_count: number } {
   const inv = (row.inventory ?? []) as { status: string }[];
+  const available_count = inv.filter((u) => u.status === "AVAILABLE").length;
+  const sold_count = inv.filter((u) => u.status === "SOLD").length;
   return {
     ...row,
     selling_price: Number(row.selling_price),
@@ -55,7 +57,8 @@ function shapeProduct(row: any): ProductCard {
         (a: ProductImage, b: ProductImage) =>
           Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order,
       ),
-    available_count: inv.filter((u) => u.status === "AVAILABLE").length,
+    available_count,
+    sold_count,
   };
 }
 
@@ -83,7 +86,15 @@ export const allProductsQuery = queryOptions({
       .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return (data ?? []).map(shapeProduct);
+    // Sort available products first, then sold products at the bottom (stable by created_at desc within each group)
+    return (data ?? [])
+      .map(shapeProduct)
+      .sort((a, b) => {
+        const aSold = a.available_count === 0 ? 1 : 0;
+        const bSold = b.available_count === 0 ? 1 : 0;
+        if (aSold !== bSold) return aSold - bSold;
+        return 0;
+      });
   },
   staleTime: 30_000,
 });
@@ -100,6 +111,6 @@ export const productBySlugQuery = (slug: string) =>
         .eq("is_deleted", false)
         .maybeSingle();
       if (error) throw error;
-      return data ? (shapeProduct(data) as ProductCard & { description: string }) : null;
+      return data ? (shapeProduct(data) as unknown as ProductCard & { description: string }) : null;
     },
   });

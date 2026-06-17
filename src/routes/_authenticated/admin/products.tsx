@@ -41,11 +41,23 @@ function ProductsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, brand:brands(name)")
+        .select("*, brand:brands(name), inventory:inventory_units(id,status)")
         .eq("is_deleted", false)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as (Product & { brand: { name: string } | null })[];
+      type Row = Product & {
+        brand: { name: string } | null;
+        inventory: { id: string; status: string }[] | null;
+      };
+      return ((data ?? []) as Row[]).map((p) => {
+        const inv = p.inventory ?? [];
+        return {
+          ...p,
+          available_count: inv.filter((u) => u.status === "AVAILABLE").length,
+          sold_count: inv.filter((u) => u.status === "SOLD").length,
+          total_count: inv.length,
+        };
+      });
     },
   });
 
@@ -124,7 +136,10 @@ function ProductsPage() {
             ) : filtered.length === 0 ? (
               <tr><td colSpan={6} className="px-4 py-8 text-center text-admin-muted">No products.</td></tr>
             ) : (
-              filtered.map((p) => (
+              filtered.map((p) => {
+                const isSold = p.total_count > 0 && p.available_count === 0;
+                const lowStock = p.available_count > 0 && p.available_count <= 1;
+                return (
                 <tr key={p.id} className="hover:bg-admin-surface-2/50">
                   <td className="px-4 py-3">
                     <div className="font-semibold">{p.name}</div>
@@ -134,7 +149,25 @@ function ProductsPage() {
                   <td className="px-4 py-3 text-admin-muted">{p.storage ?? "—"}</td>
                   <td className="px-4 py-3 font-num font-semibold">{formatINR(p.selling_price)}</td>
                   <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap items-center gap-1">
+                      {isSold ? (
+                        <span className="inline-flex items-center rounded bg-ruby/20 px-2 py-1 text-xs font-bold uppercase tracking-wider text-ruby">
+                          Sold
+                        </span>
+                      ) : lowStock ? (
+                        <span className="inline-flex items-center rounded bg-amber/20 px-2 py-1 text-xs font-bold uppercase tracking-wider text-amber">
+                          Low · {p.available_count}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded bg-emerald/20 px-2 py-1 text-xs font-semibold text-emerald">
+                          {p.available_count} avl
+                        </span>
+                      )}
+                      {p.sold_count > 0 && (
+                        <span className="inline-flex items-center rounded bg-admin-surface-2 px-2 py-1 text-[10px] text-admin-muted">
+                          {p.sold_count} sold
+                        </span>
+                      )}
                       <button
                         onClick={() => toggle.mutate({ id: p.id, patch: { is_listed: !p.is_listed } })}
                         className={`inline-flex items-center gap-1 rounded px-2 py-1 text-xs ${p.is_listed ? "bg-emerald/20 text-emerald" : "bg-admin-surface-2 text-admin-muted"}`}
@@ -153,10 +186,10 @@ function ProductsPage() {
                   <td className="px-4 py-3 text-right">
                     <Link to="/phone/$slug" params={{ slug: p.slug }} target="_blank" className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-admin-surface-2"><ExternalLink className="h-4 w-4" /></Link>
                     <button onClick={() => { setEditing(p); setOpen(true); }} className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-admin-surface-2 hover:text-admin-text"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => confirm(`Delete ${p.name}?`) && del.mutate(p.id)} className="inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-ruby/20 hover:text-ruby"><Trash2 className="h-4 w-4" /></button>
+                    <button onClick={() => confirm(`Delete ${p.name}?${isSold ? "\n\nNote: this product has SOLD units — sold history will be preserved." : ""}`) && del.mutate(p.id)} className="inline-flex h-8 w-8 items-center justify-center rounded text-admin-muted hover:bg-ruby/20 hover:text-ruby"><Trash2 className="h-4 w-4" /></button>
                   </td>
                 </tr>
-              ))
+              );})
             )}
           </tbody>
         </table>

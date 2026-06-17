@@ -28,12 +28,20 @@ export function ProductCard({ product, index = 0 }: { product: P; index?: number
             alt={product.name}
             loading="lazy"
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            onError={(e) => {
+              const t = e.currentTarget;
+              t.style.display = "none";
+              const fb = t.nextElementSibling as HTMLElement | null;
+              if (fb) fb.style.display = "flex";
+            }}
           />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-            <Smartphone className="h-12 w-12 opacity-30" strokeWidth={1.25} />
-          </div>
-        )}
+        ) : null}
+        <div
+          className="flex h-full w-full items-center justify-center text-muted-foreground"
+          style={{ display: img ? "none" : "flex" }}
+        >
+          <Smartphone className="h-12 w-12 opacity-30" strokeWidth={1.25} />
+        </div>
         <div className="absolute top-2 left-2 flex gap-1.5">
           <span className="rounded-md border border-black/10 bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground shadow-sm">
             {conditionLabel[product.condition] ?? product.condition}

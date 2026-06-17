@@ -85,7 +85,7 @@
   --admin-subtle: oklch(0.45 0.02 270);
 
   /* Public light theme = shadcn semantic */
-  --background: oklch(0.995 0.003 90);     /* warm white */
+  --background: oklch(0.965 0.003 270);    /* ghost white #F4F5F9 family */
   --foreground: var(--ink);
   --card: oklch(1 0 0);
   --card-foreground: var(--ink);

@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
-import { ChevronDown, ChevronRight, Eye } from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, Download } from "lucide-react";
+import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
+import { exportToXLSX } from "@/lib/xlsx-export";
 
 export const Route = createFileRoute("/_authenticated/admin/customers")({
   head: () => ({ meta: [{ title: "Customers · Admin" }] }),
@@ -51,13 +53,38 @@ function CustomersPage() {
     },
   });
 
+  function exportAll() {
+    try {
+      exportToXLSX(
+        customers.map((c) => ({
+          "Name": c.name,
+          "Phone": c.phone,
+          "Total Orders": c.orders,
+          "Total Spend (INR)": c.spend,
+          "First Purchase": new Date(c.first).toLocaleDateString(),
+          "Last Purchase": new Date(c.last).toLocaleDateString(),
+        })),
+        "Customers",
+        "used-mobiles-customers",
+      );
+      toast.success(`Exported ${customers.length} customers`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold">Customers</h1>
-        <p className="text-sm text-admin-muted">
-          Derived from bills · {customers.length} unique · click a row to view purchase history
-        </p>
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Customers</h1>
+          <p className="text-sm text-admin-muted">
+            Derived from bills · {customers.length} unique · click a row to view purchase history
+          </p>
+        </div>
+        <button onClick={exportAll} disabled={!customers.length} className="inline-flex h-10 items-center gap-2 rounded-md border border-admin-border bg-admin-surface px-4 text-sm font-semibold text-admin-text hover:border-amber/40 disabled:opacity-50">
+          <Download className="h-4 w-4" /> Export XLSX
+        </button>
       </header>
       <div className="overflow-hidden rounded-xl border border-admin-border bg-admin-surface">
         <table className="w-full text-sm">

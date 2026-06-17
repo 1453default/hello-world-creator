@@ -107,3 +107,18 @@ _None — awaiting next-phase instruction._
 ### Known follow-ups (not in this pass)
 - `/admin` → `/backoffice` rename: deferred to keep the URL surface, redirects, and bookmarks intact in one safe pass. All admin routes remain at `/admin/*`.
 - Server-side brute-force tracking with a Supabase `auth_failed_attempts` table: client-side hardening + HIBP shipped now; a server table-backed implementation is the recommended next step for shared-device protection.
+
+## Round 4 — Final polish (2026-06-17)
+
+- ✅ Maps URL updated to https://maps.app.goo.gl/hsqcq1b25oxw3Vyq7 (shop.ts + embed iframe in contact)
+- ✅ Admin → Products: visible **Sold** badge per row (red), **Low** stock badge, sold-count chip, available-count chip
+- ✅ Delete confirmation warns when product has sold units
+- ✅ Admin → Bills: **Export XLSX** button (full bill metadata)
+- ✅ Admin → Customers: **Export XLSX** button (aggregated customer ledger)
+- ✅ Public catalog now sorts **sold products to the bottom** (allProductsQuery)
+- ✅ Database trigger `auto_unlist_sold_product` auto-unlists products once SOLD ≥ 5 and AVAILABLE = 0
+  (threshold configurable via shop_settings.auto_unlist_sold_threshold)
+- ✅ Global background switched to Ghost White (~#F4F5F9)
+- ✅ Logo enlarged on public header (h-12 → h-14 on md) and admin sidebar (h-10)
+- ✅ ProductCard + logo `<img>` have graceful onError fallback (no broken placeholders)
+- ✅ Image proxy `/api/public/img/...` preserved; Vercel SSR (Nitro preset) keeps it working

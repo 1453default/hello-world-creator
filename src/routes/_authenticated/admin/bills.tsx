@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Eye, Printer } from "lucide-react";
+import { Eye, Printer, Download } from "lucide-react";
+import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
+import { exportToXLSX } from "@/lib/xlsx-export";
 
 export const Route = createFileRoute("/_authenticated/admin/bills")({
   head: () => ({ meta: [{ title: "Bills · Admin" }] }),
@@ -43,11 +45,46 @@ function BillsPage() {
     },
   });
 
+  async function exportAll() {
+    try {
+      const { data, error } = await supabase
+        .from("bills")
+        .select("bill_number, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, created_at, notes")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      exportToXLSX(
+        (data ?? []).map((b: any) => ({
+          "Bill #": b.bill_number ?? "",
+          "Customer": b.customer_name ?? "",
+          "Phone": b.customer_phone ?? "",
+          "Payment": b.payment_method ?? "",
+          "Status": b.status ?? "",
+          "Subtotal": Number(b.subtotal ?? 0),
+          "Discount": Number(b.discount ?? 0),
+          "Tax": Number(b.tax ?? 0),
+          "Grand Total": Number(b.grand_total ?? 0),
+          "Date": new Date(b.created_at).toLocaleString(),
+          "Notes": b.notes ?? "",
+        })),
+        "Bills",
+        "used-mobiles-bills",
+      );
+      toast.success(`Exported ${data?.length ?? 0} bills`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold">Bills</h1>
-        <p className="text-sm text-admin-muted">{bills.length} recent transactions</p>
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Bills</h1>
+          <p className="text-sm text-admin-muted">{bills.length} recent transactions</p>
+        </div>
+        <button onClick={exportAll} className="inline-flex h-10 items-center gap-2 rounded-md border border-admin-border bg-admin-surface px-4 text-sm font-semibold text-admin-text hover:border-amber/40">
+          <Download className="h-4 w-4" /> Export XLSX
+        </button>
       </header>
       <div className="overflow-hidden rounded-xl border border-admin-border bg-admin-surface">
         <table className="w-full text-sm">
