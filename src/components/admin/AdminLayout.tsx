@@ -103,7 +103,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
       <div className="flex h-16 items-center gap-2 border-b border-admin-border px-4">
-        <img src={logoAsset.url} alt="" className="h-8 w-8 object-contain" />
+        <img src={logoAsset.url} alt="" className="h-10 w-10 object-contain" onError={(e) => ((e.currentTarget.style.display = "none"))} />
         <div className="min-w-0">
           <div className="font-display text-sm font-extrabold leading-tight tracking-tight">
             USED MOBILES
