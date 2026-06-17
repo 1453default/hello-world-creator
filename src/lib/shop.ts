@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const SHOP_PHONE = "090004 64640";
 export const SHOP_WHATSAPP = "919000464640";
 export const SHOP_WHATSAPP_DISPLAY = "+91 90004 64640";
-export const SHOP_MAPS_URL = "https://maps.app.goo.gl/VKzkLwhPNbta42Ae9";
+export const SHOP_MAPS_URL = "https://maps.app.goo.gl/hsqcq1b25oxw3Vyq7";
 export const SHOP_INSTAGRAM = "https://www.instagram.com/thereal_used_mobiles";
 export const SHOP_INSTAGRAM_HANDLE = "@thereal_used_mobiles";
 export const SHOP_ADDRESS =
