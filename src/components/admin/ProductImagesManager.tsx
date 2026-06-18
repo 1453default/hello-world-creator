@@ -26,9 +26,11 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         .order("display_order")
         .order("created_at");
       if (error) throw error;
-      return data as Img[];
+      const { signImageList } = await import("@/lib/catalog");
+      return await signImageList(data as Img[]);
     },
   });
+
   const [uploading, setUploading] = useState(false);
 
   async function handleFiles(files: FileList | null) {
