@@ -106,7 +106,7 @@ function ReceiptPage() {
         {/* Header */}
         <div className="flex items-start justify-between gap-6 border-b border-neutral-200 pb-6">
           <div className="flex items-center gap-3">
-            <img src={logoAsset.url} alt="USED MOBILES" className="h-14 w-14 object-contain" />
+            <img src="/USED_MOBILE_LOGO.png" alt="USED MOBILES" className="h-14 w-14 object-contain" />
             <div>
               <div className="font-display text-xl font-extrabold leading-tight tracking-tight text-black">
                 USED MOBILES

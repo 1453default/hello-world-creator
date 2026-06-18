@@ -1,7 +1,6 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Phone, Instagram } from "lucide-react";
-import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
 import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, whatsappLink } from "@/lib/shop";
 import { Dock } from "@/components/public/Dock";
 
@@ -21,7 +20,7 @@ function PublicHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4">
         <Link to="/" className="flex min-w-0 items-center gap-2.5">
-          <img src={logoAsset.url} alt="USED MOBILES" className="h-12 w-12 md:h-14 md:w-14 shrink-0 object-contain" onError={(e) => ((e.currentTarget.style.display = "none"))} />
+          <img src="/USED_MOBILE_LOGO.png" alt="USED MOBILES" className="h-12 w-12 md:h-14 md:w-14 shrink-0 object-contain" onError={(e) => ((e.currentTarget.style.display = "none"))} />
           <div className="min-w-0">
             <div className="font-display text-base font-extrabold leading-none tracking-tight text-foreground">
               USED MOBILES
@@ -69,7 +68,7 @@ function PublicFooter() {
       <div className="mx-auto max-w-6xl px-4 py-10 grid gap-8 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <img src={logoAsset.url} alt="" className="h-9 w-9 object-contain" />
+            <img src="/USED_MOBILE_LOGO.png" alt="" className="h-9 w-9 object-contain" />
             <div>
               <div className="font-display font-extrabold text-foreground">USED MOBILES</div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Buy · Trust</div>

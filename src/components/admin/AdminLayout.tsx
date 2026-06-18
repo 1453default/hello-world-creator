@@ -20,7 +20,6 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
 
 type NavItem = {
   to: string;
@@ -103,7 +102,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
       <div className="flex h-16 items-center gap-2 border-b border-admin-border px-4">
-        <img src={logoAsset.url} alt="" className="h-10 w-10 object-contain" onError={(e) => ((e.currentTarget.style.display = "none"))} />
+        <img src="/USED_MOBILE_LOGO.png" alt="" className="h-10 w-10 object-contain" onError={(e) => ((e.currentTarget.style.display = "none"))} />
         <div className="min-w-0">
           <div className="font-display text-sm font-extrabold leading-tight tracking-tight">
             USED MOBILES
@@ -126,11 +125,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 <Link
                   to={item.to}
                   onClick={onNavigate}
-                  className={`flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition ${
-                    active
+                  className={`flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition ${active
                       ? "bg-admin-surface-2 text-admin-text"
                       : "text-admin-muted hover:bg-admin-surface-2 hover:text-admin-text"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   <span className="truncate">{item.label}</span>

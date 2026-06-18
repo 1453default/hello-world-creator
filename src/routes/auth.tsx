@@ -135,7 +135,7 @@ function AuthPage() {
         className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm"
       >
         <Link to="/" className="flex items-center gap-2 mb-6">
-          <img src={logoAsset.url} alt="" className="h-10 w-10 object-contain" />
+          <img src="/USED_MOBILE_LOGO.png" alt="" className="h-10 w-10 object-contain" />
           <div>
             <div className="font-display font-extrabold tracking-tight text-foreground">USED MOBILES</div>
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Staff portal</div>
