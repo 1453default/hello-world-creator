@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, Star, Trash2, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveImageUrl } from "@/lib/catalog";
+// signImageList is dynamically imported in the query to avoid SSR-time circular work
 
 type Img = { id: string; url: string; is_primary: boolean; display_order: number };
 
@@ -26,9 +26,11 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         .order("display_order")
         .order("created_at");
       if (error) throw error;
-      return data as Img[];
+      const { signImageList } = await import("@/lib/catalog");
+      return await signImageList(data as Img[]);
     },
   });
+
   const [uploading, setUploading] = useState(false);
 
   async function handleFiles(files: FileList | null) {
@@ -122,7 +124,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {images.map((img) => (
             <div key={img.id} className="group relative aspect-square overflow-hidden rounded-md border border-admin-border bg-admin-surface-2">
-              <img src={resolveImageUrl(img.url)} alt="" className="h-full w-full object-cover" />
+              <img src={img.url} alt="" className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
               {img.is_primary && (
                 <span className="absolute left-1 top-1 rounded bg-amber px-1.5 py-0.5 text-[9px] font-bold text-ink">
                   Primary

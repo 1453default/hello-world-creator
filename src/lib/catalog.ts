@@ -36,27 +36,61 @@ const PRODUCT_SELECT = `
   inventory:inventory_units ( id, status )
 `;
 
+/**
+ * Extract { bucket, path } from any of our stored URL formats.
+ *  - /api/public/img/<bucket>/<path>            (legacy SSR proxy form — fails on Vercel static)
+ *  - https://*.supabase.co/storage/v1/object/{public|sign|authenticated}/<bucket>/<path>
+ *  - <bucket>::<path>                            (new compact form, future-proof)
+ */
+function parseStorageRef(url: string | null | undefined): { bucket: string; path: string } | null {
+  if (!url) return null;
+  const proxy = url.match(/^\/api\/public\/img\/([^/]+)\/(.+)$/);
+  if (proxy) return { bucket: proxy[1], path: proxy[2].split("?")[0] };
+  const storage = url.match(/\/storage\/v1\/object\/(?:public|sign|authenticated)\/([^/]+)\/([^?]+)/);
+  if (storage) return { bucket: storage[1], path: storage[2] };
+  const compact = url.match(/^([a-z0-9_-]+)::(.+)$/i);
+  if (compact) return { bucket: compact[1], path: compact[2] };
+  return null;
+}
+
+/** Synchronous best-effort URL (used as a fallback / before signing). Empty string → placeholder. */
 export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  // Legacy Supabase Storage URLs → public image proxy (the bucket is private).
-  const m = url.match(/\/storage\/v1\/object\/(?:public|sign)\/([^/]+)\/([^?]+)/);
-  if (m) return `/api/public/img/${m[1]}/${m[2]}`;
+  if (/^https?:\/\//i.test(url)) return url;
+  // Legacy proxy form still works on Lovable runtime; on Vercel static it 404s.
   return url;
 }
 
-function shapeProduct(row: any): ProductCard & { sold_count: number } {
+/** Sign a single stored URL → CDN-served signed URL. Returns original if it's already an external https URL. */
+async function signImageUrl(url: string): Promise<string> {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url) && !/\/storage\/v1\/object\//.test(url)) return url;
+  const ref = parseStorageRef(url);
+  if (!ref) return url;
+  const { data, error } = await supabase.storage
+    .from(ref.bucket)
+    .createSignedUrl(ref.path, 60 * 60 * 6); // 6h is plenty; React Query caches the resolved result
+  if (error || !data?.signedUrl) return "";
+  return data.signedUrl;
+}
+
+export async function signImageList<T extends { url: string }>(images: T[]): Promise<T[]> {
+  if (!images || images.length === 0) return images;
+  return Promise.all(images.map(async (img) => ({ ...img, url: await signImageUrl(img.url) })));
+}
+
+async function shapeProduct(row: any): Promise<ProductCard & { sold_count: number }> {
   const inv = (row.inventory ?? []) as { status: string }[];
   const available_count = inv.filter((u) => u.status === "AVAILABLE").length;
   const sold_count = inv.filter((u) => u.status === "SOLD").length;
+  const sortedImages = ((row.images ?? []) as ProductImage[]).sort(
+    (a, b) => Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order,
+  );
+  const images = await signImageList(sortedImages);
   return {
     ...row,
     selling_price: Number(row.selling_price),
-    images: (row.images ?? [])
-      .map((img: ProductImage) => ({ ...img, url: resolveImageUrl(img.url) }))
-      .sort(
-        (a: ProductImage, b: ProductImage) =>
-          Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order,
-      ),
+    images,
     available_count,
     sold_count,
   };
@@ -86,18 +120,17 @@ export const allProductsQuery = queryOptions({
       .eq("is_deleted", false)
       .order("created_at", { ascending: false });
     if (error) throw error;
-    // Sort available products first, then sold products at the bottom (stable by created_at desc within each group)
-    return (data ?? [])
-      .map(shapeProduct)
-      .sort((a, b) => {
-        const aSold = a.available_count === 0 ? 1 : 0;
-        const bSold = b.available_count === 0 ? 1 : 0;
-        if (aSold !== bSold) return aSold - bSold;
-        return 0;
-      });
+    const shaped = await Promise.all((data ?? []).map(shapeProduct));
+    // Sort available products first, then sold products at the bottom (stable order within each group).
+    return shaped.sort((a, b) => {
+      const aSold = a.available_count === 0 ? 1 : 0;
+      const bSold = b.available_count === 0 ? 1 : 0;
+      return aSold - bSold;
+    });
   },
   staleTime: 30_000,
 });
+
 
 export const productBySlugQuery = (slug: string) =>
   queryOptions({
@@ -111,6 +144,6 @@ export const productBySlugQuery = (slug: string) =>
         .eq("is_deleted", false)
         .maybeSingle();
       if (error) throw error;
-      return data ? (shapeProduct(data) as unknown as ProductCard & { description: string }) : null;
+      return data ? ((await shapeProduct(data)) as unknown as ProductCard & { description: string }) : null;
     },
   });

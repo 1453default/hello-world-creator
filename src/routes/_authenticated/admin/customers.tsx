@@ -53,25 +53,60 @@ function CustomersPage() {
     },
   });
 
-  function exportAll() {
+  async function exportAll() {
     try {
-      exportToXLSX(
-        customers.map((c) => ({
-          "Name": c.name,
-          "Phone": c.phone,
-          "Total Orders": c.orders,
-          "Total Spend (INR)": c.spend,
-          "First Purchase": new Date(c.first).toLocaleDateString(),
-          "Last Purchase": new Date(c.last).toLocaleDateString(),
-        })),
-        "Customers",
-        "used-mobiles-customers",
-      );
-      toast.success(`Exported ${customers.length} customers`);
+      // Pull all bills with items, IMEI, product & brand — one spreadsheet row per purchased device.
+      const { data, error } = await supabase
+        .from("bills")
+        .select(
+          "bill_number, created_at, customer_name, customer_phone, payment_method, grand_total, items:bill_items(description, quantity, unit_price, line_total, inventory_unit:inventory_units(imei), product:products(name, brand:brands(name)))",
+        )
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const rows: Record<string, string | number>[] = [];
+      for (const b of (data ?? []) as any[]) {
+        const items = (b.items ?? []) as any[];
+        if (items.length === 0) {
+          rows.push({
+            "Customer Name": b.customer_name ?? "Guest",
+            "Phone": b.customer_phone ?? "",
+            "Bill Number": b.bill_number ?? "",
+            "Bill Date": new Date(b.created_at).toLocaleString(),
+            "Brand": "",
+            "Product": "",
+            "IMEI": "",
+            "Quantity": 0,
+            "Unit Price (INR)": 0,
+            "Line Total (INR)": 0,
+            "Bill Total (INR)": Number(b.grand_total),
+            "Payment Method": b.payment_method ?? "",
+          });
+          continue;
+        }
+        for (const it of items) {
+          rows.push({
+            "Customer Name": b.customer_name ?? "Guest",
+            "Phone": b.customer_phone ?? "",
+            "Bill Number": b.bill_number ?? "",
+            "Bill Date": new Date(b.created_at).toLocaleString(),
+            "Brand": it.product?.brand?.name ?? "",
+            "Product": it.product?.name ?? it.description ?? "",
+            "IMEI": it.inventory_unit?.imei ?? "",
+            "Quantity": Number(it.quantity ?? 0),
+            "Unit Price (INR)": Number(it.unit_price ?? 0),
+            "Line Total (INR)": Number(it.line_total ?? 0),
+            "Bill Total (INR)": Number(b.grand_total),
+            "Payment Method": b.payment_method ?? "",
+          });
+        }
+      }
+      exportToXLSX(rows, "Customer Purchases", "used-mobiles-customer-purchases");
+      toast.success(`Exported ${rows.length} purchase rows`);
     } catch (e) {
       toast.error((e as Error).message);
     }
   }
+
 
   return (
     <div className="space-y-6">
