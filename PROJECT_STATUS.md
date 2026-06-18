@@ -122,3 +122,29 @@ _None — awaiting next-phase instruction._
 - ✅ Logo enlarged on public header (h-12 → h-14 on md) and admin sidebar (h-10)
 - ✅ ProductCard + logo `<img>` have graceful onError fallback (no broken placeholders)
 - ✅ Image proxy `/api/public/img/...` preserved; Vercel SSR (Nitro preset) keeps it working
+
+## Round 5 — Vercel image rendering + detailed customer export (2026-06-18)
+
+- ✅ **Product images render on Vercel (and Lovable, Netlify)** — replaced the
+  SSR `/api/public/img/*` proxy dependency with on-read **signed URLs** via
+  the publishable-key client. Works on static deployments with no
+  service-role secret required.
+  - Migration: added `storage.objects` policies for `product-images`
+    (anon+authenticated SELECT; authenticated insert/update/delete).
+  - `src/lib/catalog.ts`: new `parseStorageRef()`, async `signImageUrl()`,
+    `signImageList()`; `shapeProduct()` is now async; both
+    `allProductsQuery` and `productBySlugQuery` resolve image URLs.
+  - `src/components/admin/ProductImagesManager.tsx`: gallery now uses
+    signed URLs; `<img>` has `onError` fallback.
+  - Backward-compatible: legacy `/api/public/img/<bucket>/<path>` URLs,
+    Supabase storage URLs, and compact `bucket::path` form are all parsed.
+  - The SSR proxy route is left in place as a harmless extra fallback.
+- ✅ **Customer XLSX export now includes per-purchase device detail** —
+  one row per purchased item with: Customer Name, Phone, Bill Number,
+  Bill Date, Brand, Product, IMEI, Quantity, Unit Price, Line Total,
+  Bill Total, Payment Method. Replaces the previous summary-only sheet.
+- ✅ Verified (already in place from earlier rounds, preserved):
+  - Admin → Products: SOLD / Low / Available badges and sold-history delete warning.
+  - Admin → Customers: View + Print actions on each bill in history.
+  - Public catalog: sold products sorted to the bottom.
+  - Auto-unlist trigger active at threshold (default 5).
