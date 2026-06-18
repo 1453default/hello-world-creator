@@ -144,6 +144,6 @@ export const productBySlugQuery = (slug: string) =>
         .eq("is_deleted", false)
         .maybeSingle();
       if (error) throw error;
-      return data ? (shapeProduct(data) as unknown as ProductCard & { description: string }) : null;
+      return data ? ((await shapeProduct(data)) as unknown as ProductCard & { description: string }) : null;
     },
   });
