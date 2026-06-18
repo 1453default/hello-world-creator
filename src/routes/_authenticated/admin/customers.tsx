@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
-import { ChevronDown, ChevronRight, Eye, Download } from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, Download, Printer } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
@@ -212,6 +212,14 @@ function CustomerDetail({ customer }: { customer: Customer }) {
                     >
                       <Eye className="h-3 w-3" /> Receipt
                     </Link>
+                    <a
+                      href={`/receipt/${b.id}?print=1`}
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex h-7 items-center gap-1 rounded border border-admin-border px-2 text-[11px] font-semibold text-admin-muted hover:text-amber"
+                    >
+                      <Printer className="h-3 w-3" /> Print
+                    </a>
                   </div>
                 </div>
                 <table className="w-full text-xs">
