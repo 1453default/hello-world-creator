@@ -34,7 +34,7 @@ function ContactPage() {
           Visit our shop.
         </h1>
         <p className="mt-3 text-base md:text-lg text-muted-foreground max-w-xl">
-          Come in to see, test, and pick your phone in person. We're open six days a week.
+          Come in to see, test, and pick your phone in person. We're open all days of a week.
         </p>
 
         <div className="mt-8 grid gap-6 md:grid-cols-[1.2fr_1fr]">
@@ -46,7 +46,7 @@ function ContactPage() {
           >
             <iframe
               title="USED MOBILES location"
-              src="https://www.google.com/maps?q=USED+MOBILES+Toli+Chowki+Hyderabad&output=embed"
+              src="https://www.google.com/maps?q=Used+Mobile+Hyder+Manzil+7+Tombs+Road+Toli+Chowki+Hyderabad+500008&output=embed"
               className="h-full w-full"
               loading="lazy"
             />

@@ -9,7 +9,7 @@ export const SHOP_INSTAGRAM = "https://www.instagram.com/thereal_used_mobiles";
 export const SHOP_INSTAGRAM_HANDLE = "@thereal_used_mobiles";
 export const SHOP_ADDRESS =
   "Hyder Manzil, 7 Tombs Rd, beside Al Ameen Meat Mart, Samata Colony, Toli Chowki, Hyderabad, Telangana 500008";
-export const SHOP_HOURS = "Mon–Sat: 10:00 AM – 8:00 PM";
+export const SHOP_HOURS = "All Days of the Week: 10:00 AM - 11:00 PM";
 
 export function whatsappLink(message?: string) {
   const base = `https://wa.me/${SHOP_WHATSAPP}`;
