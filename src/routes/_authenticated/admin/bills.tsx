@@ -49,7 +49,7 @@ function BillsPage() {
     try {
       const { data, error } = await supabase
         .from("bills")
-        .select("bill_number, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, created_at, notes")
+        .select("bill_number, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, created_at")
         .order("created_at", { ascending: false });
       if (error) throw error;
       exportToXLSX(
@@ -64,7 +64,6 @@ function BillsPage() {
           "Tax": Number(b.tax ?? 0),
           "Grand Total": Number(b.grand_total ?? 0),
           "Date": new Date(b.created_at).toLocaleString(),
-          "Notes": b.notes ?? "",
         })),
         "Bills",
         "used-mobiles-bills",
