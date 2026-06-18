@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Upload, Star, Trash2, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveImageUrl } from "@/lib/catalog";
+// signImageList is dynamically imported in the query to avoid SSR-time circular work
 
 type Img = { id: string; url: string; is_primary: boolean; display_order: number };
 
