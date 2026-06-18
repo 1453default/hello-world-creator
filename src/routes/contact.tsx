@@ -46,7 +46,7 @@ function ContactPage() {
           >
             <iframe
               title="USED MOBILES location"
-              src="https://www.google.com/maps?q=Hyder+Manzil+7+Tombs+Rd+beside+Al+Ameen+Meat+Mart+Samata+Colony+Toli+Chowki+Hyderabad+500008&output=embed"
+              src="https://www.google.com/maps?q=USED+MOBILES+Toli+Chowki+Hyderabad&output=embed"
               className="h-full w-full"
               loading="lazy"
             />
