@@ -89,12 +89,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "USED MOBILES — Pre-Owned Smartphones, Hyderabad" },
       { name: "twitter:title", content: "USED MOBILES — Pre-Owned Smartphones, Hyderabad" },
-      { name: "description", content: "Generates HTML files with \"Hello World\" code." },
-      { property: "og:description", content: "Generates HTML files with \"Hello World\" code." },
-      { name: "twitter:description", content: "Generates HTML files with \"Hello World\" code." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2e2d75be-b171-43c5-9976-5dfd7e086448" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2e2d75be-b171-43c5-9976-5dfd7e086448" },
     ],
+
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
