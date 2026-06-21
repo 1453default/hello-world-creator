@@ -62,7 +62,6 @@ function AuthPage() {
   }, [attempts.count]);
 
   useEffect(() => {
-    fetch("/api/public/bootstrap-admin", { method: "POST" }).catch(() => {});
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/admin" });
     });
