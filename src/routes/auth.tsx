@@ -109,11 +109,7 @@ function AuthPage() {
       };
       saveAttempts(newState);
       setAttempts(newState);
-      console.warn("[auth] login failed", {
-        email,
-        attempt: next,
-        t: new Date().toISOString(),
-      });
+      console.warn("[auth] login failed", { attempt: next });
       // Generic error — never reveal whether the email exists
       toast.error(
         locked
