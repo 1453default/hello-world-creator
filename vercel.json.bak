@@ -1,8 +1,0 @@
-{
-  "version": 2,
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }],
-  "buildCommand": "vite build",
-  "outputDirectory": ".output/public",
-  "framework": null,
-  "trailingSlash": false
-}
