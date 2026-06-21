@@ -62,7 +62,6 @@ function AuthPage() {
   }, [attempts.count]);
 
   useEffect(() => {
-    fetch("/api/public/bootstrap-admin", { method: "POST" }).catch(() => {});
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/admin" });
     });
@@ -98,7 +97,7 @@ function AuthPage() {
       // Successful login: reset and log
       saveAttempts({ count: 0, lockedUntil: null });
       setAttempts({ count: 0, lockedUntil: null });
-      console.info("[auth] login success", { email, t: new Date().toISOString() });
+      console.info("[auth] login success");
       toast.success("Welcome back");
       navigate({ to: "/admin" });
     } catch (err: any) {
@@ -110,11 +109,7 @@ function AuthPage() {
       };
       saveAttempts(newState);
       setAttempts(newState);
-      console.warn("[auth] login failed", {
-        email,
-        attempt: next,
-        t: new Date().toISOString(),
-      });
+      console.warn("[auth] login failed", { attempt: next });
       // Generic error — never reveal whether the email exists
       toast.error(
         locked
