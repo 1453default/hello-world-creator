@@ -84,6 +84,8 @@ function SettingsPage() {
 }
 
 function DangerZone() {
+  const delCustomers = useServerFn(deleteAllCustomers);
+  const delBills = useServerFn(deleteAllBills);
   return (
     <section className="rounded-xl border-2 border-ruby/40 bg-ruby/5 p-6">
       <div className="flex items-center gap-2">
@@ -98,25 +100,13 @@ function DangerZone() {
           title="Delete all customer history"
           description="Removes every customer record. Inventory and product data are kept. This cannot be undone."
           phrase="DELETE ALL CUSTOMERS"
-          action={async () => {
-            const { error } = await supabase
-              .from("bills")
-              .update({ customer_name: null, customer_phone: null } as never)
-              .not("id", "is", null);
-            if (error) throw error;
-          }}
+          action={async () => { await delCustomers({}); }}
         />
         <DangerAction
           title="Delete all bill history"
           description="Wipes every bill and bill_item record. Inventory units sold via these bills will be reset to AVAILABLE. This cannot be undone."
           phrase="DELETE ALL BILLS"
-          action={async () => {
-            // Reset inventory units back to AVAILABLE so stock stays consistent.
-            await supabase.from("inventory_units").update({ status: "AVAILABLE" }).eq("status", "SOLD");
-            await supabase.from("bill_items").delete().not("id", "is", null);
-            const { error } = await supabase.from("bills").delete().not("id", "is", null);
-            if (error) throw error;
-          }}
+          action={async () => { await delBills({}); }}
         />
       </div>
     </section>
