@@ -5,7 +5,7 @@ import {
   LayoutDashboard,
   Tags,
   Smartphone,
-  Boxes,
+  
   ShoppingCart,
   Receipt,
   Users,
