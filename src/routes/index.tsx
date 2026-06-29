@@ -241,6 +241,21 @@ function HomePage() {
             </div>
           </section>
 
+          {/* Latest Stock Arrivals (Instagram) */}
+          <InstagramReels
+            title="Latest Stock Arrivals"
+            subtitle="See our newest arrivals exactly as posted on Instagram."
+            urls={latestStockReels}
+            showCta
+          />
+
+          {/* Customer Testimonials */}
+          <InstagramReels
+            title="Happy Customers"
+            subtitle="Real customers. Real purchases. Real feedback."
+            urls={testimonialReels}
+          />
+
           {/* WhatsApp CTA */}
           <section className="mx-auto max-w-6xl px-4 mt-12 mb-4">
             <div className="rounded-2xl bg-ink text-white p-6 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden relative">
