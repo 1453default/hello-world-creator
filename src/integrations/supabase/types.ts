@@ -164,9 +164,13 @@ export type Database = {
           imei: string | null
           notes: string | null
           product_id: string
+          purchase_date: string | null
           serial: string | null
+          sold_at: string | null
           status: string
+          supplier: string | null
           updated_at: string
+          warranty_until: string | null
         }
         Insert: {
           cost_price?: number | null
@@ -175,9 +179,13 @@ export type Database = {
           imei?: string | null
           notes?: string | null
           product_id: string
+          purchase_date?: string | null
           serial?: string | null
+          sold_at?: string | null
           status?: string
+          supplier?: string | null
           updated_at?: string
+          warranty_until?: string | null
         }
         Update: {
           cost_price?: number | null
@@ -186,9 +194,13 @@ export type Database = {
           imei?: string | null
           notes?: string | null
           product_id?: string
+          purchase_date?: string | null
           serial?: string | null
+          sold_at?: string | null
           status?: string
+          supplier?: string | null
           updated_at?: string
+          warranty_until?: string | null
         }
         Relationships: [
           {
