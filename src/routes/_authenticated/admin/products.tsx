@@ -494,8 +494,14 @@ function ProductsPage() {
                         <ExpandedDetail product={p} onChanged={invalidate} />
                       </td>
                     </tr>
+                  {isOpen && (
+                    <tr className="bg-admin-surface-2/30">
+                      <td colSpan={12} className="px-4 py-4">
+                        <ExpandedDetail product={p} onChanged={invalidate} />
+                      </td>
+                    </tr>
                   )}
-                </>
+                </FragmentRow>
               );
             })}
           </tbody>
