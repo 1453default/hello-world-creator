@@ -201,12 +201,11 @@ function ProductsPage() {
 
   const bulkUnitStatus = useMutation({
     mutationFn: async ({ productIds, status }: { productIds: string[]; status: UnitStatus }) => {
-      const target = status === "SOLD" ? "AVAILABLE" : "SOLD";
       const { error } = await supabase
         .from("inventory_units")
         .update({ status, sold_at: status === "SOLD" ? new Date().toISOString() : null })
         .in("product_id", productIds)
-        .eq("status", target);
+        .neq("status", status);
       if (error) throw error;
     },
     onSuccess: (_d, v) => { toast.success(`Marked ${v.status.toLowerCase()}`); invalidate(); },
