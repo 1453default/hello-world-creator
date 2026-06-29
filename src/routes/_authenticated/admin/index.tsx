@@ -91,7 +91,7 @@ function DashboardPage() {
       </section>
 
       <section className="grid gap-3 md:grid-cols-3">
-        <QuickAction to="/admin/inventory" icon={Boxes} title="Manage Inventory" desc="Add new units, update IMEIs, change status" />
+        <QuickAction to="/admin/products" icon={Boxes} title="Manage Inventory" desc="IMEIs, stock, prices — inside Products" />
         <QuickAction to="/admin/products" icon={Smartphone} title="Add Product" desc="Create model with specs and images" />
         <QuickAction to="/admin/brands" icon={Tags} title="Brands" desc="Logos, ordering, visibility" />
       </section>
