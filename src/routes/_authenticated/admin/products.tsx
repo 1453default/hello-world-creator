@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState, type ReactNode } from "react";
+import { Fragment, useMemo, useState, type ReactNode } from "react";
+const FragmentRow = Fragment;
 import {
   Pencil, Trash2, Plus, Eye, EyeOff, Star, ExternalLink, ChevronDown, ChevronRight,
   Copy, Download, ShoppingBag, CheckCircle2, Clock3, Search,
