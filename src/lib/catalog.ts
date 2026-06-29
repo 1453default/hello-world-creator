@@ -180,6 +180,12 @@ export const productBySlugQuery = (slug: string) =>
         .eq("is_deleted", false)
         .maybeSingle();
       if (error) throw error;
-      return data ? ((await shapeProduct(data)) as unknown as ProductCard & { description: string }) : null;
+      if (!data) return null;
+      const shaped = await shapeProduct(data);
+      shaped.images = await signImageList(shaped.images);
+      return shaped as unknown as ProductCard & { description: string };
     },
+    staleTime: 2 * 60_000,
+    gcTime: 30 * 60_000,
   });
+
