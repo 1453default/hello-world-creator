@@ -32,7 +32,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
   });
 
   const [uploading, setUploading] = useState(false);
-  const [pasteFocused, setPasteFocused] = useState(false);
+
 
   // Clipboard paste → reuse the exact same upload pipeline as the Upload button.
   useEffect(() => {
