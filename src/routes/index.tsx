@@ -241,20 +241,24 @@ function HomePage() {
             </div>
           </section>
 
-          {/* Latest Stock Arrivals (Instagram) */}
+          {/* Happy Customers (Instagram) */}
           <InstagramReels
-            title="Latest Stock Arrivals"
-            subtitle="See our newest arrivals exactly as posted on Instagram."
-            urls={latestStockReels}
+            title="⭐ Happy Customers"
+            subtitle="Real customers. Real purchases. Real experiences."
+            urls={testimonialReels}
             showCta
+            ctaLabel="View More Customer Stories"
           />
 
-          {/* Customer Testimonials */}
+          {/* Stock Reels (Instagram) */}
           <InstagramReels
-            title="Happy Customers"
-            subtitle="Real customers. Real purchases. Real feedback."
-            urls={testimonialReels}
+            title="🎥 Stock Reels"
+            subtitle="Watch our latest phone arrivals, demos and stock updates directly from Instagram."
+            urls={latestStockReels}
+            showCta
+            ctaLabel="Explore More Stock"
           />
+
 
           {/* WhatsApp CTA */}
           <section className="mx-auto max-w-6xl px-4 mt-12 mb-4">
