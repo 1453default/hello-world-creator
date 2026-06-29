@@ -128,8 +128,11 @@ export function ProductImagesManager({ productId }: { productId: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-admin-muted">Images</span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wider text-admin-muted">
+          Images <span className="ml-2 normal-case font-normal tracking-normal text-admin-muted/70">· paste with Ctrl + V</span>
+        </span>
+
         <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-admin-border bg-admin-surface-2 px-3 py-1.5 text-xs font-semibold text-admin-text hover:border-amber/50">
           {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
           {uploading ? "Uploading…" : "Upload"}
