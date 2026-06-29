@@ -247,6 +247,30 @@ function HomePage() {
             </div>
           </section>
 
+          {/* Recently Sold — social proof */}
+          {recentlySold.length > 0 && (
+            <section className="mx-auto max-w-6xl px-4 mt-12">
+              <div className="flex items-end justify-between mb-4">
+                <div>
+                  <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-red-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
+                    Live activity
+                  </div>
+                  <h2 className="font-display text-2xl font-bold mt-1">🔥 Recently Sold</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    These devices were recently purchased by our customers.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                {recentlySold.map((p, i) => (
+                  <RecentlySoldCard key={p.id} product={p} index={i} />
+                ))}
+              </div>
+            </section>
+          )}
+
+
           {/* Happy Customers (Instagram) */}
           <InstagramReels
             title="⭐ Happy Customers"
