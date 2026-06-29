@@ -7,6 +7,8 @@ import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { brandsQuery, allProductsQuery } from "@/lib/catalog";
 import { whatsappLink } from "@/lib/shop";
+import { InstagramReels } from "@/components/public/InstagramReels";
+import { latestStockReels, testimonialReels } from "@/lib/instagram";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -238,6 +240,21 @@ function HomePage() {
               ))}
             </div>
           </section>
+
+          {/* Latest Stock Arrivals (Instagram) */}
+          <InstagramReels
+            title="Latest Stock Arrivals"
+            subtitle="See our newest arrivals exactly as posted on Instagram."
+            urls={latestStockReels}
+            showCta
+          />
+
+          {/* Customer Testimonials */}
+          <InstagramReels
+            title="Happy Customers"
+            subtitle="Real customers. Real purchases. Real feedback."
+            urls={testimonialReels}
+          />
 
           {/* WhatsApp CTA */}
           <section className="mx-auto max-w-6xl px-4 mt-12 mb-4">
