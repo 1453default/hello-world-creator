@@ -1,4 +1,7 @@
 // Admin-only destructive server functions. Caller must be authenticated AND have admin role.
+// Uses the authenticated user's Supabase client (RLS-enforced) — staff/admin policies on
+// bills, bill_items, and inventory_units grant the required access. This avoids depending on
+// SUPABASE_SERVICE_ROLE_KEY at runtime.
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -15,8 +18,7 @@ export const deleteAllCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("bills")
       .update({ customer_name: null, customer_phone: null })
       .not("id", "is", null);
@@ -28,13 +30,23 @@ export const deleteAllBills = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
+    // Reset inventory units sold via any bill back to AVAILABLE.
+    const { error: invErr } = await context.supabase
       .from("inventory_units")
       .update({ status: "AVAILABLE" })
       .eq("status", "SOLD");
-    await supabaseAdmin.from("bill_items").delete().not("id", "is", null);
-    const { error } = await supabaseAdmin.from("bills").delete().not("id", "is", null);
+    if (invErr) throw new Error(invErr.message);
+
+    const { error: itemsErr } = await context.supabase
+      .from("bill_items")
+      .delete()
+      .not("id", "is", null);
+    if (itemsErr) throw new Error(itemsErr.message);
+
+    const { error } = await context.supabase
+      .from("bills")
+      .delete()
+      .not("id", "is", null);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
