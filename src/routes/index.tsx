@@ -5,10 +5,12 @@ import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle } from "lucide
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
-import { brandsQuery, allProductsQuery } from "@/lib/catalog";
+import { RecentlySoldCard } from "@/components/public/RecentlySoldCard";
+import { brandsQuery, allProductsQuery, recentlySoldQuery } from "@/lib/catalog";
 import { whatsappLink } from "@/lib/shop";
 import { InstagramReels } from "@/components/public/InstagramReels";
 import { latestStockReels, testimonialReels } from "@/lib/instagram";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,8 +32,10 @@ export const Route = createFileRoute("/")({
     await Promise.all([
       context.queryClient.ensureQueryData(brandsQuery),
       context.queryClient.ensureQueryData(allProductsQuery),
+      context.queryClient.ensureQueryData(recentlySoldQuery),
     ]);
   },
+
   component: HomePage,
   errorComponent: ({ error }) => <ErrorPage message={error.message} />,
   notFoundComponent: () => <ErrorPage message="Page not found." />,
@@ -59,6 +63,8 @@ const BUDGET_BUCKETS = [
 function HomePage() {
   const { data: brands } = useSuspenseQuery(brandsQuery);
   const { data: products } = useSuspenseQuery(allProductsQuery);
+  const { data: recentlySold } = useSuspenseQuery(recentlySoldQuery);
+
   const [activeBudget, setActiveBudget] = useState<number | null>(null);
   const [activeBrand, setActiveBrand] = useState<string | null>(null);
 
@@ -240,6 +246,30 @@ function HomePage() {
               ))}
             </div>
           </section>
+
+          {/* Recently Sold — social proof */}
+          {recentlySold.length > 0 && (
+            <section className="mx-auto max-w-6xl px-4 mt-12">
+              <div className="flex items-end justify-between mb-4">
+                <div>
+                  <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-red-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
+                    Live activity
+                  </div>
+                  <h2 className="font-display text-2xl font-bold mt-1">🔥 Recently Sold</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    These devices were recently purchased by our customers.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                {recentlySold.map((p, i) => (
+                  <RecentlySoldCard key={p.id} product={p} index={i} />
+                ))}
+              </div>
+            </section>
+          )}
+
 
           {/* Happy Customers (Instagram) */}
           <InstagramReels
