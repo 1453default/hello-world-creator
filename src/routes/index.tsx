@@ -63,6 +63,8 @@ const BUDGET_BUCKETS = [
 function HomePage() {
   const { data: brands } = useSuspenseQuery(brandsQuery);
   const { data: products } = useSuspenseQuery(allProductsQuery);
+  const { data: recentlySold } = useSuspenseQuery(recentlySoldQuery);
+
   const [activeBudget, setActiveBudget] = useState<number | null>(null);
   const [activeBrand, setActiveBrand] = useState<string | null>(null);
 
