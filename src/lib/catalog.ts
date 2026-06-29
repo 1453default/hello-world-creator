@@ -189,3 +189,89 @@ export const productBySlugQuery = (slug: string) =>
     gcTime: 30 * 60_000,
   });
 
+export type RecentlySoldCard = {
+  id: string;
+  name: string;
+  slug: string;
+  storage: string | null;
+  ram: string | null;
+  color: string | null;
+  condition: string;
+  brand: { name: string; slug: string } | null;
+  images: ProductImage[];
+  sold_at: string;
+};
+
+export const recentlySoldQuery = queryOptions({
+  queryKey: ["products", "recently-sold"],
+  queryFn: async (): Promise<RecentlySoldCard[]> => {
+    // Read configurable window (days). Default 7.
+    let days = 7;
+    try {
+      const { data: setting } = await supabase
+        .from("shop_settings")
+        .select("value")
+        .eq("key", "recently_sold_days")
+        .maybeSingle();
+      const parsed = setting?.value ? parseInt(setting.value, 10) : NaN;
+      if (Number.isFinite(parsed) && parsed > 0) days = parsed;
+    } catch {
+      /* keep default */
+    }
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+    // Pull recently-sold units with the parent product (ignores is_listed so
+    // auto-unlisted sold products still appear here, but not in the catalog).
+    const { data, error } = await supabase
+      .from("inventory_units")
+      .select(
+        `sold_at, product:products!inner (
+          id, name, slug, storage, ram, color, condition, is_deleted,
+          brand:brands ( name, slug ),
+          images:product_images ( url, is_primary, display_order )
+        )`,
+      )
+      .eq("status", "SOLD")
+      .gte("sold_at", since)
+      .order("sold_at", { ascending: false })
+      .limit(50);
+    if (error) throw error;
+
+    // Dedupe by product id, keep most recent sold_at, skip deleted products.
+    const seen = new Map<string, RecentlySoldCard>();
+    for (const row of (data ?? []) as any[]) {
+      const p = row.product;
+      if (!p || p.is_deleted) continue;
+      if (seen.has(p.id)) continue;
+      const sortedImages = ((p.images ?? []) as ProductImage[]).sort(
+        (a, b) =>
+          Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order,
+      );
+      seen.set(p.id, {
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        storage: p.storage,
+        ram: p.ram,
+        color: p.color,
+        condition: p.condition,
+        brand: p.brand,
+        images: sortedImages,
+        sold_at: row.sold_at,
+      });
+      if (seen.size >= 10) break;
+    }
+    const list = Array.from(seen.values());
+    const allImages = list.flatMap((p) => p.images);
+    const signedFlat = await signImageList(allImages);
+    let i = 0;
+    for (const p of list) {
+      p.images = signedFlat.slice(i, i + p.images.length);
+      i += p.images.length;
+    }
+    return list;
+  },
+  staleTime: 2 * 60_000,
+  gcTime: 30 * 60_000,
+});
+
