@@ -69,14 +69,41 @@ async function signImageUrl(url: string): Promise<string> {
   if (!ref) return url;
   const { data, error } = await supabase.storage
     .from(ref.bucket)
-    .createSignedUrl(ref.path, 60 * 60 * 6); // 6h is plenty; React Query caches the resolved result
+    .createSignedUrl(ref.path, 60 * 60 * 6);
   if (error || !data?.signedUrl) return "";
   return data.signedUrl;
 }
 
 export async function signImageList<T extends { url: string }>(images: T[]): Promise<T[]> {
   if (!images || images.length === 0) return images;
-  return Promise.all(images.map(async (img) => ({ ...img, url: await signImageUrl(img.url) })));
+  // Group by bucket → one createSignedUrls() request per bucket instead of N.
+  const refs = images.map((img) => ({ img, ref: parseStorageRef(img.url) }));
+  const byBucket = new Map<string, string[]>();
+  for (const { ref } of refs) {
+    if (!ref) continue;
+    const list = byBucket.get(ref.bucket) ?? [];
+    list.push(ref.path);
+    byBucket.set(ref.bucket, list);
+  }
+  const signed = new Map<string, string>(); // key = bucket + "::" + path
+  await Promise.all(
+    Array.from(byBucket.entries()).map(async ([bucket, paths]) => {
+      const unique = Array.from(new Set(paths));
+      const { data, error } = await supabase.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 6);
+      if (error || !data) return;
+      for (const row of data) {
+        if (row.path && row.signedUrl) signed.set(`${bucket}::${row.path}`, row.signedUrl);
+      }
+    }),
+  );
+  return refs.map(({ img, ref }) => {
+    if (!ref) {
+      // Fallback: pass-through for external/unknown URLs
+      if (/^https?:\/\//i.test(img.url)) return img;
+      return { ...img, url: "" };
+    }
+    return { ...img, url: signed.get(`${ref.bucket}::${ref.path}`) ?? "" };
+  });
 }
 
 async function shapeProduct(row: any): Promise<ProductCard & { sold_count: number }> {
@@ -86,11 +113,10 @@ async function shapeProduct(row: any): Promise<ProductCard & { sold_count: numbe
   const sortedImages = ((row.images ?? []) as ProductImage[]).sort(
     (a, b) => Number(b.is_primary) - Number(a.is_primary) || a.display_order - b.display_order,
   );
-  const images = await signImageList(sortedImages);
   return {
     ...row,
     selling_price: Number(row.selling_price),
-    images,
+    images: sortedImages,
     available_count,
     sold_count,
   };
@@ -107,7 +133,8 @@ export const brandsQuery = queryOptions({
     if (error) throw error;
     return data as Brand[];
   },
-  staleTime: 60_000,
+  staleTime: 5 * 60_000,
+  gcTime: 30 * 60_000,
 });
 
 export const allProductsQuery = queryOptions({
@@ -121,15 +148,24 @@ export const allProductsQuery = queryOptions({
       .order("created_at", { ascending: false });
     if (error) throw error;
     const shaped = await Promise.all((data ?? []).map(shapeProduct));
-    // Sort available products first, then sold products at the bottom (stable order within each group).
+    // Batch-sign every product image in one request per bucket.
+    const allImages = shaped.flatMap((p) => p.images);
+    const signedFlat = await signImageList(allImages);
+    let i = 0;
+    for (const p of shaped) {
+      p.images = signedFlat.slice(i, i + p.images.length);
+      i += p.images.length;
+    }
     return shaped.sort((a, b) => {
       const aSold = a.available_count === 0 ? 1 : 0;
       const bSold = b.available_count === 0 ? 1 : 0;
       return aSold - bSold;
     });
   },
-  staleTime: 30_000,
+  staleTime: 2 * 60_000,
+  gcTime: 30 * 60_000,
 });
+
 
 
 export const productBySlugQuery = (slug: string) =>
