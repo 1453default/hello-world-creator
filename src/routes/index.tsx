@@ -5,10 +5,12 @@ import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle } from "lucide
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
-import { brandsQuery, allProductsQuery } from "@/lib/catalog";
+import { RecentlySoldCard } from "@/components/public/RecentlySoldCard";
+import { brandsQuery, allProductsQuery, recentlySoldQuery } from "@/lib/catalog";
 import { whatsappLink } from "@/lib/shop";
 import { InstagramReels } from "@/components/public/InstagramReels";
 import { latestStockReels, testimonialReels } from "@/lib/instagram";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
