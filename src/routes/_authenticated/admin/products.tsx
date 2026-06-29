@@ -522,6 +522,105 @@ function IconBtn({ children, onClick, title, danger }: { children: ReactNode; on
   );
 }
 
+function useClickAway<T extends HTMLElement>(onAway: () => void) {
+  const ref = useRef<T | null>(null);
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onAway();
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onAway]);
+  return ref;
+}
+
+function StatusMenu({ product, onPick, onHide, onUnhide }: {
+  product: ProductRow;
+  onPick: (s: UnitStatus) => void;
+  onHide: () => void;
+  onUnhide: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useClickAway<HTMLDivElement>(() => setOpen(false));
+  const item = "flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-admin-surface-2";
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        title="Status" onClick={() => setOpen((v) => !v)}
+        className="inline-flex h-7 w-7 items-center justify-center rounded text-admin-muted hover:bg-admin-surface hover:text-admin-text"
+      ><Activity className="h-3.5 w-3.5" /></button>
+      {open && (
+        <div className="absolute right-0 z-20 mt-1 w-44 overflow-hidden rounded-md border border-admin-border bg-admin-surface shadow-lg">
+          <button className={item} onClick={() => { setOpen(false); onPick("AVAILABLE"); }}>
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald" /> Available
+          </button>
+          <button className={item} onClick={() => { setOpen(false); onPick("SOLD"); }}>
+            <ShoppingBag className="h-3.5 w-3.5 text-ruby" /> Sold
+          </button>
+          <button className={item} onClick={() => { setOpen(false); onPick("RESERVED"); }}>
+            <Clock3 className="h-3.5 w-3.5 text-sky-300" /> Reserved
+          </button>
+          <div className="my-1 h-px bg-admin-border" />
+          {product.is_listed ? (
+            <button className={item} onClick={() => { setOpen(false); onHide(); }}>
+              <EyeOff className="h-3.5 w-3.5" /> Hidden (unlist)
+            </button>
+          ) : (
+            <button className={item} onClick={() => { setOpen(false); onUnhide(); }}>
+              <Eye className="h-3.5 w-3.5" /> Unhide (list)
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MoreMenu({ product, onDuplicate, onToggleFeature, onToggleHidden, onExport }: {
+  product: ProductRow;
+  onDuplicate: () => void;
+  onToggleFeature: () => void;
+  onToggleHidden: () => void;
+  onExport: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useClickAway<HTMLDivElement>(() => setOpen(false));
+  const item = "flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-admin-surface-2";
+  const disabled = "flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-admin-subtle cursor-not-allowed";
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        title="More" onClick={() => setOpen((v) => !v)}
+        className="inline-flex h-7 w-7 items-center justify-center rounded text-admin-muted hover:bg-admin-surface hover:text-admin-text"
+      ><MoreVertical className="h-3.5 w-3.5" /></button>
+      {open && (
+        <div className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-md border border-admin-border bg-admin-surface shadow-lg">
+          <button className={item} onClick={() => { setOpen(false); onDuplicate(); }}>
+            <Copy className="h-3.5 w-3.5" /> Duplicate
+          </button>
+          <button className={item} onClick={() => { setOpen(false); onToggleFeature(); }}>
+            <Star className={`h-3.5 w-3.5 ${product.is_featured ? "text-amber" : ""}`} /> {product.is_featured ? "Remove Feature" : "Feature"}
+          </button>
+          <button className={item} onClick={() => { setOpen(false); onToggleHidden(); }}>
+            {product.is_listed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {product.is_listed ? "Hide" : "Unhide"}
+          </button>
+          <button className={item} onClick={() => { setOpen(false); onExport(); }}>
+            <Download className="h-3.5 w-3.5" /> Export single (CSV)
+          </button>
+          <div className="my-1 h-px bg-admin-border" />
+          <button className={disabled} disabled title="Coming soon">
+            <Printer className="h-3.5 w-3.5" /> Print Label (soon)
+          </button>
+          <button className={disabled} disabled title="Coming soon">
+            <History className="h-3.5 w-3.5" /> Audit History (soon)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ---------------- Expanded row: inventory editor + images + bills ---------------- */
 
 function ExpandedDetail({ product, onChanged }: { product: ProductRow; onChanged: () => void }) {
