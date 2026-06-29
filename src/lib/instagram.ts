@@ -4,8 +4,6 @@
 export const INSTAGRAM_PROFILE_URL = "https://instagram.com/USED_MOBILES_HYD";
 
 export const latestStockReels: string[] = [
-  "https://www.instagram.com/p/DaIAdgkzcEv/",
-  "https://www.instagram.com/p/DaGrEBfh5hJ/",
   "https://www.instagram.com/p/DaFSHc8TKSy/",
   "https://www.instagram.com/p/DZ9EhqbTbid/",
   "https://www.instagram.com/p/DZ0hYfOTnOM/",
