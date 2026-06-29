@@ -27,6 +27,9 @@ export function ProductCard({ product, index = 0 }: { product: P; index?: number
             src={img}
             alt={product.name}
             loading="lazy"
+            decoding="async"
+            width={400}
+            height={300}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
             onError={(e) => {
               const t = e.currentTarget;
@@ -36,6 +39,7 @@ export function ProductCard({ product, index = 0 }: { product: P; index?: number
             }}
           />
         ) : null}
+
         <div
           className="flex h-full w-full items-center justify-center text-muted-foreground"
           style={{ display: img ? "none" : "flex" }}
