@@ -32,6 +32,35 @@ export function ProductImagesManager({ productId }: { productId: string }) {
   });
 
   const [uploading, setUploading] = useState(false);
+  const [pasteFocused, setPasteFocused] = useState(false);
+
+  // Clipboard paste → reuse the exact same upload pipeline as the Upload button.
+  useEffect(() => {
+    function onPaste(e: ClipboardEvent) {
+      const items = e.clipboardData?.items;
+      if (!items || items.length === 0) return;
+      const dt = new DataTransfer();
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        if (it.kind !== "file") continue;
+        const file = it.getAsFile();
+        if (!file || !file.type.startsWith("image/")) continue;
+        const ext = (file.type.split("/")[1] || "png").split("+")[0];
+        const named = file.name && file.name !== "image.png"
+          ? file
+          : new File([file], `pasted-${Date.now()}-${i}.${ext}`, { type: file.type });
+        dt.items.add(named);
+      }
+      if (dt.files.length === 0) return;
+      e.preventDefault();
+      void handleFiles(dt.files);
+    }
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+    // handleFiles is stable via closure; intentionally not in deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId, images.length]);
+
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
