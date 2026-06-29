@@ -32,8 +32,10 @@ export const Route = createFileRoute("/")({
     await Promise.all([
       context.queryClient.ensureQueryData(brandsQuery),
       context.queryClient.ensureQueryData(allProductsQuery),
+      context.queryClient.ensureQueryData(recentlySoldQuery),
     ]);
   },
+
   component: HomePage,
   errorComponent: ({ error }) => <ErrorPage message={error.message} />,
   notFoundComponent: () => <ErrorPage message="Page not found." />,
