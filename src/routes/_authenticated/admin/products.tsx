@@ -375,7 +375,7 @@ function ProductsPage() {
       )}
 
       <div className="overflow-x-auto rounded-xl border border-admin-border bg-admin-surface">
-        <table className="w-full min-w-[1200px] text-sm">
+        <table className="w-full min-w-[1024px] text-sm">
           <thead className="bg-admin-surface-2 text-left text-[11px] uppercase tracking-wider text-admin-muted">
             <tr>
               <th className="w-10 px-3 py-3">
@@ -388,10 +388,9 @@ function ProductsPage() {
               <th className="px-3 py-3">Product</th>
               <th className="px-3 py-3">Brand</th>
               <th className="px-3 py-3">Specs</th>
-              <th className="px-3 py-3">IMEI(s)</th>
+              <th className="px-3 py-3">IMEI</th>
               <th className="px-3 py-3 text-right">Purchase</th>
               <th className="px-3 py-3 text-right">Sell</th>
-              <th className="px-3 py-3 text-center">Stock</th>
               <th className="px-3 py-3">Status</th>
               <th className="px-3 py-3">Dates</th>
               <th className="px-3 py-3 text-right">Actions</th>
@@ -399,26 +398,33 @@ function ProductsPage() {
           </thead>
           <tbody className="divide-y divide-admin-border">
             {isLoading ? (
-              <tr><td colSpan={12} className="px-4 py-10 text-center text-admin-muted">Loading…</td></tr>
+              <tr><td colSpan={11} className="px-4 py-10 text-center text-admin-muted">Loading…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={12} className="px-4 py-10 text-center text-admin-muted">No products match.</td></tr>
+              <tr><td colSpan={11} className="px-4 py-10 text-center text-admin-muted">No products match.</td></tr>
             ) : filtered.map((p) => {
               const isOpen = expanded.has(p.id);
               const isOut = p.total_count > 0 && p.available_count === 0 && p.reserved_count === 0;
               const lowStock = p.available_count > 0 && p.available_count <= 1;
               const imeiList = p.inventory.map((u) => u.imei).filter(Boolean) as string[];
+              const primaryStatus: string =
+                p.total_count === 0 ? "DRAFT"
+                : !p.is_listed ? "HIDDEN"
+                : isOut ? "SOLD"
+                : p.reserved_count > 0 && p.available_count === 0 ? "RESERVED"
+                : lowStock ? "LOW"
+                : "AVAILABLE";
               return (
                 <FragmentRow key={p.id}>
                   <tr className="hover:bg-admin-surface-2/40">
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-2 align-middle">
                       <input type="checkbox" checked={selected.has(p.id)} onChange={(e) => toggleSelect(p.id, e.target.checked)} />
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2 align-middle">
                       <button onClick={() => toggleExpand(p.id)} className="text-admin-muted hover:text-admin-text">
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                       </button>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-3 py-2 align-middle">
                       <div className="flex items-center gap-2">
                         <div className="h-10 w-10 shrink-0 overflow-hidden rounded border border-admin-border bg-admin-surface-2">
                           {p.primary_image ? (
@@ -433,65 +439,56 @@ function ProductsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-admin-muted">{p.brand?.name ?? "—"}</td>
-                    <td className="px-3 py-2 text-xs text-admin-muted">
+                    <td className="px-3 py-2 align-middle text-admin-muted">{p.brand?.name ?? "—"}</td>
+                    <td className="px-3 py-2 align-middle text-xs text-admin-muted">
                       <div>{p.storage ?? "—"} · {p.ram ?? "—"}</div>
                       <div className="text-admin-subtle">{p.color ?? "—"}</div>
                     </td>
-                    <td className="px-3 py-2 font-mono text-[11px] text-admin-muted">
+                    <td className="px-3 py-2 align-middle font-mono text-[11px] text-admin-muted">
                       {imeiList.length === 0 ? "—" : imeiList.length === 1 ? imeiList[0] : (
                         <span title={imeiList.join("\n")}>{imeiList[0]} <span className="text-admin-subtle">+{imeiList.length - 1}</span></span>
                       )}
                     </td>
-                    <td className="px-3 py-2 text-right font-num text-admin-muted">
+                    <td className="px-3 py-2 align-middle text-right font-num text-admin-muted">
                       {p.min_cost == null ? "—" : p.min_cost === p.max_cost ? formatINR(p.min_cost) : `${formatINR(p.min_cost)}–${formatINR(p.max_cost!)}`}
                     </td>
-                    <td className="px-3 py-2 text-right font-num font-semibold">{formatINR(p.selling_price)}</td>
-                    <td className="px-3 py-2 text-center">
-                      <div className="inline-flex flex-col text-[11px] leading-tight">
-                        <span className="font-bold text-emerald">{p.available_count} avl</span>
-                        {p.sold_count > 0 && <span className="text-admin-muted">{p.sold_count} sold</span>}
-                        {p.reserved_count > 0 && <span className="text-sky-300">{p.reserved_count} resv</span>}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex flex-wrap gap-1">
-                        {p.total_count === 0 ? <Badge k="DRAFT" /> :
-                          isOut ? <Badge k="OUT" /> :
-                          lowStock ? <Badge k="LOW" /> :
-                          <Badge k="AVAILABLE" />}
-                        {!p.is_listed && <Badge k="HIDDEN" />}
+                    <td className="px-3 py-2 align-middle text-right font-num font-semibold">{formatINR(p.selling_price)}</td>
+                    <td className="px-3 py-2 align-middle">
+                      <div className="flex flex-wrap items-center gap-1">
+                        <Badge k={primaryStatus} />
                         {p.is_featured && <Badge k="FEATURED" />}
-                        {p.scrap_count > 0 && <Badge k="SCRAP">{p.scrap_count} scrap</Badge>}
                       </div>
                     </td>
-                    <td className="px-3 py-2 text-[11px] text-admin-muted">
+                    <td className="px-3 py-2 align-middle text-[11px] text-admin-muted">
                       <div>C {fmtDate(p.created_at)}</div>
                       <div>U {fmtDate(p.updated_at)}</div>
                     </td>
-                    <td className="px-3 py-2">
-                      <div className="flex justify-end gap-0.5">
+                    <td className="px-3 py-2 align-middle">
+                      <div className="flex items-center justify-end gap-0.5">
                         <IconBtn title="View public" onClick={() => window.open(`/phone/${p.slug}`, "_blank")}><ExternalLink className="h-3.5 w-3.5" /></IconBtn>
                         <IconBtn title="Edit" onClick={() => { setEditing(p); setDialogOpen(true); }}><Pencil className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title="Duplicate" onClick={() => duplicate(p)}><Copy className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title={p.is_listed ? "Hide" : "Unhide"} onClick={() => updateProduct.mutate({ ids: [p.id], patch: { is_listed: !p.is_listed } })}>
-                          {p.is_listed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                        </IconBtn>
-                        <IconBtn title={p.is_featured ? "Unfeature" : "Feature"} onClick={() => updateProduct.mutate({ ids: [p.id], patch: { is_featured: !p.is_featured } })}>
-                          <Star className={`h-3.5 w-3.5 ${p.is_featured ? "text-amber" : ""}`} />
-                        </IconBtn>
-                        <IconBtn title="Mark Sold" onClick={() => bulkUnitStatus.mutate({ productIds: [p.id], status: "SOLD" })}><ShoppingBag className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title="Mark Available" onClick={() => bulkUnitStatus.mutate({ productIds: [p.id], status: "AVAILABLE" })}><CheckCircle2 className="h-3.5 w-3.5" /></IconBtn>
-                        <IconBtn title="Reserve" onClick={() => bulkUnitStatus.mutate({ productIds: [p.id], status: "RESERVED" })}><Clock3 className="h-3.5 w-3.5" /></IconBtn>
+                        <StatusMenu
+                          product={p}
+                          onPick={(s) => bulkUnitStatus.mutate({ productIds: [p.id], status: s })}
+                          onHide={() => updateProduct.mutate({ ids: [p.id], patch: { is_listed: false } })}
+                          onUnhide={() => updateProduct.mutate({ ids: [p.id], patch: { is_listed: true } })}
+                        />
                         <IconBtn title="Delete" danger onClick={() => confirm(`Delete ${p.name}?${p.sold_count > 0 ? "\nSold history is preserved." : ""}`) && deleteProducts.mutate([p.id])}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </IconBtn>
+                        <MoreMenu
+                          product={p}
+                          onDuplicate={() => duplicate(p)}
+                          onToggleFeature={() => updateProduct.mutate({ ids: [p.id], patch: { is_featured: !p.is_featured } })}
+                          onToggleHidden={() => updateProduct.mutate({ ids: [p.id], patch: { is_listed: !p.is_listed } })}
+                          onExport={() => exportCSV([p])}
+                        />
                       </div>
                     </td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-admin-surface-2/30">
-                      <td colSpan={12} className="px-4 py-4">
+                      <td colSpan={11} className="px-4 py-4">
                         <ExpandedDetail product={p} onChanged={invalidate} />
                       </td>
                     </tr>
@@ -502,6 +499,7 @@ function ProductsPage() {
           </tbody>
         </table>
       </div>
+
 
       {dialogOpen && (
         <ProductDialog
