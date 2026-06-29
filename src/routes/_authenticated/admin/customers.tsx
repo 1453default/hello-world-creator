@@ -546,10 +546,9 @@ function CustomersPage() {
                             onClick={() => setDrawer(c)}
                             icon={<User className="h-3.5 w-3.5" />}
                           />
-                          <IconLink
+                          <IconReceiptLink
                             title="View latest bill"
-                            to="/receipt/$id"
-                            params={{ id: lb.id }}
+                            id={lb.id}
                             icon={<Eye className="h-3.5 w-3.5" />}
                           />
                           <IconAnchor
