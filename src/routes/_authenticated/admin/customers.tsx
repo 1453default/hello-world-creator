@@ -667,22 +667,11 @@ function IconBtn({
   );
 }
 
-function IconLink({
-  title,
-  to,
-  params,
-  icon,
-}: {
-  title: string;
-  to: string;
-  params: Record<string, string>;
-  icon: React.ReactNode;
-}) {
+function IconReceiptLink({ title, id, icon }: { title: string; id: string; icon: React.ReactNode }) {
   return (
     <Link
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      to={to as any}
-      params={params}
+      to="/receipt/$id"
+      params={{ id }}
       target="_blank"
       title={title}
       className="inline-flex h-7 w-7 items-center justify-center rounded border border-admin-border text-admin-muted hover:border-amber/40 hover:text-amber"
