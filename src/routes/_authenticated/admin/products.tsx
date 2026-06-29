@@ -407,8 +407,8 @@ function ProductsPage() {
               const lowStock = p.available_count > 0 && p.available_count <= 1;
               const imeiList = p.inventory.map((u) => u.imei).filter(Boolean) as string[];
               return (
-                <>
-                  <tr key={p.id} className="hover:bg-admin-surface-2/40">
+                <FragmentRow key={p.id}>
+                  <tr className="hover:bg-admin-surface-2/40">
                     <td className="px-3 py-2">
                       <input type="checkbox" checked={selected.has(p.id)} onChange={(e) => toggleSelect(p.id, e.target.checked)} />
                     </td>
