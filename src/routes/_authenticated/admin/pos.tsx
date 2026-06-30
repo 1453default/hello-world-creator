@@ -147,7 +147,7 @@ function POSPage() {
 
       // 2. Persist any newly-entered IMEIs onto inventory_units BEFORE creating the bill
       for (const c of cart) {
-        const patch: Record<string, string | null> = {};
+        const patch: { imei?: string; imei2?: string } = {};
         if (!c.imei && c.imei_input.trim()) patch.imei = c.imei_input.trim();
         if (!c.imei2 && c.imei2_input.trim()) patch.imei2 = c.imei2_input.trim();
         if (Object.keys(patch).length > 0) {
