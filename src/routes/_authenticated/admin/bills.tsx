@@ -216,7 +216,7 @@ function BillsPage() {
                 const firstItem = b.items?.[0];
                 const extra = (b.items?.length ?? 0) - 1;
                 const product = firstItem ? productLabel(firstItem) : "—";
-                const imei = firstItem?.inventory_unit?.imei ?? "—";
+                const imei = [firstItem?.inventory_unit?.imei, firstItem?.inventory_unit?.imei2].filter(Boolean).join(" / ") || "—";
                 return (
                   <tr key={b.id} className={`hover:bg-admin-surface-2/50 ${selected === b.id ? "bg-admin-surface-2" : ""}`}>
                     <td onClick={() => setSelected(b.id === selected ? null : b.id)} className="cursor-pointer px-4 py-3 font-mono text-xs">{b.bill_number}</td>
