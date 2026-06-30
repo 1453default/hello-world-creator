@@ -73,7 +73,7 @@ function POSPage() {
         product_id: u.product_id,
         product_label: `${u.product!.brand?.name ?? ""} ${u.product!.name}`.trim(),
         imei: u.imei,
-        serial: (u as any).serial ?? null,
+        serial: u.serial,
         unit_price: Number(u.product!.selling_price),
         quantity: 1,
       },
@@ -92,7 +92,7 @@ function POSPage() {
               ...c,
               unit_id: next.id,
               imei: next.imei,
-              serial: (next as any).serial ?? null,
+              serial: next.serial,
             }
           : c,
       ),
