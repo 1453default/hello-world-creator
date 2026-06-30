@@ -118,7 +118,7 @@ function ProductsPage() {
         .select(`
           *,
           brand:brands(name),
-          inventory:inventory_units(id,product_id,imei,serial,cost_price,status,notes,supplier,purchase_date,warranty_until,sold_at,created_at,updated_at),
+          inventory:inventory_units(id,product_id,imei,serial,cost_price,status,notes,supplier,purchase_date,warranty_until,sold_at,created_at,updated_at,bill_items(bill:bills(id,bill_number,customer_name,customer_phone,created_at))),
           images:product_images(url,is_primary,display_order)
         `)
         .eq("is_deleted", false)
