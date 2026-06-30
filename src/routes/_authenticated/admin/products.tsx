@@ -857,6 +857,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
     is_featured: product?.is_featured ?? false,
     is_listed: product?.is_listed ?? true,
     imei: "",
+    imei2: "",
     cost_price: "" as number | "",
   });
   const [saving, setSaving] = useState(false);
