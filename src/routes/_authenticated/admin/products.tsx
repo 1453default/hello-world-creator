@@ -406,7 +406,7 @@ function ProductsPage() {
               const isOpen = expanded.has(p.id);
               const isOut = p.total_count > 0 && p.available_count === 0 && p.reserved_count === 0;
               const lowStock = p.available_count > 0 && p.available_count <= 1;
-              const imeiList = p.inventory.map((u) => u.imei).filter(Boolean) as string[];
+              const imeiList = p.inventory.flatMap((u) => [u.imei, u.imei2]).filter(Boolean) as string[];
               const primaryStatus: string =
                 p.total_count === 0 ? "DRAFT"
                 : !p.is_listed ? "HIDDEN"
