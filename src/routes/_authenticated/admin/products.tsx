@@ -715,7 +715,7 @@ function InventoryEditor({ product, onChanged }: { product: ProductRow; onChange
           </thead>
           <tbody className="divide-y divide-admin-border">
             {product.inventory.length === 0 ? (
-              <tr><td colSpan={8} className="px-2 py-4 text-center text-admin-muted">No units. Add one above.</td></tr>
+              <tr><td colSpan={9} className="px-2 py-4 text-center text-admin-muted">No units. Add one above.</td></tr>
             ) : product.inventory.map((u) => (
               <UnitRow key={u.id} unit={u} onSave={(patch) => updateUnit(u.id, patch)} onDelete={() => delUnit(u.id)} />
             ))}
