@@ -22,7 +22,9 @@ type AvailableUnit = {
 type CartItem = {
   unit_id: string;
   product_id: string;
-  description: string;
+  product_label: string;
+  imei: string | null;
+  serial: string | null;
   unit_price: number;
   quantity: number;
 };
