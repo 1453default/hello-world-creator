@@ -285,7 +285,10 @@ function BillsPage() {
                   {b.items.map((it) => (
                     <tr key={it.id}>
                       <td className="px-2 py-2">{productLabel(it)}</td>
-                      <td className="px-2 py-2 font-mono text-xs">{it.inventory_unit?.imei ?? "—"}</td>
+                      <td className="px-2 py-2 font-mono text-xs">
+                        {it.inventory_unit?.imei ?? "—"}
+                        {it.inventory_unit?.imei2 && <div className="text-admin-muted">{it.inventory_unit.imei2}</div>}
+                      </td>
                       <td className="px-2 py-2 font-mono text-xs">{it.inventory_unit?.serial ?? "—"}</td>
                       <td className="px-2 py-2 text-right">{it.quantity}</td>
                       <td className="px-2 py-2 text-right font-num">{formatINR(it.unit_price)}</td>
