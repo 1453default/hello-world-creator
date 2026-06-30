@@ -185,7 +185,7 @@ function POSPage() {
         <div className="flex items-center gap-2 rounded-md border border-admin-border bg-admin-surface px-3">
           <Search className="h-4 w-4 text-admin-muted" />
           <input
-            placeholder="Search by IMEI, product, brand…"
+            placeholder="Search by IMEI, product, brand, or price…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-11 flex-1 bg-transparent outline-none text-sm"
