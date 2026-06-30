@@ -20,6 +20,7 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useRealtimeAdminSync } from "@/hooks/useRealtimeAdminSync";
 
 type NavItem = {
   to: string;
@@ -44,6 +45,7 @@ const NAV: NavItem[] = [
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  useRealtimeAdminSync();
   return (
     <div className="min-h-screen bg-admin-bg text-admin-text">
       <Toaster position="top-right" toastOptions={{ style: { background: "#21262D", color: "#E6EDF3" } }} />
