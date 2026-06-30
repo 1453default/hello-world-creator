@@ -142,7 +142,7 @@ function CustomersPage() {
       const { data, error } = await supabase
         .from("bills")
         .select(
-          "id, bill_number, created_at, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, items:bill_items(id, description, quantity, unit_price, line_total, inventory_unit:inventory_units(imei, serial, cost_price, notes), product:products(name, model, ram, storage, color, brand:brands(name)))",
+          "id, bill_number, created_at, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, items:bill_items(id, description, quantity, unit_price, line_total, inventory_unit:inventory_units(imei, imei2, serial, cost_price, notes), product:products(name, model, ram, storage, color, brand:brands(name)))",
         )
         .order("created_at", { ascending: false });
       if (error) throw error;
