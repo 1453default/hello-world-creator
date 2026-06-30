@@ -740,6 +740,18 @@ function UnitRow({ unit, onSave, onDelete }: { unit: InventoryUnit; onSave: (p: 
         </select>
       </td>
       <td className="px-2 py-1.5">
+        {(() => {
+          const bi = unit.bill_items?.find((b) => b.bill);
+          if (!bi?.bill) return <span className="text-admin-muted">—</span>;
+          return (
+            <div className="text-[11px] leading-tight">
+              <div className="font-mono">{bi.bill.bill_number ?? bi.bill.id.slice(0, 8)}</div>
+              <div className="text-admin-muted truncate max-w-[140px]">{bi.bill.customer_name ?? "Walk-in"}</div>
+            </div>
+          );
+        })()}
+      </td>
+      <td className="px-2 py-1.5">
         <input type="number" className="admin-input h-7 w-24 text-xs" value={u.cost_price ?? ""} onChange={(e) => setU({ ...u, cost_price: e.target.value === "" ? null : Number(e.target.value) })} />
       </td>
       <td className="px-2 py-1.5">
