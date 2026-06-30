@@ -59,7 +59,7 @@ function ReceiptPage() {
       const { data: items, error: e2 } = await supabase
         .from("bill_items")
         .select(
-          "id, description, unit_price, quantity, line_total, inventory_unit_id, product_id, inventory_unit:inventory_units(imei), product:products(name, brand:brands(name))",
+          "id, description, unit_price, quantity, line_total, inventory_unit_id, product_id, inventory_unit:inventory_units(imei, imei2), product:products(name, brand:brands(name))",
         )
         .eq("bill_id", id)
         .order("created_at");
