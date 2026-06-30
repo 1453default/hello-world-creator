@@ -168,6 +168,7 @@ function CustomersPage() {
       fields.push(
         it.description,
         it.inventory_unit?.imei,
+        it.inventory_unit?.imei2,
         it.inventory_unit?.serial,
         it.product?.name,
         it.product?.model,
