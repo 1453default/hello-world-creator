@@ -492,7 +492,7 @@ function CustomersPage() {
                 const open = expanded === c.key || (searching && c.bills.length <= 3);
                 const lb = c.latestBill;
                 const li = c.latestItem;
-                const imei = li?.inventory_unit?.imei ?? "";
+                const imei = [li?.inventory_unit?.imei, li?.inventory_unit?.imei2].filter(Boolean).join(" / ");
                 return (
                   <Fragment key={c.key}>
                     <tr
