@@ -895,6 +895,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         const { error: invErr } = await supabase.from("inventory_units").insert({
           product_id: data.id,
           imei: form.imei.trim() || null,
+          imei2: form.imei2.trim() || null,
           cost_price: form.cost_price === "" ? null : Number(form.cost_price),
           status: "AVAILABLE",
         });
