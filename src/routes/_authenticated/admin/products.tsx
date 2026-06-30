@@ -973,11 +973,16 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         </Section>
 
         {/* 3. IMEI Management */}
-        <Section title="IMEI Management" subtitle="Edit, add or remove IMEIs. Unsold IMEIs can be removed; sold IMEIs are locked to preserve bill history.">
+        <Section title="IMEI Management" subtitle="IMEIs are optional. If missing, the system will collect them automatically during billing.">
           {!createdId ? (
-            <Field label="IMEI (initial unit, optional)">
-              <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
-            </Field>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="IMEI 1 (optional)">
+                <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+              </Field>
+              <Field label="IMEI 2 (optional)">
+                <input value={form.imei2} onChange={(e) => set("imei2", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+              </Field>
+            </div>
           ) : product ? (
             <ImeiManager product={product} onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "products"] })} />
           ) : (
