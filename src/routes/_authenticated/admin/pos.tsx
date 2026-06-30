@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { Trash2, ShoppingCart, Search } from "lucide-react";
+import { Trash2, ShoppingCart, Search, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin/pos")({
 type AvailableUnit = {
   id: string;
   imei: string | null;
+  imei2: string | null;
   serial: string | null;
   product_id: string;
   product: { id: string; name: string; selling_price: number; brand: { name: string } | null } | null;
@@ -25,9 +26,13 @@ type CartItem = {
   product_id: string;
   product_label: string;
   imei: string | null;
+  imei2: string | null;
   serial: string | null;
   unit_price: number;
   quantity: number;
+  // user-entered values while billing (only used when stored ones are missing)
+  imei_input: string;
+  imei2_input: string;
 };
 
 function POSPage() {
@@ -44,7 +49,7 @@ function POSPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("inventory_units")
-        .select("id, imei, serial, product_id, product:products(id, name, selling_price, brand:brands(name))")
+        .select("id, imei, imei2, serial, product_id, product:products(id, name, selling_price, brand:brands(name))")
         .eq("status", "AVAILABLE")
         .limit(200);
       if (error) throw error;
@@ -61,6 +66,7 @@ function POSPage() {
     return units.filter((u) => {
       if (
         u.imei?.toLowerCase().includes(q) ||
+        u.imei2?.toLowerCase().includes(q) ||
         u.product?.name.toLowerCase().includes(q) ||
         u.product?.brand?.name.toLowerCase().includes(q)
       ) return true;
@@ -83,9 +89,12 @@ function POSPage() {
         product_id: u.product_id,
         product_label: `${u.product!.brand?.name ?? ""} ${u.product!.name}`.trim(),
         imei: u.imei,
+        imei2: u.imei2,
         serial: u.serial,
         unit_price: Number(u.product!.selling_price),
         quantity: 1,
+        imei_input: "",
+        imei2_input: "",
       },
     ]);
   }
@@ -98,23 +107,55 @@ function POSPage() {
     setCart((cs) =>
       cs.map((c) =>
         c.unit_id === currentUnitId
-          ? {
-              ...c,
-              unit_id: next.id,
-              imei: next.imei,
-              serial: next.serial,
-            }
+          ? { ...c, unit_id: next.id, imei: next.imei, imei2: next.imei2, serial: next.serial, imei_input: "", imei2_input: "" }
           : c,
       ),
     );
   }
 
+  function updateImeiInput(unitId: string, field: "imei_input" | "imei2_input", value: string) {
+    setCart((cs) => cs.map((c) => (c.unit_id === unitId ? { ...c, [field]: value } : c)));
+  }
+
   const subtotal = cart.reduce((s, c) => s + c.unit_price * c.quantity, 0);
   const grand = Math.max(0, subtotal - discount);
+
+  // Items needing IMEI capture (no stored IMEI 1)
+  const missingImei = cart.filter((c) => !c.imei && !c.imei_input.trim());
 
   const checkout = useMutation({
     mutationFn: async () => {
       if (cart.length === 0) throw new Error("Cart is empty");
+
+      // 1. Validate IMEI capture for items that don't have stored IMEI 1
+      const seen = new Set<string>();
+      for (const c of cart) {
+        const effImei = (c.imei ?? c.imei_input.trim()) || null;
+        const effImei2 = (c.imei2 ?? c.imei2_input.trim()) || null;
+        if (!effImei) {
+          throw new Error(`${c.product_label}: IMEI 1 is required to complete the sale`);
+        }
+        if (effImei2 && effImei === effImei2) {
+          throw new Error(`${c.product_label}: IMEI 1 and IMEI 2 must differ`);
+        }
+        for (const v of [effImei, effImei2]) {
+          if (!v) continue;
+          if (seen.has(v)) throw new Error(`Duplicate IMEI in cart: ${v}`);
+          seen.add(v);
+        }
+      }
+
+      // 2. Persist any newly-entered IMEIs onto inventory_units BEFORE creating the bill
+      for (const c of cart) {
+        const patch: { imei?: string; imei2?: string } = {};
+        if (!c.imei && c.imei_input.trim()) patch.imei = c.imei_input.trim();
+        if (!c.imei2 && c.imei2_input.trim()) patch.imei2 = c.imei2_input.trim();
+        if (Object.keys(patch).length > 0) {
+          const { error } = await supabase.from("inventory_units").update(patch).eq("id", c.unit_id);
+          if (error) throw new Error(`IMEI save failed for ${c.product_label}: ${error.message}`);
+        }
+      }
+
       const { data: user } = await supabase.auth.getUser();
       const { data: bill, error } = await supabase
         .from("bills")
@@ -134,15 +175,20 @@ function POSPage() {
         .single();
       if (error) throw error;
 
-      const items = cart.map((c) => ({
-        bill_id: bill.id,
-        inventory_unit_id: c.unit_id,
-        product_id: c.product_id,
-        description: `${c.product_label}${c.imei ? ` (IMEI ${c.imei})` : ""}`.trim(),
-        unit_price: c.unit_price,
-        quantity: c.quantity,
-        line_total: c.unit_price * c.quantity,
-      }));
+      const items = cart.map((c) => {
+        const effImei = c.imei ?? c.imei_input.trim();
+        const effImei2 = c.imei2 ?? c.imei2_input.trim();
+        const imeiTag = [effImei, effImei2].filter(Boolean).join(" / ");
+        return {
+          bill_id: bill.id,
+          inventory_unit_id: c.unit_id,
+          product_id: c.product_id,
+          description: `${c.product_label}${imeiTag ? ` (IMEI ${imeiTag})` : ""}`.trim(),
+          unit_price: c.unit_price,
+          quantity: c.quantity,
+          line_total: c.unit_price * c.quantity,
+        };
+      });
       const { error: e2 } = await supabase.from("bill_items").insert(items);
       if (e2) throw e2;
 
@@ -165,7 +211,7 @@ function POSPage() {
       qc.invalidateQueries({ queryKey: ["admin", "bills"] });
       qc.invalidateQueries({ queryKey: ["admin", "dashboard-kpis"] });
       qc.invalidateQueries({ queryKey: ["products", "all"] });
-      // Open dedicated receipt in a new tab
+      qc.invalidateQueries({ queryKey: ["admin", "products"] });
       try {
         window.open(`/receipt/${bill.id}`, "_blank", "noopener");
       } catch {
@@ -200,7 +246,9 @@ function POSPage() {
             >
               <div className="min-w-0">
                 <div className="font-semibold text-sm truncate">{u.product?.brand?.name} {u.product?.name}</div>
-                <div className="font-mono text-[10px] text-admin-muted">{u.imei ?? "no IMEI"}</div>
+                <div className="font-mono text-[10px] text-admin-muted truncate">
+                  {u.imei ?? "no IMEI"}{u.imei2 ? ` · ${u.imei2}` : ""}
+                </div>
               </div>
               <div className="font-num font-semibold text-amber">{formatINR(u.product?.selling_price ?? 0)}</div>
             </button>
@@ -214,10 +262,12 @@ function POSPage() {
           <ShoppingCart className="h-4 w-4 text-amber" />
           <h2 className="font-display font-bold">Cart ({cart.length})</h2>
         </div>
-        <div className="max-h-80 space-y-2 overflow-y-auto">
+        <div className="max-h-[28rem] space-y-2 overflow-y-auto">
           {cart.map((c) => {
             const alternates = units.filter((u) => u.product_id === c.product_id && u.id !== c.unit_id);
             const cartUnitIds = new Set(cart.map((x) => x.unit_id));
+            const needsImei = !c.imei;
+            const needsImei2 = !c.imei2;
             return (
               <div key={c.unit_id} className="space-y-1.5 rounded-md bg-admin-surface-2 p-2 text-xs">
                 <div className="flex items-start gap-2">
@@ -227,26 +277,63 @@ function POSPage() {
                   </div>
                   <button onClick={() => setCart((cs) => cs.filter((x) => x.unit_id !== c.unit_id))} className="text-admin-muted hover:text-ruby"><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-wider text-admin-muted">IMEI</span>
-                  {alternates.length > 0 ? (
-                    <select
-                      value={c.unit_id}
-                      onChange={(e) => swapUnit(c.unit_id, e.target.value)}
+
+                {/* IMEI 1 */}
+                {needsImei ? (
+                  <div className="space-y-1 rounded border border-amber/40 bg-amber/5 p-1.5">
+                    <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-amber font-bold">
+                      <AlertCircle className="h-3 w-3" /> IMEI 1 required *
+                    </div>
+                    <input
+                      value={c.imei_input}
+                      onChange={(e) => updateImeiInput(c.unit_id, "imei_input", e.target.value)}
+                      placeholder="Enter IMEI 1 (will be saved permanently)"
+                      maxLength={20}
+                      className="admin-input h-7 w-full font-mono text-[11px]"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-wider text-admin-muted">IMEI 1</span>
+                    {alternates.length > 0 ? (
+                      <select
+                        value={c.unit_id}
+                        onChange={(e) => swapUnit(c.unit_id, e.target.value)}
+                        className="admin-input h-7 flex-1 font-mono text-[11px]"
+                        title="Change to another available unit"
+                      >
+                        <option value={c.unit_id}>{c.imei} (current)</option>
+                        {alternates
+                          .filter((u) => !cartUnitIds.has(u.id))
+                          .map((u) => (
+                            <option key={u.id} value={u.id}>{u.imei ?? "no IMEI"}</option>
+                          ))}
+                      </select>
+                    ) : (
+                      <span className="font-mono text-[11px]">{c.imei}</span>
+                    )}
+                  </div>
+                )}
+
+                {/* IMEI 2 */}
+                {needsImei2 ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-wider text-admin-muted whitespace-nowrap">IMEI 2</span>
+                    <input
+                      value={c.imei2_input}
+                      onChange={(e) => updateImeiInput(c.unit_id, "imei2_input", e.target.value)}
+                      placeholder="Optional"
+                      maxLength={20}
                       className="admin-input h-7 flex-1 font-mono text-[11px]"
-                      title="Change to another available unit"
-                    >
-                      <option value={c.unit_id}>{c.imei ?? "no IMEI"} (current)</option>
-                      {alternates
-                        .filter((u) => !cartUnitIds.has(u.id))
-                        .map((u) => (
-                          <option key={u.id} value={u.id}>{u.imei ?? "no IMEI"}</option>
-                        ))}
-                    </select>
-                  ) : (
-                    <span className="font-mono text-[11px]">{c.imei ?? "no IMEI"}</span>
-                  )}
-                </div>
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-wider text-admin-muted">IMEI 2</span>
+                    <span className="font-mono text-[11px]">{c.imei2}</span>
+                  </div>
+                )}
+
                 {c.serial && (
                   <div className="font-mono text-[10px] text-admin-muted">SN: {c.serial}</div>
                 )}
@@ -274,9 +361,14 @@ function POSPage() {
           <div className="flex justify-between text-admin-muted"><span>Discount</span><span className="font-num">−{formatINR(discount)}</span></div>
           <div className="flex justify-between text-lg font-bold"><span>Total</span><span className="font-num text-amber">{formatINR(grand)}</span></div>
         </div>
+        {missingImei.length > 0 && (
+          <div className="rounded-md border border-amber/40 bg-amber/10 p-2 text-[11px] text-amber">
+            Enter IMEI 1 for {missingImei.length} item{missingImei.length > 1 ? "s" : ""} above before completing the sale.
+          </div>
+        )}
         <button
           onClick={() => checkout.mutate()}
-          disabled={cart.length === 0 || checkout.isPending}
+          disabled={cart.length === 0 || checkout.isPending || missingImei.length > 0}
           className="w-full h-11 rounded-md bg-amber font-bold text-ink hover:bg-amber-dark disabled:opacity-40"
         >
           {checkout.isPending ? "Processing…" : "Complete Sale"}

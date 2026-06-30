@@ -24,6 +24,7 @@ type InventoryUnit = {
   id: string;
   product_id: string;
   imei: string | null;
+  imei2: string | null;
   serial: string | null;
   cost_price: number | null;
   status: UnitStatus;
@@ -119,7 +120,7 @@ function ProductsPage() {
         .select(`
           *,
           brand:brands(name),
-          inventory:inventory_units(id,product_id,imei,serial,cost_price,status,notes,supplier,purchase_date,warranty_until,sold_at,created_at,updated_at,bill_items(bill:bills(id,bill_number,customer_name,customer_phone,created_at))),
+          inventory:inventory_units(id,product_id,imei,imei2,serial,cost_price,status,notes,supplier,purchase_date,warranty_until,sold_at,created_at,updated_at,bill_items(bill:bills(id,bill_number,customer_name,customer_phone,created_at))),
           images:product_images(url,is_primary,display_order)
         `)
         .eq("is_deleted", false)
@@ -232,7 +233,7 @@ function ProductsPage() {
         p.name, p.brand?.name, p.model, p.storage, p.ram, p.color, p.slug,
       ].filter(Boolean).join(" ").toLowerCase().includes(q);
       const inImei = p.inventory.some((u) =>
-        (u.imei?.toLowerCase().includes(q)) || (u.serial?.toLowerCase().includes(q))
+        (u.imei?.toLowerCase().includes(q)) || (u.imei2?.toLowerCase().includes(q)) || (u.serial?.toLowerCase().includes(q))
       );
       const inBill = billIds?.has(p.id) ?? false;
       return inText || inImei || inBill;
@@ -278,7 +279,7 @@ function ProductsPage() {
     ];
     const lines = [headers.join(",")];
     for (const p of rows) {
-      const imeis = p.inventory.map((u) => u.imei).filter(Boolean).join("|");
+      const imeis = p.inventory.flatMap((u) => [u.imei, u.imei2]).filter(Boolean).join("|");
       const cells = [
         p.brand?.name ?? "", p.model ?? p.name, p.storage ?? "", p.ram ?? "", p.color ?? "",
         imeis, p.min_cost ?? "", p.max_cost ?? "", p.selling_price,
@@ -405,7 +406,7 @@ function ProductsPage() {
               const isOpen = expanded.has(p.id);
               const isOut = p.total_count > 0 && p.available_count === 0 && p.reserved_count === 0;
               const lowStock = p.available_count > 0 && p.available_count <= 1;
-              const imeiList = p.inventory.map((u) => u.imei).filter(Boolean) as string[];
+              const imeiList = p.inventory.flatMap((u) => [u.imei, u.imei2]).filter(Boolean) as string[];
               const primaryStatus: string =
                 p.total_count === 0 ? "DRAFT"
                 : !p.is_listed ? "HIDDEN"
@@ -732,7 +733,10 @@ function UnitRow({ unit, onSave, onDelete }: { unit: InventoryUnit; onSave: (p: 
   return (
     <tr>
       <td className="px-2 py-1.5">
-        <input className="admin-input h-7 font-mono text-xs" value={u.imei ?? ""} onChange={(e) => setU({ ...u, imei: e.target.value || null })} />
+        <div className="flex flex-col gap-1">
+          <input className="admin-input h-7 font-mono text-xs" placeholder="IMEI 1" value={u.imei ?? ""} onChange={(e) => setU({ ...u, imei: e.target.value || null })} />
+          <input className="admin-input h-7 font-mono text-xs" placeholder="IMEI 2" value={u.imei2 ?? ""} onChange={(e) => setU({ ...u, imei2: e.target.value || null })} />
+        </div>
       </td>
       <td className="px-2 py-1.5">
         <select className="admin-input h-7 text-xs" value={u.status} onChange={(e) => setU({ ...u, status: e.target.value as UnitStatus })}>
@@ -856,6 +860,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
     is_featured: product?.is_featured ?? false,
     is_listed: product?.is_listed ?? true,
     imei: "",
+    imei2: "",
     cost_price: "" as number | "",
   });
   const [saving, setSaving] = useState(false);
@@ -893,6 +898,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         const { error: invErr } = await supabase.from("inventory_units").insert({
           product_id: data.id,
           imei: form.imei.trim() || null,
+          imei2: form.imei2.trim() || null,
           cost_price: form.cost_price === "" ? null : Number(form.cost_price),
           status: "AVAILABLE",
         });
@@ -970,11 +976,16 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         </Section>
 
         {/* 3. IMEI Management */}
-        <Section title="IMEI Management" subtitle="Edit, add or remove IMEIs. Unsold IMEIs can be removed; sold IMEIs are locked to preserve bill history.">
+        <Section title="IMEI Management" subtitle="IMEIs are optional. If missing, the system will collect them automatically during billing.">
           {!createdId ? (
-            <Field label="IMEI (initial unit, optional)">
-              <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
-            </Field>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="IMEI 1 (optional)">
+                <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+              </Field>
+              <Field label="IMEI 2 (optional)">
+                <input value={form.imei2} onChange={(e) => set("imei2", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+              </Field>
+            </div>
           ) : product ? (
             <ImeiManager product={product} onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "products"] })} />
           ) : (
@@ -996,26 +1007,36 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
 function ImeiManager({ product, onChanged }: { product: ProductRow; onChanged: () => void }) {
   const qc = useQueryClient();
   const [newImei, setNewImei] = useState("");
-  const [edits, setEdits] = useState<Record<string, string>>({});
+  const [newImei2, setNewImei2] = useState("");
+  const [edits, setEdits] = useState<Record<string, { imei?: string; imei2?: string }>>({});
 
   const units = product.inventory;
 
   function imeiExists(value: string, exceptId?: string) {
     const v = value.trim().toLowerCase();
     if (!v) return false;
-    return units.some((u) => u.id !== exceptId && (u.imei ?? "").trim().toLowerCase() === v);
+    return units.some((u) =>
+      u.id !== exceptId &&
+      ((u.imei ?? "").trim().toLowerCase() === v || (u.imei2 ?? "").trim().toLowerCase() === v),
+    );
   }
 
-  async function saveImei(id: string) {
-    const value = (edits[id] ?? "").trim();
+  async function saveUnit(id: string) {
+    const e = edits[id] ?? {};
     const unit = units.find((u) => u.id === id);
     if (!unit) return;
-    if ((unit.imei ?? "") === value) { setEdits((e) => { const n = { ...e }; delete n[id]; return n; }); return; }
-    if (value && imeiExists(value, id)) { toast.error("Duplicate IMEI on this product"); return; }
-    const { error } = await supabase.from("inventory_units").update({ imei: value || null }).eq("id", id);
+    const nextImei = (e.imei ?? unit.imei ?? "").trim();
+    const nextImei2 = (e.imei2 ?? unit.imei2 ?? "").trim();
+    if (nextImei && nextImei === nextImei2) { toast.error("IMEI 1 and IMEI 2 must differ"); return; }
+    if (nextImei && imeiExists(nextImei, id)) { toast.error("Duplicate IMEI"); return; }
+    if (nextImei2 && imeiExists(nextImei2, id)) { toast.error("Duplicate IMEI 2"); return; }
+    const { error } = await supabase
+      .from("inventory_units")
+      .update({ imei: nextImei || null, imei2: nextImei2 || null })
+      .eq("id", id);
     if (error) { toast.error(error.message); return; }
-    toast.success("IMEI updated");
-    setEdits((e) => { const n = { ...e }; delete n[id]; return n; });
+    toast.success("IMEI saved");
+    setEdits((s) => { const n = { ...s }; delete n[id]; return n; });
     qc.invalidateQueries({ queryKey: ["admin", "products"] });
     onChanged();
   }
@@ -1032,60 +1053,80 @@ function ImeiManager({ product, onChanged }: { product: ProductRow; onChanged: (
 
   async function addImei(e: React.FormEvent) {
     e.preventDefault();
-    const value = newImei.trim();
-    if (value && imeiExists(value)) { toast.error("Duplicate IMEI on this product"); return; }
+    const v1 = newImei.trim();
+    const v2 = newImei2.trim();
+    if (v1 && v2 && v1 === v2) { toast.error("IMEI 1 and IMEI 2 must differ"); return; }
+    if (v1 && imeiExists(v1)) { toast.error("Duplicate IMEI"); return; }
+    if (v2 && imeiExists(v2)) { toast.error("Duplicate IMEI 2"); return; }
     const { error } = await supabase.from("inventory_units").insert({
       product_id: product.id,
-      imei: value || null,
+      imei: v1 || null,
+      imei2: v2 || null,
       status: "AVAILABLE",
     });
     if (error) { toast.error(error.message); return; }
-    toast.success("IMEI added");
-    setNewImei("");
+    toast.success("Unit added");
+    setNewImei(""); setNewImei2("");
     qc.invalidateQueries({ queryKey: ["admin", "products"] });
     onChanged();
   }
 
+  function isDirty(id: string, unit: InventoryUnit) {
+    const e = edits[id];
+    if (!e) return false;
+    if (e.imei !== undefined && e.imei !== (unit.imei ?? "")) return true;
+    if (e.imei2 !== undefined && e.imei2 !== (unit.imei2 ?? "")) return true;
+    return false;
+  }
+
   return (
     <div className="space-y-3">
-      <form onSubmit={addImei} className="flex flex-wrap items-end gap-2">
-        <div className="flex-1 min-w-[220px]">
-          <Field label="Add IMEI">
-            <input value={newImei} onChange={(e) => setNewImei(e.target.value)} placeholder="15-digit IMEI" maxLength={20} className="admin-input font-mono" />
-          </Field>
-        </div>
+      <form onSubmit={addImei} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto] items-end">
+        <Field label="Add IMEI 1 (optional)">
+          <input value={newImei} onChange={(e) => setNewImei(e.target.value)} placeholder="15-digit IMEI" maxLength={20} className="admin-input font-mono" />
+        </Field>
+        <Field label="IMEI 2 (optional)">
+          <input value={newImei2} onChange={(e) => setNewImei2(e.target.value)} placeholder="15-digit IMEI" maxLength={20} className="admin-input font-mono" />
+        </Field>
         <button className="h-10 rounded bg-amber px-4 text-xs font-bold text-ink">
-          <Plus className="inline h-3 w-3 -mt-0.5" /> Add
+          <Plus className="inline h-3 w-3 -mt-0.5" /> Add unit
         </button>
       </form>
 
       {units.length === 0 ? (
         <div className="rounded-md border border-dashed border-admin-border bg-admin-surface-2 p-4 text-center text-xs text-admin-muted">
-          No IMEIs yet — add one above.
+          No units yet — IMEIs are optional. Add a unit above whenever you have one (or collect it at billing).
         </div>
       ) : (
         <ul className="divide-y divide-admin-border rounded-md border border-admin-border bg-admin-surface-2/40">
           {units.map((u) => {
-            const dirty = edits[u.id] !== undefined && edits[u.id] !== (u.imei ?? "");
+            const dirty = isDirty(u.id, u);
             const isSold = u.status === "SOLD";
             return (
-              <li key={u.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
+              <li key={u.id} className="grid gap-2 px-3 py-2 sm:grid-cols-[1fr_1fr_auto_auto_auto] items-center">
                 <input
-                  value={edits[u.id] ?? u.imei ?? ""}
-                  onChange={(e) => setEdits((s) => ({ ...s, [u.id]: e.target.value }))}
-                  placeholder="IMEI"
+                  value={edits[u.id]?.imei ?? u.imei ?? ""}
+                  onChange={(ev) => setEdits((s) => ({ ...s, [u.id]: { ...s[u.id], imei: ev.target.value } }))}
+                  placeholder="IMEI 1"
                   maxLength={20}
-                  className="admin-input h-8 flex-1 min-w-[200px] font-mono text-xs"
+                  className="admin-input h-8 font-mono text-xs"
+                />
+                <input
+                  value={edits[u.id]?.imei2 ?? u.imei2 ?? ""}
+                  onChange={(ev) => setEdits((s) => ({ ...s, [u.id]: { ...s[u.id], imei2: ev.target.value } }))}
+                  placeholder="IMEI 2"
+                  maxLength={20}
+                  className="admin-input h-8 font-mono text-xs"
                 />
                 <Badge k={u.status} />
-                {dirty && (
-                  <button type="button" onClick={() => saveImei(u.id)} className="rounded bg-amber px-2 py-1 text-[10px] font-bold text-ink">Save</button>
-                )}
+                {dirty ? (
+                  <button type="button" onClick={() => saveUnit(u.id)} className="rounded bg-amber px-2 py-1 text-[10px] font-bold text-ink">Save</button>
+                ) : <span />}
                 <button
                   type="button"
                   onClick={() => removeUnit(u.id, u.status)}
                   disabled={isSold}
-                  title={isSold ? "Sold IMEIs cannot be removed" : "Remove"}
+                  title={isSold ? "Sold units cannot be removed" : "Remove"}
                   className="rounded p-1 text-admin-muted hover:bg-ruby/20 hover:text-ruby disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-admin-muted disabled:cursor-not-allowed"
                 >
                   <Trash2 className="h-3.5 w-3.5" />

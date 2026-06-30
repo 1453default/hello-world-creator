@@ -38,7 +38,7 @@ type ItemRow = {
   line_total: number;
   inventory_unit_id: string | null;
   product_id: string | null;
-  inventory_unit: { imei: string | null } | null;
+  inventory_unit: { imei: string | null; imei2: string | null } | null;
   product: { name: string; brand: { name: string } | null } | null;
 };
 
@@ -59,7 +59,7 @@ function ReceiptPage() {
       const { data: items, error: e2 } = await supabase
         .from("bill_items")
         .select(
-          "id, description, unit_price, quantity, line_total, inventory_unit_id, product_id, inventory_unit:inventory_units(imei), product:products(name, brand:brands(name))",
+          "id, description, unit_price, quantity, line_total, inventory_unit_id, product_id, inventory_unit:inventory_units(imei, imei2), product:products(name, brand:brands(name))",
         )
         .eq("bill_id", id)
         .order("created_at");
@@ -162,6 +162,9 @@ function ReceiptPage() {
                     <td className="py-3 pr-2 text-black">{productName}</td>
                     <td className="py-3 pr-2 font-mono text-xs text-neutral-700">
                       {it.inventory_unit?.imei || "—"}
+                      {it.inventory_unit?.imei2 && (
+                        <div className="text-[11px] text-neutral-500">{it.inventory_unit.imei2}</div>
+                      )}
                     </td>
                     <td className="py-3 text-center text-black">{it.quantity}</td>
                     <td className="py-3 text-right font-num text-black">{formatINR(it.unit_price)}</td>

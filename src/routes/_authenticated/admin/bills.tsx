@@ -18,7 +18,7 @@ type BillItem = {
   unit_price: number;
   quantity: number;
   line_total: number;
-  inventory_unit: { imei: string | null; serial: string | null } | null;
+  inventory_unit: { imei: string | null; imei2: string | null; serial: string | null } | null;
   product: { name: string | null; model: string | null; brand: { name: string | null } | null } | null;
 };
 
@@ -59,7 +59,7 @@ function BillsPage() {
       const { data, error } = await supabase
         .from("bills")
         .select(
-          "id, bill_number, customer_name, customer_phone, subtotal, discount, tax, grand_total, payment_method, status, created_at, items:bill_items(id, description, unit_price, quantity, line_total, inventory_unit:inventory_units(imei, serial), product:products(name, model, brand:brands(name)))",
+          "id, bill_number, customer_name, customer_phone, subtotal, discount, tax, grand_total, payment_method, status, created_at, items:bill_items(id, description, unit_price, quantity, line_total, inventory_unit:inventory_units(imei, imei2, serial), product:products(name, model, brand:brands(name)))",
         )
         .order("created_at", { ascending: false })
         .limit(500);
@@ -89,6 +89,7 @@ function BillsPage() {
         hay.push(
           it.description,
           it.inventory_unit?.imei,
+          it.inventory_unit?.imei2,
           it.inventory_unit?.serial,
           it.product?.name,
           it.product?.model,
@@ -112,7 +113,8 @@ function BillsPage() {
             "Phone": b.customer_phone ?? "",
             "Brand": it?.product?.brand?.name ?? "",
             "Product": it ? productLabel(it) : "",
-            "IMEI": it?.inventory_unit?.imei ?? "",
+            "IMEI 1": it?.inventory_unit?.imei ?? "",
+            "IMEI 2": it?.inventory_unit?.imei2 ?? "",
             "Serial": it?.inventory_unit?.serial ?? "",
             "Unit Price": Number(it?.unit_price ?? 0),
             "Qty": Number(it?.quantity ?? 0),
@@ -214,7 +216,7 @@ function BillsPage() {
                 const firstItem = b.items?.[0];
                 const extra = (b.items?.length ?? 0) - 1;
                 const product = firstItem ? productLabel(firstItem) : "—";
-                const imei = firstItem?.inventory_unit?.imei ?? "—";
+                const imei = [firstItem?.inventory_unit?.imei, firstItem?.inventory_unit?.imei2].filter(Boolean).join(" / ") || "—";
                 return (
                   <tr key={b.id} className={`hover:bg-admin-surface-2/50 ${selected === b.id ? "bg-admin-surface-2" : ""}`}>
                     <td onClick={() => setSelected(b.id === selected ? null : b.id)} className="cursor-pointer px-4 py-3 font-mono text-xs">{b.bill_number}</td>
@@ -283,7 +285,10 @@ function BillsPage() {
                   {b.items.map((it) => (
                     <tr key={it.id}>
                       <td className="px-2 py-2">{productLabel(it)}</td>
-                      <td className="px-2 py-2 font-mono text-xs">{it.inventory_unit?.imei ?? "—"}</td>
+                      <td className="px-2 py-2 font-mono text-xs">
+                        {it.inventory_unit?.imei ?? "—"}
+                        {it.inventory_unit?.imei2 && <div className="text-admin-muted">{it.inventory_unit.imei2}</div>}
+                      </td>
                       <td className="px-2 py-2 font-mono text-xs">{it.inventory_unit?.serial ?? "—"}</td>
                       <td className="px-2 py-2 text-right">{it.quantity}</td>
                       <td className="px-2 py-2 text-right font-num">{formatINR(it.unit_price)}</td>

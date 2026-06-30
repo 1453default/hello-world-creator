@@ -35,6 +35,7 @@ type BillItem = {
   line_total: number;
   inventory_unit: {
     imei: string | null;
+    imei2: string | null;
     serial: string | null;
     cost_price: number | null;
     notes: string | null;
@@ -141,7 +142,7 @@ function CustomersPage() {
       const { data, error } = await supabase
         .from("bills")
         .select(
-          "id, bill_number, created_at, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, items:bill_items(id, description, quantity, unit_price, line_total, inventory_unit:inventory_units(imei, serial, cost_price, notes), product:products(name, model, ram, storage, color, brand:brands(name)))",
+          "id, bill_number, created_at, customer_name, customer_phone, payment_method, status, subtotal, discount, tax, grand_total, items:bill_items(id, description, quantity, unit_price, line_total, inventory_unit:inventory_units(imei, imei2, serial, cost_price, notes), product:products(name, model, ram, storage, color, brand:brands(name)))",
         )
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -167,6 +168,7 @@ function CustomersPage() {
       fields.push(
         it.description,
         it.inventory_unit?.imei,
+        it.inventory_unit?.imei2,
         it.inventory_unit?.serial,
         it.product?.name,
         it.product?.model,
@@ -298,7 +300,8 @@ function CustomersPage() {
             "RAM": it?.product?.ram ?? "",
             "Storage": it?.product?.storage ?? "",
             "Colour": it?.product?.color ?? "",
-            "IMEI": it?.inventory_unit?.imei ?? "",
+            "IMEI 1": it?.inventory_unit?.imei ?? "",
+            "IMEI 2": it?.inventory_unit?.imei2 ?? "",
             "Serial": it?.inventory_unit?.serial ?? "",
             "Purchase Cost (INR)": Number(it?.inventory_unit?.cost_price ?? 0),
             "Selling Price (INR)": Number(it?.unit_price ?? 0),
@@ -489,7 +492,7 @@ function CustomersPage() {
                 const open = expanded === c.key || (searching && c.bills.length <= 3);
                 const lb = c.latestBill;
                 const li = c.latestItem;
-                const imei = li?.inventory_unit?.imei ?? "";
+                const imei = [li?.inventory_unit?.imei, li?.inventory_unit?.imei2].filter(Boolean).join(" / ");
                 return (
                   <Fragment key={c.key}>
                     <tr
@@ -805,6 +808,9 @@ function CustomerHistory({ customer, highlightQ }: { customer: Customer; highlig
                     </td>
                     <td className="py-1.5 font-mono text-[10px] text-admin-muted">
                       {highlight(it.inventory_unit?.imei || "—", highlightQ)}
+                      {it.inventory_unit?.imei2 && (
+                        <div>{highlight(it.inventory_unit.imei2, highlightQ)}</div>
+                      )}
                     </td>
                     <td className="py-1.5 text-right font-num text-admin-muted">
                       {it.inventory_unit?.cost_price

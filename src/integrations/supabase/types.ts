@@ -162,6 +162,7 @@ export type Database = {
           created_at: string
           id: string
           imei: string | null
+          imei2: string | null
           notes: string | null
           product_id: string
           purchase_date: string | null
@@ -177,6 +178,7 @@ export type Database = {
           created_at?: string
           id?: string
           imei?: string | null
+          imei2?: string | null
           notes?: string | null
           product_id: string
           purchase_date?: string | null
@@ -192,6 +194,7 @@ export type Database = {
           created_at?: string
           id?: string
           imei?: string | null
+          imei2?: string | null
           notes?: string | null
           product_id?: string
           purchase_date?: string | null
