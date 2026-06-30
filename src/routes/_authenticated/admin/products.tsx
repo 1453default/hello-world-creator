@@ -939,6 +939,12 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         <Field label="Description">
           <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
         </Field>
+        {createdId && product && (
+          <div className="rounded-lg border border-admin-border bg-admin-surface-2 p-3">
+            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-admin-muted">IMEI / Inventory Units</h3>
+            <InventoryEditor product={product} onChanged={onSaved} />
+          </div>
+        )}
         {createdId && (
           <div className="rounded-lg border border-admin-border bg-admin-surface-2 p-3">
             <ProductImagesManager productId={createdId} />
