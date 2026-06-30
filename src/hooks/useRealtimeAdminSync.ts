@@ -87,8 +87,7 @@ export function useRealtimeAdminSync() {
 
     for (const table of Object.keys(TABLE_INVALIDATIONS)) {
       channel.on(
-        // @ts-expect-error supabase-js typing for postgres_changes is overly strict
-        "postgres_changes",
+        "postgres_changes" as never,
         { event: "*", schema: "public", table },
         () => {
           const keys = TABLE_INVALIDATIONS[table];
