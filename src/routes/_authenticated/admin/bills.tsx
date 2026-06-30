@@ -59,7 +59,7 @@ function BillsPage() {
       const { data, error } = await supabase
         .from("bills")
         .select(
-          "id, bill_number, customer_name, customer_phone, subtotal, discount, tax, grand_total, payment_method, status, created_at, items:bill_items(id, description, unit_price, quantity, line_total, inventory_unit:inventory_units(imei, serial), product:products(name, model, brand:brands(name)))",
+          "id, bill_number, customer_name, customer_phone, subtotal, discount, tax, grand_total, payment_method, status, created_at, items:bill_items(id, description, unit_price, quantity, line_total, inventory_unit:inventory_units(imei, imei2, serial), product:products(name, model, brand:brands(name)))",
         )
         .order("created_at", { ascending: false })
         .limit(500);
