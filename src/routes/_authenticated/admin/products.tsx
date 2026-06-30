@@ -704,6 +704,7 @@ function InventoryEditor({ product, onChanged }: { product: ProductRow; onChange
             <tr>
               <th className="px-2 py-2">IMEI / Serial</th>
               <th className="px-2 py-2">Status</th>
+              <th className="px-2 py-2">Sold To</th>
               <th className="px-2 py-2">Cost ₹</th>
               <th className="px-2 py-2">Supplier</th>
               <th className="px-2 py-2">Purchased</th>
