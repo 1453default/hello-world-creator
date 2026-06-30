@@ -20,7 +20,7 @@ export function ProductCard({ product, index = 0 }: { product: P; index?: number
       <Link
         to="/phone/$slug"
         params={{ slug: product.slug }}
-        className="block aspect-[4/3] relative bg-muted overflow-hidden"
+        className="block aspect-[3/4] relative bg-muted overflow-hidden"
       >
         {img ? (
           <img
@@ -29,8 +29,8 @@ export function ProductCard({ product, index = 0 }: { product: P; index?: number
             loading="lazy"
             decoding="async"
             width={400}
-            height={300}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            height={533}
+            className="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-105"
             onError={(e) => {
               const t = e.currentTarget;
               t.style.display = "none";
