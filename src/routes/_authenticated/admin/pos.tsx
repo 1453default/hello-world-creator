@@ -70,11 +70,32 @@ function POSPage() {
       {
         unit_id: u.id,
         product_id: u.product_id,
-        description: `${u.product!.brand?.name ?? ""} ${u.product!.name}${u.imei ? ` (IMEI ${u.imei})` : ""}`.trim(),
+        product_label: `${u.product!.brand?.name ?? ""} ${u.product!.name}`.trim(),
+        imei: u.imei,
+        serial: (u as any).serial ?? null,
         unit_price: Number(u.product!.selling_price),
         quantity: 1,
       },
     ]);
+  }
+
+  function swapUnit(currentUnitId: string, nextUnitId: string) {
+    if (currentUnitId === nextUnitId) return;
+    if (cart.find((c) => c.unit_id === nextUnitId)) return toast.error("That IMEI is already in the cart");
+    const next = units.find((u) => u.id === nextUnitId);
+    if (!next || !next.product) return;
+    setCart((cs) =>
+      cs.map((c) =>
+        c.unit_id === currentUnitId
+          ? {
+              ...c,
+              unit_id: next.id,
+              imei: next.imei,
+              serial: (next as any).serial ?? null,
+            }
+          : c,
+      ),
+    );
   }
 
   const subtotal = cart.reduce((s, c) => s + c.unit_price * c.quantity, 0);
