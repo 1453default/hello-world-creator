@@ -427,7 +427,7 @@ function ProductsPage() {
                       <div className="flex items-center gap-2">
                         <div className="h-10 w-10 shrink-0 overflow-hidden rounded border border-admin-border bg-admin-surface-2">
                           {p.primary_image ? (
-                            <img src={p.primary_image} alt="" className="h-full w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+                            <img src={p.primary_image} alt="" className="h-full w-full object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
                           ) : (
                             <div className="grid h-full w-full place-items-center text-[9px] text-admin-subtle">no img</div>
                           )}
