@@ -162,6 +162,9 @@ function ReceiptPage() {
                     <td className="py-3 pr-2 text-black">{productName}</td>
                     <td className="py-3 pr-2 font-mono text-xs text-neutral-700">
                       {it.inventory_unit?.imei || "—"}
+                      {it.inventory_unit?.imei2 && (
+                        <div className="text-[11px] text-neutral-500">{it.inventory_unit.imei2}</div>
+                      )}
                     </td>
                     <td className="py-3 text-center text-black">{it.quantity}</td>
                     <td className="py-3 text-right font-num text-black">{formatINR(it.unit_price)}</td>
