@@ -44,7 +44,7 @@ function POSPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("inventory_units")
-        .select("id, imei, product_id, product:products(id, name, selling_price, brand:brands(name))")
+        .select("id, imei, serial, product_id, product:products(id, name, selling_price, brand:brands(name))")
         .eq("status", "AVAILABLE")
         .limit(200);
       if (error) throw error;
