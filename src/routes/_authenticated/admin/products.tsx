@@ -733,7 +733,10 @@ function UnitRow({ unit, onSave, onDelete }: { unit: InventoryUnit; onSave: (p: 
   return (
     <tr>
       <td className="px-2 py-1.5">
-        <input className="admin-input h-7 font-mono text-xs" value={u.imei ?? ""} onChange={(e) => setU({ ...u, imei: e.target.value || null })} />
+        <div className="flex flex-col gap-1">
+          <input className="admin-input h-7 font-mono text-xs" placeholder="IMEI 1" value={u.imei ?? ""} onChange={(e) => setU({ ...u, imei: e.target.value || null })} />
+          <input className="admin-input h-7 font-mono text-xs" placeholder="IMEI 2" value={u.imei2 ?? ""} onChange={(e) => setU({ ...u, imei2: e.target.value || null })} />
+        </div>
       </td>
       <td className="px-2 py-1.5">
         <select className="admin-input h-7 text-xs" value={u.status} onChange={(e) => setU({ ...u, status: e.target.value as UnitStatus })}>
