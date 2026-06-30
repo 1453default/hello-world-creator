@@ -808,6 +808,9 @@ function CustomerHistory({ customer, highlightQ }: { customer: Customer; highlig
                     </td>
                     <td className="py-1.5 font-mono text-[10px] text-admin-muted">
                       {highlight(it.inventory_unit?.imei || "—", highlightQ)}
+                      {it.inventory_unit?.imei2 && (
+                        <div>{highlight(it.inventory_unit.imei2, highlightQ)}</div>
+                      )}
                     </td>
                     <td className="py-1.5 text-right font-num text-admin-muted">
                       {it.inventory_unit?.cost_price
