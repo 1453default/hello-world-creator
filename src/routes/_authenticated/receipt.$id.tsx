@@ -38,7 +38,7 @@ type ItemRow = {
   line_total: number;
   inventory_unit_id: string | null;
   product_id: string | null;
-  inventory_unit: { imei: string | null } | null;
+  inventory_unit: { imei: string | null; imei2: string | null } | null;
   product: { name: string; brand: { name: string } | null } | null;
 };
 
