@@ -233,7 +233,7 @@ function ProductsPage() {
         p.name, p.brand?.name, p.model, p.storage, p.ram, p.color, p.slug,
       ].filter(Boolean).join(" ").toLowerCase().includes(q);
       const inImei = p.inventory.some((u) =>
-        (u.imei?.toLowerCase().includes(q)) || (u.serial?.toLowerCase().includes(q))
+        (u.imei?.toLowerCase().includes(q)) || (u.imei2?.toLowerCase().includes(q)) || (u.serial?.toLowerCase().includes(q))
       );
       const inBill = billIds?.has(p.id) ?? false;
       return inText || inImei || inBill;
