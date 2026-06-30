@@ -203,16 +203,45 @@ function POSPage() {
           <ShoppingCart className="h-4 w-4 text-amber" />
           <h2 className="font-display font-bold">Cart ({cart.length})</h2>
         </div>
-        <div className="max-h-64 space-y-2 overflow-y-auto">
-          {cart.map((c) => (
-            <div key={c.unit_id} className="flex items-center gap-2 rounded-md bg-admin-surface-2 p-2 text-xs">
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-semibold">{c.description}</div>
-                <div className="font-num text-admin-muted">{formatINR(c.unit_price)}</div>
+        <div className="max-h-80 space-y-2 overflow-y-auto">
+          {cart.map((c) => {
+            const alternates = units.filter((u) => u.product_id === c.product_id && u.id !== c.unit_id);
+            const cartUnitIds = new Set(cart.map((x) => x.unit_id));
+            return (
+              <div key={c.unit_id} className="space-y-1.5 rounded-md bg-admin-surface-2 p-2 text-xs">
+                <div className="flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-semibold">{c.product_label}</div>
+                    <div className="font-num text-admin-muted">{formatINR(c.unit_price)}</div>
+                  </div>
+                  <button onClick={() => setCart((cs) => cs.filter((x) => x.unit_id !== c.unit_id))} className="text-admin-muted hover:text-ruby"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase tracking-wider text-admin-muted">IMEI</span>
+                  {alternates.length > 0 ? (
+                    <select
+                      value={c.unit_id}
+                      onChange={(e) => swapUnit(c.unit_id, e.target.value)}
+                      className="admin-input h-7 flex-1 font-mono text-[11px]"
+                      title="Change to another available unit"
+                    >
+                      <option value={c.unit_id}>{c.imei ?? "no IMEI"} (current)</option>
+                      {alternates
+                        .filter((u) => !cartUnitIds.has(u.id))
+                        .map((u) => (
+                          <option key={u.id} value={u.id}>{u.imei ?? "no IMEI"}</option>
+                        ))}
+                    </select>
+                  ) : (
+                    <span className="font-mono text-[11px]">{c.imei ?? "no IMEI"}</span>
+                  )}
+                </div>
+                {c.serial && (
+                  <div className="font-mono text-[10px] text-admin-muted">SN: {c.serial}</div>
+                )}
               </div>
-              <button onClick={() => setCart((cs) => cs.filter((x) => x.unit_id !== c.unit_id))} className="text-admin-muted hover:text-ruby"><Trash2 className="h-3.5 w-3.5" /></button>
-            </div>
-          ))}
+            );
+          })}
           {cart.length === 0 && <div className="text-center text-xs text-admin-muted py-6">Cart is empty</div>}
         </div>
         <div className="space-y-2 border-t border-admin-border pt-3">
