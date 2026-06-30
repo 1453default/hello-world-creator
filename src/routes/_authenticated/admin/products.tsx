@@ -34,6 +34,7 @@ type InventoryUnit = {
   sold_at: string | null;
   created_at: string;
   updated_at: string;
+  bill_items?: { bill: { id: string; bill_number: string | null; customer_name: string | null; customer_phone: string | null; created_at: string } | null }[];
 };
 
 type Product = {
@@ -118,7 +119,7 @@ function ProductsPage() {
         .select(`
           *,
           brand:brands(name),
-          inventory:inventory_units(id,product_id,imei,serial,cost_price,status,notes,supplier,purchase_date,warranty_until,sold_at,created_at,updated_at),
+          inventory:inventory_units(id,product_id,imei,serial,cost_price,status,notes,supplier,purchase_date,warranty_until,sold_at,created_at,updated_at,bill_items(bill:bills(id,bill_number,customer_name,customer_phone,created_at))),
           images:product_images(url,is_primary,display_order)
         `)
         .eq("is_deleted", false)
@@ -703,6 +704,7 @@ function InventoryEditor({ product, onChanged }: { product: ProductRow; onChange
             <tr>
               <th className="px-2 py-2">IMEI / Serial</th>
               <th className="px-2 py-2">Status</th>
+              <th className="px-2 py-2">Sold To</th>
               <th className="px-2 py-2">Cost ₹</th>
               <th className="px-2 py-2">Supplier</th>
               <th className="px-2 py-2">Purchased</th>
@@ -713,7 +715,7 @@ function InventoryEditor({ product, onChanged }: { product: ProductRow; onChange
           </thead>
           <tbody className="divide-y divide-admin-border">
             {product.inventory.length === 0 ? (
-              <tr><td colSpan={8} className="px-2 py-4 text-center text-admin-muted">No units. Add one above.</td></tr>
+              <tr><td colSpan={9} className="px-2 py-4 text-center text-admin-muted">No units. Add one above.</td></tr>
             ) : product.inventory.map((u) => (
               <UnitRow key={u.id} unit={u} onSave={(patch) => updateUnit(u.id, patch)} onDelete={() => delUnit(u.id)} />
             ))}
@@ -736,6 +738,18 @@ function UnitRow({ unit, onSave, onDelete }: { unit: InventoryUnit; onSave: (p: 
         <select className="admin-input h-7 text-xs" value={u.status} onChange={(e) => setU({ ...u, status: e.target.value as UnitStatus })}>
           {UNIT_STATUSES.map((s) => <option key={s}>{s}</option>)}
         </select>
+      </td>
+      <td className="px-2 py-1.5">
+        {(() => {
+          const bi = unit.bill_items?.find((b) => b.bill);
+          if (!bi?.bill) return <span className="text-admin-muted">—</span>;
+          return (
+            <div className="text-[11px] leading-tight">
+              <div className="font-mono">{bi.bill.bill_number ?? bi.bill.id.slice(0, 8)}</div>
+              <div className="text-admin-muted truncate max-w-[140px]">{bi.bill.customer_name ?? "Walk-in"}</div>
+            </div>
+          );
+        })()}
       </td>
       <td className="px-2 py-1.5">
         <input type="number" className="admin-input h-7 w-24 text-xs" value={u.cost_price ?? ""} onChange={(e) => setU({ ...u, cost_price: e.target.value === "" ? null : Number(e.target.value) })} />

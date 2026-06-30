@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin/pos")({
 type AvailableUnit = {
   id: string;
   imei: string | null;
+  serial: string | null;
   product_id: string;
   product: { id: string; name: string; selling_price: number; brand: { name: string } | null } | null;
 };
@@ -22,7 +23,9 @@ type AvailableUnit = {
 type CartItem = {
   unit_id: string;
   product_id: string;
-  description: string;
+  product_label: string;
+  imei: string | null;
+  serial: string | null;
   unit_price: number;
   quantity: number;
 };
@@ -41,7 +44,7 @@ function POSPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("inventory_units")
-        .select("id, imei, product_id, product:products(id, name, selling_price, brand:brands(name))")
+        .select("id, imei, serial, product_id, product:products(id, name, selling_price, brand:brands(name))")
         .eq("status", "AVAILABLE")
         .limit(200);
       if (error) throw error;
@@ -68,11 +71,32 @@ function POSPage() {
       {
         unit_id: u.id,
         product_id: u.product_id,
-        description: `${u.product!.brand?.name ?? ""} ${u.product!.name}${u.imei ? ` (IMEI ${u.imei})` : ""}`.trim(),
+        product_label: `${u.product!.brand?.name ?? ""} ${u.product!.name}`.trim(),
+        imei: u.imei,
+        serial: u.serial,
         unit_price: Number(u.product!.selling_price),
         quantity: 1,
       },
     ]);
+  }
+
+  function swapUnit(currentUnitId: string, nextUnitId: string) {
+    if (currentUnitId === nextUnitId) return;
+    if (cart.find((c) => c.unit_id === nextUnitId)) return toast.error("That IMEI is already in the cart");
+    const next = units.find((u) => u.id === nextUnitId);
+    if (!next || !next.product) return;
+    setCart((cs) =>
+      cs.map((c) =>
+        c.unit_id === currentUnitId
+          ? {
+              ...c,
+              unit_id: next.id,
+              imei: next.imei,
+              serial: next.serial,
+            }
+          : c,
+      ),
+    );
   }
 
   const subtotal = cart.reduce((s, c) => s + c.unit_price * c.quantity, 0);
@@ -104,7 +128,7 @@ function POSPage() {
         bill_id: bill.id,
         inventory_unit_id: c.unit_id,
         product_id: c.product_id,
-        description: c.description,
+        description: `${c.product_label}${c.imei ? ` (IMEI ${c.imei})` : ""}`.trim(),
         unit_price: c.unit_price,
         quantity: c.quantity,
         line_total: c.unit_price * c.quantity,
@@ -180,16 +204,45 @@ function POSPage() {
           <ShoppingCart className="h-4 w-4 text-amber" />
           <h2 className="font-display font-bold">Cart ({cart.length})</h2>
         </div>
-        <div className="max-h-64 space-y-2 overflow-y-auto">
-          {cart.map((c) => (
-            <div key={c.unit_id} className="flex items-center gap-2 rounded-md bg-admin-surface-2 p-2 text-xs">
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-semibold">{c.description}</div>
-                <div className="font-num text-admin-muted">{formatINR(c.unit_price)}</div>
+        <div className="max-h-80 space-y-2 overflow-y-auto">
+          {cart.map((c) => {
+            const alternates = units.filter((u) => u.product_id === c.product_id && u.id !== c.unit_id);
+            const cartUnitIds = new Set(cart.map((x) => x.unit_id));
+            return (
+              <div key={c.unit_id} className="space-y-1.5 rounded-md bg-admin-surface-2 p-2 text-xs">
+                <div className="flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-semibold">{c.product_label}</div>
+                    <div className="font-num text-admin-muted">{formatINR(c.unit_price)}</div>
+                  </div>
+                  <button onClick={() => setCart((cs) => cs.filter((x) => x.unit_id !== c.unit_id))} className="text-admin-muted hover:text-ruby"><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase tracking-wider text-admin-muted">IMEI</span>
+                  {alternates.length > 0 ? (
+                    <select
+                      value={c.unit_id}
+                      onChange={(e) => swapUnit(c.unit_id, e.target.value)}
+                      className="admin-input h-7 flex-1 font-mono text-[11px]"
+                      title="Change to another available unit"
+                    >
+                      <option value={c.unit_id}>{c.imei ?? "no IMEI"} (current)</option>
+                      {alternates
+                        .filter((u) => !cartUnitIds.has(u.id))
+                        .map((u) => (
+                          <option key={u.id} value={u.id}>{u.imei ?? "no IMEI"}</option>
+                        ))}
+                    </select>
+                  ) : (
+                    <span className="font-mono text-[11px]">{c.imei ?? "no IMEI"}</span>
+                  )}
+                </div>
+                {c.serial && (
+                  <div className="font-mono text-[10px] text-admin-muted">SN: {c.serial}</div>
+                )}
               </div>
-              <button onClick={() => setCart((cs) => cs.filter((x) => x.unit_id !== c.unit_id))} className="text-admin-muted hover:text-ruby"><Trash2 className="h-3.5 w-3.5" /></button>
-            </div>
-          ))}
+            );
+          })}
           {cart.length === 0 && <div className="text-center text-xs text-admin-muted py-6">Cart is empty</div>}
         </div>
         <div className="space-y-2 border-t border-admin-border pt-3">
