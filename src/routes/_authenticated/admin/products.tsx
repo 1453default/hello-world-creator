@@ -895,73 +895,118 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/60 p-4" onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={save} className="my-8 w-full max-w-2xl space-y-4 rounded-xl border border-admin-border bg-admin-surface p-6">
-        <h2 className="font-display text-lg font-bold">{product || createdId ? "Edit" : "New"} Product</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Name">
-            <input value={form.name} onChange={(e) => { set("name", e.target.value); if (!product && !createdId) set("slug", slugify(e.target.value)); }} required className="admin-input" />
-          </Field>
-          <Field label="Slug">
-            <input value={form.slug} onChange={(e) => set("slug", e.target.value)} className="admin-input font-mono text-sm" />
-          </Field>
-          <Field label="Brand">
-            <select value={form.brand_id} onChange={(e) => set("brand_id", e.target.value)} className="admin-input">
-              <option value="">— None —</option>
-              {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </Field>
-          <Field label="Model"><input value={form.model} onChange={(e) => set("model", e.target.value)} className="admin-input" /></Field>
-          <Field label="Condition">
-            <select value={form.condition} onChange={(e) => set("condition", e.target.value)} className="admin-input">
-              <option value="like_new">Like New</option>
-              <option value="good">Good</option>
-              <option value="fair">Fair</option>
-              <option value="poor">Poor</option>
-            </select>
-          </Field>
-          <Field label="Storage"><input value={form.storage} onChange={(e) => set("storage", e.target.value)} className="admin-input" placeholder="128GB" /></Field>
-          <Field label="RAM"><input value={form.ram} onChange={(e) => set("ram", e.target.value)} className="admin-input" placeholder="8GB" /></Field>
-          <Field label="Color"><input value={form.color} onChange={(e) => set("color", e.target.value)} className="admin-input" /></Field>
-          <Field label="Selling Price (₹)"><input type="number" value={form.selling_price} onChange={(e) => set("selling_price", Number(e.target.value))} className="admin-input" /></Field>
+    <div className="fixed inset-0 z-50 grid place-items-start overflow-y-auto bg-black/60 p-4" onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={save} className="my-8 w-full max-w-4xl space-y-6 rounded-xl border border-admin-border bg-admin-surface p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-xl font-bold">{product || createdId ? "Edit Product" : "New Product"}</h2>
+            <p className="text-xs text-admin-muted mt-0.5">All sections below are part of one product. Save updates general info & settings; inventory and media changes apply instantly.</p>
+          </div>
         </div>
-        {!createdId && (
-          <div className="grid grid-cols-2 gap-3 rounded-lg border border-amber/20 bg-amber/5 p-3">
-            <Field label="IMEI (initial unit, optional)">
-              <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+
+        {/* 1. General Information */}
+        <Section title="General Information" subtitle="Core product details shown on the storefront">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <Field label="Name">
+              <input value={form.name} onChange={(e) => { set("name", e.target.value); if (!product && !createdId) set("slug", slugify(e.target.value)); }} required className="admin-input" />
             </Field>
-            <Field label="Cost Price (₹, optional)">
-              <input type="number" value={form.cost_price} onChange={(e) => set("cost_price", e.target.value === "" ? "" : Number(e.target.value))} className="admin-input" />
+            <Field label="Slug">
+              <input value={form.slug} onChange={(e) => set("slug", e.target.value)} className="admin-input font-mono text-sm" />
             </Field>
-            <p className="col-span-2 text-[11px] text-admin-muted">An AVAILABLE unit will be created so the product is in stock. More units can be added from the row's expand panel.</p>
+            <Field label="Brand">
+              <select value={form.brand_id} onChange={(e) => set("brand_id", e.target.value)} className="admin-input">
+                <option value="">— None —</option>
+                {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </Field>
+            <Field label="Model"><input value={form.model} onChange={(e) => set("model", e.target.value)} className="admin-input" /></Field>
+            <Field label="Storage"><input value={form.storage} onChange={(e) => set("storage", e.target.value)} className="admin-input" placeholder="128GB" /></Field>
+            <Field label="RAM"><input value={form.ram} onChange={(e) => set("ram", e.target.value)} className="admin-input" placeholder="8GB" /></Field>
+            <Field label="Color"><input value={form.color} onChange={(e) => set("color", e.target.value)} className="admin-input" /></Field>
+            <Field label="Condition">
+              <select value={form.condition} onChange={(e) => set("condition", e.target.value)} className="admin-input">
+                <option value="like_new">Like New</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Poor</option>
+              </select>
+            </Field>
+            <Field label="Selling Price (₹)">
+              <input type="number" value={form.selling_price} onChange={(e) => set("selling_price", Number(e.target.value))} className="admin-input" />
+            </Field>
           </div>
-        )}
-        <Field label="Description">
-          <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
-        </Field>
-        {createdId && product && (
-          <div className="rounded-lg border border-admin-border bg-admin-surface-2 p-3">
-            <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-admin-muted">IMEI / Inventory Units</h3>
-            <InventoryEditor product={product} onChanged={onSaved} />
+          <div className="mt-3">
+            <Field label="Description">
+              <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
+            </Field>
           </div>
-        )}
-        {createdId && (
-          <div className="rounded-lg border border-admin-border bg-admin-surface-2 p-3">
+        </Section>
+
+        {/* 2. Inventory / IMEI */}
+        <Section title="Inventory / IMEI" subtitle="Add, edit or remove units. Each unit has its own IMEI, cost, supplier, warranty and status.">
+          {!createdId ? (
+            <div className="grid grid-cols-1 gap-3 rounded-lg border border-amber/20 bg-amber/5 p-3 md:grid-cols-2">
+              <Field label="IMEI (initial unit, optional)">
+                <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+              </Field>
+              <Field label="Cost Price (₹, optional)">
+                <input type="number" value={form.cost_price} onChange={(e) => set("cost_price", e.target.value === "" ? "" : Number(e.target.value))} className="admin-input" />
+              </Field>
+              <p className="md:col-span-2 text-[11px] text-admin-muted">An AVAILABLE unit will be created when you save. More units can be added once the product exists.</p>
+            </div>
+          ) : product ? (
+            <InventoryEditor product={product} onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "products"] })} />
+          ) : (
+            <p className="text-xs text-admin-muted">Save the product first to add inventory units.</p>
+          )}
+        </Section>
+
+        {/* 3. Media */}
+        <Section title="Media" subtitle="Upload images/GIFs. Drag & drop or paste with Ctrl+V supported.">
+          {createdId ? (
             <ProductImagesManager productId={createdId} />
+          ) : (
+            <p className="text-xs text-admin-muted">Save the product first to upload media.</p>
+          )}
+        </Section>
+
+        {/* 4. Additional Settings */}
+        <Section title="Additional Settings" subtitle="Visibility and merchandising">
+          <div className="flex flex-wrap gap-6">
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_listed} onChange={(e) => set("is_listed", e.target.checked)} /> Listed (visible on site)</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => set("is_featured", e.target.checked)} /> Featured</label>
           </div>
-        )}
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_listed} onChange={(e) => set("is_listed", e.target.checked)} /> Listed (live on site)</label>
-          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => set("is_featured", e.target.checked)} /> Featured</label>
-        </div>
-        <div className="flex justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="h-9 rounded-md border border-admin-border px-4 text-sm">{createdId ? "Done" : "Cancel"}</button>
-          <button disabled={saving} className="h-9 rounded-md bg-amber px-4 text-sm font-bold text-ink disabled:opacity-50">{saving ? "Saving…" : createdId ? "Save Changes" : "Create"}</button>
+          {product && (
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-admin-muted md:grid-cols-4">
+              <div><span className="text-admin-text font-semibold">{product.available_count}</span> available</div>
+              <div><span className="text-admin-text font-semibold">{product.reserved_count}</span> reserved</div>
+              <div><span className="text-admin-text font-semibold">{product.sold_count}</span> sold</div>
+              <div><span className="text-admin-text font-semibold">{product.total_count}</span> total units</div>
+            </div>
+          )}
+        </Section>
+
+        <div className="sticky bottom-0 -mx-6 -mb-6 flex justify-end gap-2 border-t border-admin-border bg-admin-surface px-6 py-3 rounded-b-xl">
+          <button type="button" onClick={onClose} className="h-10 rounded-md border border-admin-border px-4 text-sm">{createdId ? "Done" : "Cancel"}</button>
+          <button disabled={saving} className="h-10 rounded-md bg-amber px-5 text-sm font-bold text-ink disabled:opacity-50">{saving ? "Saving…" : createdId ? "Save Changes" : "Create Product"}</button>
         </div>
       </form>
     </div>
   );
 }
+
+function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-lg border border-admin-border bg-admin-surface-2/40 p-4">
+      <header className="mb-3 border-b border-admin-border pb-2">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-admin-text">{title}</h3>
+        {subtitle && <p className="mt-0.5 text-[11px] text-admin-muted">{subtitle}</p>}
+      </header>
+      {children}
+    </section>
+  );
+}
+
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
