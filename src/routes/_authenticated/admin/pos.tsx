@@ -53,14 +53,24 @@ function POSPage() {
   });
 
   const filtered = useMemo(() => {
-    const q = search.toLowerCase();
+    const q = search.trim().toLowerCase();
     if (!q) return units.slice(0, 30);
-    return units.filter(
-      (u) =>
+    const digits = q.replace(/[^\d.]/g, "");
+    const num = Number(digits);
+    const isNumeric = digits.length > 0 && !Number.isNaN(num) && num > 0;
+    return units.filter((u) => {
+      if (
         u.imei?.toLowerCase().includes(q) ||
         u.product?.name.toLowerCase().includes(q) ||
-        u.product?.brand?.name.toLowerCase().includes(q),
-    ).slice(0, 30);
+        u.product?.brand?.name.toLowerCase().includes(q)
+      ) return true;
+      if (isNumeric) {
+        const price = Number(u.product?.selling_price ?? 0);
+        if (String(Math.round(price)).includes(digits.replace(/\..*$/, ""))) return true;
+        if (Math.abs(price - num) <= Math.max(50, num * 0.05)) return true;
+      }
+      return false;
+    }).slice(0, 30);
   }, [units, search]);
 
   function addToCart(u: AvailableUnit) {
