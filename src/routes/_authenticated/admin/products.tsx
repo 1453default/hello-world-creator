@@ -24,6 +24,7 @@ type InventoryUnit = {
   id: string;
   product_id: string;
   imei: string | null;
+  imei2: string | null;
   serial: string | null;
   cost_price: number | null;
   status: UnitStatus;
