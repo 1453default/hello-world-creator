@@ -914,7 +914,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-display text-xl font-bold">{product || createdId ? "Edit Product" : "New Product"}</h2>
-            <p className="text-xs text-admin-muted mt-0.5">All sections below are part of one product. Save updates general info & settings; inventory and media changes apply instantly.</p>
+            <p className="text-xs text-admin-muted mt-0.5">Product details only. Inventory metadata (cost, supplier, warranty, etc.) is managed in the Inventory workflow.</p>
           </div>
         </div>
 
@@ -954,29 +954,14 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
               <textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="admin-input" />
             </Field>
           </div>
+          <div className="mt-3 flex flex-wrap gap-6">
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_listed} onChange={(e) => set("is_listed", e.target.checked)} /> Listed (visible on site)</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => set("is_featured", e.target.checked)} /> Featured</label>
+          </div>
         </Section>
 
-        {/* 2. Inventory / IMEI */}
-        <Section title="Inventory / IMEI" subtitle="Add, edit or remove units. Each unit has its own IMEI, cost, supplier, warranty and status.">
-          {!createdId ? (
-            <div className="grid grid-cols-1 gap-3 rounded-lg border border-amber/20 bg-amber/5 p-3 md:grid-cols-2">
-              <Field label="IMEI (initial unit, optional)">
-                <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
-              </Field>
-              <Field label="Cost Price (₹, optional)">
-                <input type="number" value={form.cost_price} onChange={(e) => set("cost_price", e.target.value === "" ? "" : Number(e.target.value))} className="admin-input" />
-              </Field>
-              <p className="md:col-span-2 text-[11px] text-admin-muted">An AVAILABLE unit will be created when you save. More units can be added once the product exists.</p>
-            </div>
-          ) : product ? (
-            <InventoryEditor product={product} onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "products"] })} />
-          ) : (
-            <p className="text-xs text-admin-muted">Save the product first to add inventory units.</p>
-          )}
-        </Section>
-
-        {/* 3. Media */}
-        <Section title="Media" subtitle="Upload images/GIFs. Drag & drop or paste with Ctrl+V supported.">
+        {/* 2. Media */}
+        <Section title="Media" subtitle="Upload images / GIFs. Drag & drop or paste with Ctrl+V supported.">
           {createdId ? (
             <ProductImagesManager productId={createdId} />
           ) : (
@@ -984,19 +969,16 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
           )}
         </Section>
 
-        {/* 4. Additional Settings */}
-        <Section title="Additional Settings" subtitle="Visibility and merchandising">
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_listed} onChange={(e) => set("is_listed", e.target.checked)} /> Listed (visible on site)</label>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => set("is_featured", e.target.checked)} /> Featured</label>
-          </div>
-          {product && (
-            <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-admin-muted md:grid-cols-4">
-              <div><span className="text-admin-text font-semibold">{product.available_count}</span> available</div>
-              <div><span className="text-admin-text font-semibold">{product.reserved_count}</span> reserved</div>
-              <div><span className="text-admin-text font-semibold">{product.sold_count}</span> sold</div>
-              <div><span className="text-admin-text font-semibold">{product.total_count}</span> total units</div>
-            </div>
+        {/* 3. IMEI Management */}
+        <Section title="IMEI Management" subtitle="Edit, add or remove IMEIs. Unsold IMEIs can be removed; sold IMEIs are locked to preserve bill history.">
+          {!createdId ? (
+            <Field label="IMEI (initial unit, optional)">
+              <input value={form.imei} onChange={(e) => set("imei", e.target.value)} className="admin-input font-mono" placeholder="15-digit IMEI" maxLength={20} />
+            </Field>
+          ) : product ? (
+            <ImeiManager product={product} onChanged={() => qc.invalidateQueries({ queryKey: ["admin", "products"] })} />
+          ) : (
+            <p className="text-xs text-admin-muted">Save the product first to manage IMEIs.</p>
           )}
         </Section>
 
@@ -1005,6 +987,117 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
           <button disabled={saving} className="h-10 rounded-md bg-amber px-5 text-sm font-bold text-ink disabled:opacity-50">{saving ? "Saving…" : createdId ? "Save Changes" : "Create Product"}</button>
         </div>
       </form>
+    </div>
+  );
+}
+
+/* ---------------- IMEI-only manager (Edit Product dialog) ---------------- */
+
+function ImeiManager({ product, onChanged }: { product: ProductRow; onChanged: () => void }) {
+  const qc = useQueryClient();
+  const [newImei, setNewImei] = useState("");
+  const [edits, setEdits] = useState<Record<string, string>>({});
+
+  const units = product.inventory;
+
+  function imeiExists(value: string, exceptId?: string) {
+    const v = value.trim().toLowerCase();
+    if (!v) return false;
+    return units.some((u) => u.id !== exceptId && (u.imei ?? "").trim().toLowerCase() === v);
+  }
+
+  async function saveImei(id: string) {
+    const value = (edits[id] ?? "").trim();
+    const unit = units.find((u) => u.id === id);
+    if (!unit) return;
+    if ((unit.imei ?? "") === value) { setEdits((e) => { const n = { ...e }; delete n[id]; return n; }); return; }
+    if (value && imeiExists(value, id)) { toast.error("Duplicate IMEI on this product"); return; }
+    const { error } = await supabase.from("inventory_units").update({ imei: value || null }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("IMEI updated");
+    setEdits((e) => { const n = { ...e }; delete n[id]; return n; });
+    qc.invalidateQueries({ queryKey: ["admin", "products"] });
+    onChanged();
+  }
+
+  async function removeUnit(id: string, status: UnitStatus) {
+    if (status === "SOLD") { toast.error("Cannot remove a sold IMEI"); return; }
+    if (!confirm("Remove this IMEI / unit?")) return;
+    const { error } = await supabase.from("inventory_units").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Removed");
+    qc.invalidateQueries({ queryKey: ["admin", "products"] });
+    onChanged();
+  }
+
+  async function addImei(e: React.FormEvent) {
+    e.preventDefault();
+    const value = newImei.trim();
+    if (value && imeiExists(value)) { toast.error("Duplicate IMEI on this product"); return; }
+    const { error } = await supabase.from("inventory_units").insert({
+      product_id: product.id,
+      imei: value || null,
+      status: "AVAILABLE",
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("IMEI added");
+    setNewImei("");
+    qc.invalidateQueries({ queryKey: ["admin", "products"] });
+    onChanged();
+  }
+
+  return (
+    <div className="space-y-3">
+      <form onSubmit={addImei} className="flex flex-wrap items-end gap-2">
+        <div className="flex-1 min-w-[220px]">
+          <Field label="Add IMEI">
+            <input value={newImei} onChange={(e) => setNewImei(e.target.value)} placeholder="15-digit IMEI" maxLength={20} className="admin-input font-mono" />
+          </Field>
+        </div>
+        <button className="h-10 rounded bg-amber px-4 text-xs font-bold text-ink">
+          <Plus className="inline h-3 w-3 -mt-0.5" /> Add
+        </button>
+      </form>
+
+      {units.length === 0 ? (
+        <div className="rounded-md border border-dashed border-admin-border bg-admin-surface-2 p-4 text-center text-xs text-admin-muted">
+          No IMEIs yet — add one above.
+        </div>
+      ) : (
+        <ul className="divide-y divide-admin-border rounded-md border border-admin-border bg-admin-surface-2/40">
+          {units.map((u) => {
+            const dirty = edits[u.id] !== undefined && edits[u.id] !== (u.imei ?? "");
+            const isSold = u.status === "SOLD";
+            return (
+              <li key={u.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
+                <input
+                  value={edits[u.id] ?? u.imei ?? ""}
+                  onChange={(e) => setEdits((s) => ({ ...s, [u.id]: e.target.value }))}
+                  placeholder="IMEI"
+                  maxLength={20}
+                  className="admin-input h-8 flex-1 min-w-[200px] font-mono text-xs"
+                />
+                <Badge k={u.status} />
+                {dirty && (
+                  <button type="button" onClick={() => saveImei(u.id)} className="rounded bg-amber px-2 py-1 text-[10px] font-bold text-ink">Save</button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeUnit(u.id, u.status)}
+                  disabled={isSold}
+                  title={isSold ? "Sold IMEIs cannot be removed" : "Remove"}
+                  className="rounded p-1 text-admin-muted hover:bg-ruby/20 hover:text-ruby disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-admin-muted disabled:cursor-not-allowed"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <p className="text-[11px] text-admin-muted">
+        {product.available_count} available · {product.reserved_count} reserved · {product.sold_count} sold · {product.total_count} total
+      </p>
     </div>
   );
 }
