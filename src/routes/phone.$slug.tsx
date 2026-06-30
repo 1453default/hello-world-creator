@@ -89,7 +89,7 @@ function PhoneDetail() {
                       i === activeImg ? "border-primary" : "border-border"
                     }`}
                   >
-                    <img src={img.url} alt="" className="h-full w-full object-cover" />
+                    <img src={img.url} alt="" className="h-full w-full object-contain p-1" />
                   </button>
                 ))}
               </div>
