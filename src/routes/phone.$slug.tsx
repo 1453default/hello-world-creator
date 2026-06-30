@@ -65,13 +65,13 @@ function PhoneDetail() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted"
+              className="aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted"
             >
               {images[activeImg]?.url ? (
                 <img
                   src={images[activeImg].url}
                   alt={product.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain p-4"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-muted-foreground">
