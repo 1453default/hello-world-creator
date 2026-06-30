@@ -127,7 +127,7 @@ function POSPage() {
         bill_id: bill.id,
         inventory_unit_id: c.unit_id,
         product_id: c.product_id,
-        description: c.description,
+        description: `${c.product_label}${c.imei ? ` (IMEI ${c.imei})` : ""}`.trim(),
         unit_price: c.unit_price,
         quantity: c.quantity,
         line_total: c.unit_price * c.quantity,
