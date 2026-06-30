@@ -34,6 +34,7 @@ type InventoryUnit = {
   sold_at: string | null;
   created_at: string;
   updated_at: string;
+  bill_items?: { bill: { id: string; bill_number: string | null; customer_name: string | null; customer_phone: string | null; created_at: string } | null }[];
 };
 
 type Product = {
