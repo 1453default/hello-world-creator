@@ -914,7 +914,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-display text-xl font-bold">{product || createdId ? "Edit Product" : "New Product"}</h2>
-            <p className="text-xs text-admin-muted mt-0.5">Product details only. Inventory metadata (cost, supplier, warranty, etc.) is managed in the Inventory workflow.</p>
+            <p className="text-xs text-admin-muted mt-0.5">Edit product details, media and IMEIs in one place.</p>
           </div>
         </div>
 
