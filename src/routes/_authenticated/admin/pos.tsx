@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin/pos")({
 type AvailableUnit = {
   id: string;
   imei: string | null;
+  serial: string | null;
   product_id: string;
   product: { id: string; name: string; selling_price: number; brand: { name: string } | null } | null;
 };
