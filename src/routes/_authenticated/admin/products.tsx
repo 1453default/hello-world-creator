@@ -279,7 +279,7 @@ function ProductsPage() {
     ];
     const lines = [headers.join(",")];
     for (const p of rows) {
-      const imeis = p.inventory.map((u) => u.imei).filter(Boolean).join("|");
+      const imeis = p.inventory.flatMap((u) => [u.imei, u.imei2]).filter(Boolean).join("|");
       const cells = [
         p.brand?.name ?? "", p.model ?? p.name, p.storage ?? "", p.ram ?? "", p.color ?? "",
         imeis, p.min_cost ?? "", p.max_cost ?? "", p.selling_price,
