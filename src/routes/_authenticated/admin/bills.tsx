@@ -18,7 +18,7 @@ type BillItem = {
   unit_price: number;
   quantity: number;
   line_total: number;
-  inventory_unit: { imei: string | null; serial: string | null } | null;
+  inventory_unit: { imei: string | null; imei2: string | null; serial: string | null } | null;
   product: { name: string | null; model: string | null; brand: { name: string | null } | null } | null;
 };
 
