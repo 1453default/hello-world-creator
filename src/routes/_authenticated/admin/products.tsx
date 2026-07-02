@@ -62,6 +62,8 @@ type ProductRow = Product & {
   brand: { name: string } | null;
   inventory: InventoryUnit[];
   primary_image: string | null;
+  image_count: number;
+  gif_count: number;
   available_count: number;
   reserved_count: number;
   sold_count: number;
@@ -137,6 +139,8 @@ function ProductsPage() {
           brand: p.brand,
           inventory: inv,
           primary_image: primary?.url ?? null,
+          image_count: imgs.filter((i) => !/\.gif(?:$|\?)/i.test(i.url)).length,
+          gif_count: imgs.filter((i) => /\.gif(?:$|\?)/i.test(i.url)).length,
           available_count: inv.filter((u) => u.status === "AVAILABLE").length,
           reserved_count: inv.filter((u) => u.status === "RESERVED").length,
           sold_count: inv.filter((u) => u.status === "SOLD").length,
@@ -446,6 +450,10 @@ function ProductsPage() {
                         <div className="min-w-0">
                           <div className="truncate font-semibold">{p.name}</div>
                           <div className="truncate font-mono text-[10px] text-admin-subtle">{p.slug}</div>
+                          <div className="mt-0.5 text-[10px] text-admin-muted">
+                            📷 {p.image_count} {p.image_count === 1 ? "Image" : "Images"}
+                            {p.gif_count > 0 && <> · 🎞️ {p.gif_count} GIF{p.gif_count === 1 ? "" : "s"}</>}
+                          </div>
                         </div>
                       </div>
                     </td>
