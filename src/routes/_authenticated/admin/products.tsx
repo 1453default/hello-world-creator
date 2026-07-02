@@ -968,8 +968,9 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         });
         if (invErr) throw invErr;
         setCreatedId(data.id);
+        await uploadPendingImage(data.id);
         qc.invalidateQueries({ queryKey: ["admin", "products"] });
-        toast.success("Product created — add images and more units below");
+        toast.success("Product created — add more images and units below");
       }
     } catch (e) {
       toast.error((e as Error).message);
