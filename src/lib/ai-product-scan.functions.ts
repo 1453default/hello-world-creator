@@ -56,7 +56,7 @@ const RESPONSE_SCHEMA = {
   ],
 };
 
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
 
 export const analyzeProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -107,35 +107,39 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
       },
     };
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-
-    // Retry transient failures (5xx / 429) up to 3 attempts with backoff.
+    // Retry transient failures (5xx / 429) and fail over to alternate Gemini Vision models.
     let res: Response | null = null;
     let lastErrText = "";
     let lastStatus = 0;
     let networkErr: Error | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": apiKey,
-          },
-          body: JSON.stringify(body),
-        });
-        networkErr = null;
-      } catch (err) {
-        networkErr = err as Error;
-        res = null;
+    let lastModel = "";
+    modelLoop:
+    for (const model of GEMINI_MODELS) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        lastModel = model;
+        try {
+          res = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": apiKey,
+            },
+            body: JSON.stringify(body),
+          });
+          networkErr = null;
+        } catch (err) {
+          networkErr = err as Error;
+          res = null;
+        }
+        if (res && res.ok) break modelLoop;
+        if (res) {
+          lastStatus = res.status;
+          lastErrText = await res.text().catch(() => "");
+          if (res.status < 500 && res.status !== 429) break modelLoop;
+        }
+        if (attempt < 1) await new Promise((r) => setTimeout(r, 500));
       }
-      if (res && res.ok) break;
-      if (res) {
-        lastStatus = res.status;
-        lastErrText = await res.text().catch(() => "");
-        if (res.status < 500 && res.status !== 429) break;
-      }
-      if (attempt < 2) await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
     }
 
     if (!res) {
@@ -145,7 +149,7 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
     }
 
     if (!res.ok) {
-      console.error("[analyzeProductImage] Gemini error", lastStatus, lastErrText.slice(0, 800));
+      console.error("[analyzeProductImage] Gemini error", lastModel, lastStatus, lastErrText.slice(0, 800));
       if (lastStatus === 400 && /API key/i.test(lastErrText)) {
         throw new Error("Invalid Gemini API key. Please update GEMINI_API_KEY.");
       }
