@@ -139,6 +139,8 @@ function ProductsPage() {
           brand: p.brand,
           inventory: inv,
           primary_image: primary?.url ?? null,
+          image_count: imgs.filter((i) => !/\.gif(?:$|\?)/i.test(i.url)).length,
+          gif_count: imgs.filter((i) => /\.gif(?:$|\?)/i.test(i.url)).length,
           available_count: inv.filter((u) => u.status === "AVAILABLE").length,
           reserved_count: inv.filter((u) => u.status === "RESERVED").length,
           sold_count: inv.filter((u) => u.status === "SOLD").length,
