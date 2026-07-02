@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
 import { nextBillNumber } from "@/lib/admin-utils";
+import { parseSearchQuery, priceMatches, priceRelevanceCompare } from "@/lib/price-search";
 
 export const Route = createFileRoute("/_authenticated/admin/pos")({
   head: () => ({ meta: [{ title: "POS · Admin" }] }),
