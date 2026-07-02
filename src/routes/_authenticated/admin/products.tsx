@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/admin-utils";
 import { formatINR } from "@/lib/shop";
 import { ProductImagesManager } from "@/components/admin/ProductImagesManager";
+import { parseSearchQuery, priceMatches } from "@/lib/price-search";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   head: () => ({ meta: [{ title: "Products · Admin" }] }),
@@ -216,7 +217,9 @@ function ProductsPage() {
 
   // Filter + sort
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const rawQ = search.trim();
+    const { text: qText, price: priceIntent } = parseSearchQuery(rawQ);
+    const terms = qText.split(/\s+/).filter(Boolean);
     const billIds = billSearch.data;
     let list = products.filter((p) => {
       if (brandFilter && p.brand_id !== brandFilter) return false;
@@ -228,12 +231,18 @@ function ProductsPage() {
         case "hidden": if (p.is_listed) return false; break;
         case "featured": if (!p.is_featured) return false; break;
       }
-      if (!q) return true;
-      const inText = [
+      if (!rawQ) return true;
+      // Price intent must match if user typed one
+      if (!priceMatches(p.selling_price, priceIntent)) return false;
+      // If ONLY a price was entered (no other terms), price match is enough
+      if (terms.length === 0 && priceIntent.kind !== "none") return true;
+      const hay = [
         p.name, p.brand?.name, p.model, p.storage, p.ram, p.color, p.slug,
-      ].filter(Boolean).join(" ").toLowerCase().includes(q);
+      ].filter(Boolean).join(" ").toLowerCase();
+      const inText = terms.length === 0 ? hay.includes(rawQ.toLowerCase()) : terms.every((t) => hay.includes(t));
+      const rawLower = rawQ.toLowerCase();
       const inImei = p.inventory.some((u) =>
-        (u.imei?.toLowerCase().includes(q)) || (u.imei2?.toLowerCase().includes(q)) || (u.serial?.toLowerCase().includes(q))
+        (u.imei?.toLowerCase().includes(rawLower)) || (u.imei2?.toLowerCase().includes(rawLower)) || (u.serial?.toLowerCase().includes(rawLower))
       );
       const inBill = billIds?.has(p.id) ?? false;
       return inText || inImei || inBill;

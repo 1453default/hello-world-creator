@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
 import { nextBillNumber } from "@/lib/admin-utils";
+import { parseSearchQuery, priceMatches, priceRelevanceCompare } from "@/lib/price-search";
 
 export const Route = createFileRoute("/_authenticated/admin/pos")({
   head: () => ({ meta: [{ title: "POS · Admin" }] }),
@@ -58,25 +59,26 @@ function POSPage() {
   });
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return units.slice(0, 30);
-    const digits = q.replace(/[^\d.]/g, "");
-    const num = Number(digits);
-    const isNumeric = digits.length > 0 && !Number.isNaN(num) && num > 0;
-    return units.filter((u) => {
-      if (
-        u.imei?.toLowerCase().includes(q) ||
-        u.imei2?.toLowerCase().includes(q) ||
-        u.product?.name.toLowerCase().includes(q) ||
-        u.product?.brand?.name.toLowerCase().includes(q)
-      ) return true;
-      if (isNumeric) {
-        const price = Number(u.product?.selling_price ?? 0);
-        if (String(Math.round(price)).includes(digits.replace(/\..*$/, ""))) return true;
-        if (Math.abs(price - num) <= Math.max(50, num * 0.05)) return true;
-      }
-      return false;
-    }).slice(0, 30);
+    const raw = search.trim();
+    if (!raw) return units.slice(0, 30);
+    const { text, price } = parseSearchQuery(raw);
+    const terms = text.split(/\s+/).filter(Boolean);
+    // Also try raw lowercased query as an IMEI/text fallback (so a lone number still matches an IMEI).
+    const rawLower = raw.toLowerCase();
+    const list = units.filter((u) => {
+      if (!priceMatches(Number(u.product?.selling_price ?? 0), price)) return false;
+      if (terms.length === 0 && price.kind !== "none") return true;
+      const hay = `${u.product?.name ?? ""} ${u.product?.brand?.name ?? ""} ${u.imei ?? ""} ${u.imei2 ?? ""} ${u.serial ?? ""}`.toLowerCase();
+      if (terms.length === 0) return hay.includes(rawLower);
+      return terms.every((t) => hay.includes(t));
+    });
+    const ordered = price.kind === "exact" ? [...list].sort(
+      (a, b) => priceRelevanceCompare(price)(
+        { selling_price: Number(a.product?.selling_price ?? 0) },
+        { selling_price: Number(b.product?.selling_price ?? 0) },
+      ),
+    ) : list;
+    return ordered.slice(0, 30);
   }, [units, search]);
 
   function addToCart(u: AvailableUnit) {

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { allProductsQuery } from "@/lib/catalog";
+import { parseSearchQuery, priceMatches, priceRelevanceCompare } from "@/lib/price-search";
 
 const searchSchema = z.object({ q: z.string().optional().default("") });
 
@@ -32,12 +33,17 @@ function SearchPage() {
   const [query, setQuery] = useState(q);
 
   const results = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    if (!term) return products; // empty query → show all
-    return products.filter((p) => {
-      const hay = `${p.name} ${p.brand?.name ?? ""} ${p.storage ?? ""} ${p.color ?? ""}`.toLowerCase();
-      return hay.includes(term);
+    const { text, price } = parseSearchQuery(query);
+    if (!text && price.kind === "none") return products;
+    const terms = text.split(/\s+/).filter(Boolean);
+    const filtered = products.filter((p) => {
+      if (!priceMatches(p.selling_price, price)) return false;
+      if (terms.length === 0) return true;
+      const hay = `${p.name} ${p.brand?.name ?? ""} ${p.storage ?? ""} ${p.ram ?? ""} ${p.color ?? ""}`.toLowerCase();
+      return terms.every((t) => hay.includes(t));
     });
+    if (price.kind === "exact") return [...filtered].sort(priceRelevanceCompare(price));
+    return filtered;
   }, [products, query]);
 
   return (
