@@ -109,37 +109,64 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-    let res: Response;
-    try {
-      res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
-        body: JSON.stringify(body),
-      });
-    } catch (err) {
+    // Retry transient failures (5xx / 429) up to 3 attempts with backoff.
+    let res: Response | null = null;
+    let lastErrText = "";
+    let lastStatus = 0;
+    let networkErr: Error | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
+          body: JSON.stringify(body),
+        });
+        networkErr = null;
+      } catch (err) {
+        networkErr = err as Error;
+        res = null;
+      }
+      if (res && res.ok) break;
+      if (res) {
+        lastStatus = res.status;
+        lastErrText = await res.text().catch(() => "");
+        if (res.status < 500 && res.status !== 429) break;
+      }
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+    }
+
+    if (!res) {
       throw new Error(
-        `Gemini AI is currently unavailable. (network error: ${(err as Error).message})`,
+        `Gemini AI is currently unavailable. (network error: ${networkErr?.message ?? "unknown"})`,
       );
     }
 
     if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      if (res.status === 400 && /API key/i.test(errText)) {
+      console.error("[analyzeProductImage] Gemini error", lastStatus, lastErrText.slice(0, 800));
+      if (lastStatus === 400 && /API key/i.test(lastErrText)) {
         throw new Error("Invalid Gemini API key. Please update GEMINI_API_KEY.");
       }
-      if (res.status === 401 || res.status === 403) {
+      if (lastStatus === 400 && /image|INVALID_ARGUMENT/i.test(lastErrText)) {
+        throw new Error("Gemini couldn't process this image. Try a clearer or different photo.");
+      }
+      if (lastStatus === 401 || lastStatus === 403) {
         throw new Error("Gemini API key is invalid, expired, or lacks permission.");
       }
-      if (res.status === 429) {
-        throw new Error("Gemini AI is rate-limited. Please retry in a moment.");
+      if (lastStatus === 429) {
+        throw new Error("Gemini AI is rate-limited. Please wait a moment and retry.");
       }
-      if (res.status >= 500) {
-        throw new Error("Gemini AI is currently unavailable. Please try again shortly.");
+      if (lastStatus >= 500) {
+        const snippet = lastErrText.replace(/\s+/g, " ").slice(0, 160);
+        throw new Error(
+          `Gemini AI is temporarily unavailable (HTTP ${lastStatus}). Please retry in a moment.${
+            snippet ? ` Details: ${snippet}` : ""
+          }`,
+        );
       }
-      throw new Error(`Gemini request failed (${res.status}): ${errText.slice(0, 300)}`);
+      throw new Error(`Gemini request failed (${lastStatus}): ${lastErrText.slice(0, 300)}`);
     }
 
     const json = (await res.json()) as {
