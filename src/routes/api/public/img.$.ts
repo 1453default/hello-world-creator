@@ -16,7 +16,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/img/$")({
   server: {
     handlers: {
-      GET: async ({ params, request }) => {
+      GET: async ({ params }) => {
         const splat = params._splat ?? "";
         const [bucket, ...rest] = splat.split("/");
         const path = rest.join("/");
@@ -36,24 +36,7 @@ export const Route = createFileRoute("/api/public/img/$")({
           return new Response("Not found", { status: 404 });
         }
 
-        // Forward conditional headers so browsers can 304 on revalidation.
-        const upstreamHeaders: HeadersInit = {};
-        const ifNoneMatch = request.headers.get("if-none-match");
-        const ifModifiedSince = request.headers.get("if-modified-since");
-        if (ifNoneMatch) (upstreamHeaders as Record<string, string>)["if-none-match"] = ifNoneMatch;
-        if (ifModifiedSince)
-          (upstreamHeaders as Record<string, string>)["if-modified-since"] = ifModifiedSince;
-
-        const upstream = await fetch(data.signedUrl, { headers: upstreamHeaders });
-
-        if (upstream.status === 304) {
-          return new Response(null, {
-            status: 304,
-            headers: {
-              "Cache-Control": "public, max-age=31536000, immutable",
-            },
-          });
-        }
+        const upstream = await fetch(data.signedUrl);
 
         if (!upstream.ok || !upstream.body) {
           return new Response("Not found", { status: 404 });
@@ -76,22 +59,25 @@ export const Route = createFileRoute("/api/public/img/$")({
             ? upstreamType
             : extMime[ext] ?? "image/jpeg";
 
+        // Buffer the upstream body fully. Streaming through the Worker/edge
+        // runtime and forwarding upstream Content-Length caused mobile
+        // browsers (iOS Safari, Chrome Android) to abort loads when the
+        // transport re-chunked or byte counts drifted vs. the forwarded
+        // header. Buffering guarantees a byte-accurate Content-Length and a
+        // complete response body across every mobile carrier / proxy.
+        const bytes = await upstream.arrayBuffer();
+
         const headers = new Headers();
         headers.set("Content-Type", contentType);
-        // Storage paths embed a unique timestamp; content at a given URL never
-        // changes, so it's safe to cache aggressively and immutably.
+        headers.set("Content-Length", String(bytes.byteLength));
+        // Storage paths embed a unique timestamp; content at a given URL
+        // never changes, so it's safe to cache aggressively and immutably.
         headers.set("Cache-Control", "public, max-age=31536000, immutable");
-        const etag = upstream.headers.get("etag");
-        if (etag) headers.set("ETag", etag);
-        const lastModified = upstream.headers.get("last-modified");
-        if (lastModified) headers.set("Last-Modified", lastModified);
-        const contentLength = upstream.headers.get("content-length");
-        if (contentLength) headers.set("Content-Length", contentLength);
-        // Allow being embedded from any Lovable/Vercel/custom domain host.
         headers.set("Access-Control-Allow-Origin", "*");
         headers.set("X-Content-Type-Options", "nosniff");
 
-        return new Response(upstream.body, { status: 200, headers });
+        return new Response(bytes, { status: 200, headers });
+
       },
     },
   },
