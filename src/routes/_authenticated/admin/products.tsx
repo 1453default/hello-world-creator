@@ -62,6 +62,8 @@ type ProductRow = Product & {
   brand: { name: string } | null;
   inventory: InventoryUnit[];
   primary_image: string | null;
+  image_count: number;
+  gif_count: number;
   available_count: number;
   reserved_count: number;
   sold_count: number;
