@@ -423,7 +423,7 @@ function ProductRow({
         </Link>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-        {products.slice(0, 8).map((p, i) => (
+        {products.slice(0, 12).map((p, i) => (
           <ProductCard key={p.id} product={p} index={i} />
         ))}
       </div>
