@@ -157,9 +157,22 @@ export const allProductsQuery = queryOptions({
       i += p.images.length;
     }
     return shaped.sort((a, b) => {
+      // 1) Available before sold-out
       const aSold = a.available_count === 0 ? 1 : 0;
       const bSold = b.available_count === 0 ? 1 : 0;
-      return aSold - bSold;
+      if (aSold !== bSold) return aSold - bSold;
+      // 2) Brand display_order (asc) — groups products by brand
+      const aBrandOrder = (a.brand as any)?.display_order ?? 9999;
+      const bBrandOrder = (b.brand as any)?.display_order ?? 9999;
+      if (aBrandOrder !== bBrandOrder) return aBrandOrder - bBrandOrder;
+      // 3) Brand name alpha (stable when display_order equal)
+      const aBrandName = a.brand?.name ?? "";
+      const bBrandName = b.brand?.name ?? "";
+      if (aBrandName !== bBrandName) return aBrandName.localeCompare(bBrandName);
+      // 4) Price high → low (premium first within each brand)
+      if (b.selling_price !== a.selling_price) return b.selling_price - a.selling_price;
+      // 5) Newest first on ties
+      return +new Date(b.created_at) - +new Date(a.created_at);
     });
   },
   staleTime: 2 * 60_000,
