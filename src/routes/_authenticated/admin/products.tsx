@@ -994,9 +994,11 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
           </div>
         </div>
 
-        {/* AI-Assisted Scan — only when creating a brand new product */}
-        {!product && !createdId && (
-          <AiProductScanner onAccept={applyScan} />
+        {/* AI-Assisted Scan — gated by featureFlags.enableAIProductCreation */}
+        {featureFlags.enableAIProductCreation && AiProductScanner && !product && !createdId && (
+          <Suspense fallback={null}>
+            <AiProductScanner onAccept={applyScan} />
+          </Suspense>
         )}
 
         {/* 1. General Information */}
