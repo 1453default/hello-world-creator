@@ -16,7 +16,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/img/$")({
   server: {
     handlers: {
-      GET: async ({ params, request }) => {
+      GET: async ({ params }) => {
         const splat = params._splat ?? "";
         const [bucket, ...rest] = splat.split("/");
         const path = rest.join("/");
