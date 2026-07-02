@@ -412,19 +412,24 @@ function ProductRow({
 const BRAND_PRIORITY_ORDER = [
   "apple","samsung","oneplus","xiaomi","vivo","oppo","realme","motorola","nothing","iqoo","honor",
 ];
-const BRAND_ACCENTS: Record<string, { grad: string; text: string; ring: string }> = {
-  apple:    { grad: "from-zinc-900 to-zinc-700",   text: "text-white",   ring: "group-hover:ring-zinc-900/20" },
-  samsung:  { grad: "from-blue-700 to-blue-500",   text: "text-white",   ring: "group-hover:ring-blue-500/20" },
-  oneplus:  { grad: "from-red-600 to-rose-500",    text: "text-white",   ring: "group-hover:ring-red-500/20" },
-  xiaomi:   { grad: "from-orange-500 to-amber-400",text: "text-white",   ring: "group-hover:ring-orange-500/20" },
-  vivo:     { grad: "from-sky-600 to-cyan-400",    text: "text-white",   ring: "group-hover:ring-sky-500/20" },
-  oppo:     { grad: "from-emerald-600 to-green-500",text:"text-white",   ring: "group-hover:ring-emerald-500/20" },
-  realme:   { grad: "from-yellow-400 to-amber-500",text: "text-ink",     ring: "group-hover:ring-amber-500/20" },
-  motorola: { grad: "from-indigo-700 to-violet-500",text:"text-white",   ring: "group-hover:ring-indigo-500/20" },
-  nothing:  { grad: "from-neutral-800 to-neutral-600",text:"text-white", ring: "group-hover:ring-neutral-500/20" },
-  iqoo:     { grad: "from-slate-800 to-slate-600", text: "text-white",   ring: "group-hover:ring-slate-500/20" },
-  honor:    { grad: "from-cyan-700 to-teal-500",   text: "text-white",   ring: "group-hover:ring-teal-500/20" },
+const BRAND_DOMAIN: Record<string, string> = {
+  apple: "apple.com",
+  samsung: "samsung.com",
+  oneplus: "oneplus.com",
+  xiaomi: "mi.com",
+  vivo: "vivo.com",
+  oppo: "oppo.com",
+  realme: "realme.com",
+  motorola: "motorola.com",
+  nothing: "nothing.tech",
+  iqoo: "iqoo.com",
+  honor: "hihonor.com",
+  google: "store.google.com",
+  asus: "asus.com",
+  poco: "po.co",
+  redmi: "mi.com",
 };
+const LOGO_DEV_KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_LOGO_DEV_API_KEY as string | undefined;
 
 function BrandShowcase({
   brands,
@@ -475,13 +480,15 @@ function BrandShowcase({
       {/* Grid: horizontal scroll on mobile, grid from sm up */}
       <div className="-mx-4 px-4 flex gap-3 overflow-x-auto no-scrollbar sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4 sm:overflow-visible snap-x snap-mandatory">
         {ordered.map((b, i) => {
-          const accent = BRAND_ACCENTS[b.slug.toLowerCase()] ?? {
-            grad: "from-slate-700 to-slate-500",
-            text: "text-white",
-            ring: "group-hover:ring-slate-500/20",
-          };
+          const slug = b.slug.toLowerCase();
+          const domain = BRAND_DOMAIN[slug];
+          const logoUrl =
+            b.logo_url ??
+            (domain && LOGO_DEV_KEY
+              ? `https://img.logo.dev/${domain}?token=${LOGO_DEV_KEY}&size=128&format=png&retina=true`
+              : null);
           const label =
-            b.slug === topBySlug?.slug ? "Most Stock" : b.slug.toLowerCase() === "apple" ? "Premium Picks" : null;
+            b.slug === topBySlug?.slug ? "Most Stock" : slug === "apple" ? "Premium Picks" : null;
           const initials = b.name.trim().slice(0, 2).toUpperCase();
           return (
             <motion.div
@@ -502,22 +509,30 @@ function BrandShowcase({
                   </span>
                 )}
 
-                {/* Logo / monogram tile */}
-                <div
-                  className={`grid h-14 w-14 place-items-center rounded-xl bg-gradient-to-br ${accent.grad} ${accent.text} shadow-inner ring-1 ring-black/5 ${accent.ring}`}
-                >
-                  {b.logo_url ? (
+                {/* Brand logo tile — real logo via Logo.dev / brand logo_url, fallback to monogram */}
+                <div className="grid h-14 w-14 place-items-center rounded-xl bg-white ring-1 ring-border shadow-sm overflow-hidden">
+                  {logoUrl ? (
                     <img
-                      src={b.logo_url}
+                      src={logoUrl}
                       alt={`${b.name} logo`}
                       loading="lazy"
                       decoding="async"
-                      className="h-8 w-8 object-contain"
+                      className="h-10 w-10 object-contain"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                        const sib = e.currentTarget.nextElementSibling as HTMLElement | null;
+                        if (sib) sib.style.display = "flex";
+                      }}
                     />
-                  ) : (
-                    <span className="font-display text-lg font-black tracking-tight">{initials}</span>
-                  )}
+                  ) : null}
+                  <span
+                    className="font-display text-base font-black tracking-tight text-ink h-full w-full items-center justify-center"
+                    style={{ display: logoUrl ? "none" : "flex" }}
+                  >
+                    {initials}
+                  </span>
                 </div>
+
 
                 <div className="mt-4 flex-1">
                   <div className="font-display text-base font-bold text-foreground leading-tight">{b.name}</div>
