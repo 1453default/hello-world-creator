@@ -26,7 +26,7 @@ function PublicHeader() {
               USED MOBILES
             </div>
             <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              Buy · Trust
+              BUY - SELL - TRUST
             </div>
           </div>
         </Link>
@@ -71,7 +71,7 @@ function PublicFooter() {
             <img src="/USED_MOBILE_LOGO.png" alt="" className="h-9 w-9 object-contain" />
             <div>
               <div className="font-display font-extrabold text-foreground">USED MOBILES</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Buy · Trust</div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">BUY - SELL - TRUST</div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
