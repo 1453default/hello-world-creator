@@ -146,7 +146,7 @@ function HomePage() {
                 {/* Main hero image */}
                 <figure className="relative col-span-3 row-span-2 overflow-hidden rounded-2xl border border-border bg-muted shadow-xl">
                   <img
-                    src={heroMain.url}
+                    src={heroMain}
                     alt="USED MOBILES store counter with premium pre-owned smartphones on display"
                     className="h-full w-full object-cover"
                     loading="eager"
@@ -162,7 +162,7 @@ function HomePage() {
                 {/* Supporting top */}
                 <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
                   <img
-                    src={heroEnt.url}
+                    src={heroEnt}
                     alt="USED MOBILES store interior with Samsung counter and accessory display"
                     className="h-full w-full object-cover"
                     loading="lazy"
@@ -173,7 +173,7 @@ function HomePage() {
                 {/* Supporting bottom */}
                 <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
                   <img
-                    src={heroLeft.url}
+                    src={heroLeft}
                     alt="Side view of USED MOBILES shop showing organized phone accessory wall"
                     className="h-full w-full object-cover"
                     loading="lazy"
