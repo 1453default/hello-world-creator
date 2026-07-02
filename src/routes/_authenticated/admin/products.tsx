@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/admin-utils";
 import { formatINR } from "@/lib/shop";
 import { ProductImagesManager } from "@/components/admin/ProductImagesManager";
+import { AiProductScanner, type AiScanResult } from "@/components/admin/AiProductScanner";
 import { parseSearchQuery, priceMatches } from "@/lib/price-search";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
