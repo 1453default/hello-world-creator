@@ -450,6 +450,10 @@ function ProductsPage() {
                         <div className="min-w-0">
                           <div className="truncate font-semibold">{p.name}</div>
                           <div className="truncate font-mono text-[10px] text-admin-subtle">{p.slug}</div>
+                          <div className="mt-0.5 text-[10px] text-admin-muted">
+                            📷 {p.image_count} {p.image_count === 1 ? "Image" : "Images"}
+                            {p.gif_count > 0 && <> · 🎞️ {p.gif_count} GIF{p.gif_count === 1 ? "" : "s"}</>}
+                          </div>
                         </div>
                       </div>
                     </td>
