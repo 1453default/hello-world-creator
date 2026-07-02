@@ -4,6 +4,9 @@
 export const INSTAGRAM_PROFILE_URL = "https://www.instagram.com/thereal_used_mobiles/";
 
 export const latestStockReels: string[] = [
+  "https://www.instagram.com/p/DaQxc3Jzgeh/",
+  "https://www.instagram.com/p/DaOSHBxzrHO/",
+  "https://www.instagram.com/p/DaMoLXiz-OD/",
   "https://www.instagram.com/p/DaFSHc8TKSy/",
   "https://www.instagram.com/p/DZ9EhqbTbid/",
   "https://www.instagram.com/p/DZ0hYfOTnOM/",
