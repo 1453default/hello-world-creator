@@ -6,6 +6,7 @@ import { z } from "zod";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { allProductsQuery } from "@/lib/catalog";
+import { parseSearchQuery, priceMatches, priceRelevanceCompare } from "@/lib/price-search";
 
 const searchSchema = z.object({ q: z.string().optional().default("") });
 
