@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/admin-utils";
 import { formatINR } from "@/lib/shop";
 import { ProductImagesManager } from "@/components/admin/ProductImagesManager";
+import { AiProductScanner, type AiScanResult } from "@/components/admin/AiProductScanner";
 import { parseSearchQuery, priceMatches } from "@/lib/price-search";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
@@ -882,8 +883,54 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
   });
   const [saving, setSaving] = useState(false);
   const [createdId, setCreatedId] = useState<string | null>(product?.id ?? null);
+  const [pendingImageDataUrl, setPendingImageDataUrl] = useState<string | null>(null);
 
   function set<K extends keyof typeof form>(k: K, v: typeof form[K]) { setForm((f) => ({ ...f, [k]: v })); }
+
+  function applyScan(r: AiScanResult) {
+    setForm((f) => {
+      const next = { ...f };
+      const nameGuess = [r.brand, r.model, r.variant].filter(Boolean).join(" ").trim();
+      if (!next.name && nameGuess) { next.name = nameGuess; next.slug = slugify(nameGuess); }
+      if (!next.model && r.model) next.model = r.model;
+      if (!next.storage && r.storage) next.storage = r.storage;
+      if (!next.ram && r.ram) next.ram = r.ram;
+      if (!next.color && r.color) next.color = r.color;
+      if (!next.description && r.description) next.description = r.description;
+      const cond = r.condition?.toLowerCase();
+      if (cond && ["like_new", "good", "fair", "poor"].includes(cond)) next.condition = cond;
+      const price = Number(r.sellingPrice || r.stickerPrice || 0);
+      if (!next.selling_price && price > 0) next.selling_price = price;
+      if (!next.brand_id && r.brand) {
+        const match = brands.find((b) => b.name.toLowerCase() === r.brand.toLowerCase());
+        if (match) next.brand_id = match.id;
+      }
+      return next;
+    });
+    setPendingImageDataUrl(r.imageDataUrl);
+  }
+
+  async function uploadPendingImage(productId: string) {
+    if (!pendingImageDataUrl) return;
+    try {
+      const res = await fetch(pendingImageDataUrl);
+      const blob = await res.blob();
+      const ext = (blob.type.split("/")[1] || "jpg").split("+")[0];
+      const path = `${productId}/${Date.now()}-ai-primary.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("product-images")
+        .upload(path, blob, { cacheControl: "3600", upsert: false, contentType: blob.type });
+      if (upErr) throw upErr;
+      const url = `/api/public/img/product-images/${path}`;
+      const { error: insErr } = await supabase.from("product_images").insert({
+        product_id: productId, url, is_primary: true, display_order: 0,
+      });
+      if (insErr) throw insErr;
+      setPendingImageDataUrl(null);
+    } catch (e) {
+      toast.error(`Primary image upload failed: ${(e as Error).message}`);
+    }
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -921,8 +968,9 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
         });
         if (invErr) throw invErr;
         setCreatedId(data.id);
+        await uploadPendingImage(data.id);
         qc.invalidateQueries({ queryKey: ["admin", "products"] });
-        toast.success("Product created — add images and more units below");
+        toast.success("Product created — add more images and units below");
       }
     } catch (e) {
       toast.error((e as Error).message);
@@ -940,6 +988,11 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
             <p className="text-xs text-admin-muted mt-0.5">Edit product details, media and IMEIs in one place.</p>
           </div>
         </div>
+
+        {/* AI-Assisted Scan — only when creating a brand new product */}
+        {!product && !createdId && (
+          <AiProductScanner onAccept={applyScan} />
+        )}
 
         {/* 1. General Information */}
         <Section title="General Information" subtitle="Core product details shown on the storefront">
