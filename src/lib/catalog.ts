@@ -56,55 +56,35 @@ function parseStorageRef(url: string | null | undefined): { bucket: string; path
 /** Synchronous best-effort URL (used as a fallback / before signing). Empty string → placeholder. */
 export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
-  // Legacy proxy form still works on Lovable runtime; on Vercel static it 404s.
+  if (/^https?:\/\//i.test(url)) {
+    // Rewrite legacy signed/public Supabase storage URLs to the stable proxy.
+    const ref = parseStorageRef(url);
+    if (ref) return `/api/public/img/${ref.bucket}/${ref.path}`;
+    return url;
+  }
   return url;
 }
 
-/** Sign a single stored URL → CDN-served signed URL. Returns original if it's already an external https URL. */
-async function signImageUrl(url: string): Promise<string> {
-  if (!url) return "";
-  if (/^https?:\/\//i.test(url) && !/\/storage\/v1\/object\//.test(url)) return url;
-  const ref = parseStorageRef(url);
-  if (!ref) return url;
-  const { data, error } = await supabase.storage
-    .from(ref.bucket)
-    .createSignedUrl(ref.path, 60 * 60 * 6);
-  if (error || !data?.signedUrl) return "";
-  return data.signedUrl;
-}
-
+/**
+ * Return a stable, hydration-safe URL for every stored image reference.
+ *
+ * Previously this minted per-request Supabase signed URLs, which produced a
+ * different `src` on SSR vs client hydration (hydration mismatch on every
+ * product card) and eventually expired in production. The `/api/public/img`
+ * proxy route redirects to a freshly-signed URL server-side, so embedded HTML
+ * URLs are stable forever.
+ */
 export async function signImageList<T extends { url: string }>(images: T[]): Promise<T[]> {
   if (!images || images.length === 0) return images;
-  // Group by bucket → one createSignedUrls() request per bucket instead of N.
-  const refs = images.map((img) => ({ img, ref: parseStorageRef(img.url) }));
-  const byBucket = new Map<string, string[]>();
-  for (const { ref } of refs) {
-    if (!ref) continue;
-    const list = byBucket.get(ref.bucket) ?? [];
-    list.push(ref.path);
-    byBucket.set(ref.bucket, list);
-  }
-  const signed = new Map<string, string>(); // key = bucket + "::" + path
-  await Promise.all(
-    Array.from(byBucket.entries()).map(async ([bucket, paths]) => {
-      const unique = Array.from(new Set(paths));
-      const { data, error } = await supabase.storage.from(bucket).createSignedUrls(unique, 60 * 60 * 6);
-      if (error || !data) return;
-      for (const row of data) {
-        if (row.path && row.signedUrl) signed.set(`${bucket}::${row.path}`, row.signedUrl);
-      }
-    }),
-  );
-  return refs.map(({ img, ref }) => {
-    if (!ref) {
-      // Fallback: pass-through for external/unknown URLs
-      if (/^https?:\/\//i.test(img.url)) return img;
-      return { ...img, url: "" };
-    }
-    return { ...img, url: signed.get(`${ref.bucket}::${ref.path}`) ?? "" };
+  return images.map((img) => {
+    if (!img.url) return img;
+    const ref = parseStorageRef(img.url);
+    if (ref) return { ...img, url: `/api/public/img/${ref.bucket}/${ref.path}` };
+    if (/^https?:\/\//i.test(img.url)) return img; // external URL, keep as-is
+    return { ...img, url: "" };
   });
 }
+
 
 async function shapeProduct(row: any): Promise<ProductCard & { sold_count: number }> {
   const inv = (row.inventory ?? []) as { status: string }[];
