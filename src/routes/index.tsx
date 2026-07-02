@@ -86,7 +86,22 @@ function HomePage() {
   const justIn = [...products]
     .sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at))
     .slice(0, 8);
-  const featured = products.filter((p) => p.is_featured).slice(0, 8);
+  const BRAND_PRIORITY: Record<string, number> = {
+    apple: 0,
+    samsung: 1,
+    oneplus: 2,
+    nothing: 3,
+    motorola: 4,
+  };
+  const featured = products
+    .filter((p) => p.is_featured)
+    .sort((a, b) => {
+      const ra = BRAND_PRIORITY[a.brand?.name?.toLowerCase() ?? ""] ?? 99;
+      const rb = BRAND_PRIORITY[b.brand?.name?.toLowerCase() ?? ""] ?? 99;
+      if (ra !== rb) return ra - rb;
+      return b.selling_price - a.selling_price;
+    })
+    .slice(0, 12);
 
   return (
     <PublicLayout>
@@ -408,7 +423,7 @@ function ProductRow({
         </Link>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-        {products.slice(0, 8).map((p, i) => (
+        {products.slice(0, 12).map((p, i) => (
           <ProductCard key={p.id} product={p} index={i} />
         ))}
       </div>
