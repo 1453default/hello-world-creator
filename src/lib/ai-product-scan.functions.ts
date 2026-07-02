@@ -22,39 +22,41 @@ const SYSTEM_PROMPT = `You are an expert product cataloger for a used mobile pho
 You will be shown ONE image of a smartphone (or its retail sticker/box). Extract structured product data.
 
 Rules:
-- Return ONLY a single JSON object matching the given schema. No prose, no markdown.
+- Return ONLY a single JSON object matching the given schema. No prose, no markdown, no code fences.
 - Never invent data. If a field is not clearly visible or inferable, return an empty string "".
 - "sellingPrice" and "stickerPrice" are numbers as plain digits (e.g. "15500"), no currency symbols. Empty string if not visible.
 - "condition" is one of: "like_new", "good", "fair", "poor", or "".
-- "confidence" is 0..1 indicating overall extraction confidence.
+- "confidence" is a number 0..1 indicating overall extraction confidence.
 - Prefer the sticker text if a shop price sticker is visible.
 - For "description", write ONE short marketing line (max ~120 chars) only if brand+model are known, otherwise "".`;
 
+// Gemini responseSchema (subset of OpenAPI). No additionalProperties / $schema.
 const RESPONSE_SCHEMA = {
-  type: "object",
+  type: "OBJECT",
   properties: {
-    brand: { type: "string" },
-    model: { type: "string" },
-    variant: { type: "string" },
-    storage: { type: "string" },
-    ram: { type: "string" },
-    color: { type: "string" },
-    sellingPrice: { type: "string" },
-    stickerPrice: { type: "string" },
-    condition: { type: "string" },
-    notes: { type: "string" },
-    defects: { type: "string" },
-    description: { type: "string" },
-    category: { type: "string" },
-    confidence: { type: "number" },
+    brand: { type: "STRING" },
+    model: { type: "STRING" },
+    variant: { type: "STRING" },
+    storage: { type: "STRING" },
+    ram: { type: "STRING" },
+    color: { type: "STRING" },
+    sellingPrice: { type: "STRING" },
+    stickerPrice: { type: "STRING" },
+    condition: { type: "STRING" },
+    notes: { type: "STRING" },
+    defects: { type: "STRING" },
+    description: { type: "STRING" },
+    category: { type: "STRING" },
+    confidence: { type: "NUMBER" },
   },
   required: [
     "brand", "model", "variant", "storage", "ram", "color",
     "sellingPrice", "stickerPrice", "condition", "notes",
     "defects", "description", "category", "confidence",
   ],
-  additionalProperties: false,
 };
+
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 export const analyzeProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -72,63 +74,101 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
     return { imageDataUrl: d.imageDataUrl, hint: (d.hint ?? "").toString().slice(0, 500) };
   })
   .handler(async ({ data }): Promise<ScannedProduct> => {
-    const apiKey = process.env.LOVABLE_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error("AI is not configured on the server (missing LOVABLE_API_KEY).");
+      throw new Error("Gemini AI is not configured on the server (missing GEMINI_API_KEY).");
     }
+
+    // Parse data URL: data:image/jpeg;base64,XXXX
+    const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(data.imageDataUrl);
+    if (!match) throw new Error("Invalid image data URL.");
+    const mimeType = match[1];
+    const base64 = match[2];
 
     const userText = data.hint
       ? `Analyze this product image and return JSON. Admin hint: ${data.hint}`
       : "Analyze this product image and return JSON.";
 
     const body = {
-      model: "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+      systemInstruction: { role: "system", parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [
         {
           role: "user",
-          content: [
-            { type: "text", text: userText },
-            { type: "image_url", image_url: { url: data.imageDataUrl } },
+          parts: [
+            { text: userText },
+            { inlineData: { mimeType, data: base64 } },
           ],
         },
       ],
-      response_format: {
-        type: "json_schema",
-        json_schema: { name: "ScannedProduct", schema: RESPONSE_SCHEMA, strict: true },
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
       },
     };
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Lovable-API-Key": apiKey,
-      },
-      body: JSON.stringify(body),
-    });
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      throw new Error(
+        `Gemini AI is currently unavailable. (network error: ${(err as Error).message})`,
+      );
+    }
 
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
-      if (res.status === 429) throw new Error("AI is rate-limited. Please retry in a moment.");
-      if (res.status === 402) throw new Error("AI credits exhausted. Add credits in workspace billing.");
-      throw new Error(`AI request failed (${res.status}): ${errText.slice(0, 300)}`);
+      if (res.status === 400 && /API key/i.test(errText)) {
+        throw new Error("Invalid Gemini API key. Please update GEMINI_API_KEY.");
+      }
+      if (res.status === 401 || res.status === 403) {
+        throw new Error("Gemini API key is invalid, expired, or lacks permission.");
+      }
+      if (res.status === 429) {
+        throw new Error("Gemini AI is rate-limited. Please retry in a moment.");
+      }
+      if (res.status >= 500) {
+        throw new Error("Gemini AI is currently unavailable. Please try again shortly.");
+      }
+      throw new Error(`Gemini request failed (${res.status}): ${errText.slice(0, 300)}`);
     }
 
     const json = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
+      candidates?: {
+        content?: { parts?: { text?: string }[] };
+        finishReason?: string;
+      }[];
+      promptFeedback?: { blockReason?: string };
     };
-    const raw = json.choices?.[0]?.message?.content ?? "";
+
+    if (json.promptFeedback?.blockReason) {
+      throw new Error(`Gemini blocked the image: ${json.promptFeedback.blockReason}`);
+    }
+
+    const raw = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
+    if (!raw.trim()) {
+      throw new Error("Gemini returned an empty response. Please try again.");
+    }
+
     let parsed: Partial<ScannedProduct>;
     try {
       parsed = JSON.parse(raw);
     } catch {
       const m = raw.match(/\{[\s\S]*\}/);
-      if (!m) throw new Error("AI returned an unreadable response. Please try again.");
+      if (!m) throw new Error("Gemini returned an unreadable response. Please try again.");
       try {
         parsed = JSON.parse(m[0]);
       } catch {
-        throw new Error("AI returned invalid JSON. Please try again.");
+        throw new Error("Gemini returned invalid JSON. Please try again.");
       }
     }
 
