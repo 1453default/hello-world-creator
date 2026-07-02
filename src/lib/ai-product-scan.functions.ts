@@ -57,6 +57,47 @@ const RESPONSE_SCHEMA = {
 };
 
 const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
+const LOVABLE_AI_MODEL = "google/gemini-2.5-flash";
+
+function normalizeScan(parsed: Partial<ScannedProduct>): ScannedProduct {
+  const s = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+  const n = (v: unknown) => (typeof v === "number" && isFinite(v) ? v : 0);
+  return {
+    brand: s(parsed.brand),
+    model: s(parsed.model),
+    variant: s(parsed.variant),
+    storage: s(parsed.storage),
+    ram: s(parsed.ram),
+    color: s(parsed.color),
+    sellingPrice: s(parsed.sellingPrice),
+    stickerPrice: s(parsed.stickerPrice),
+    condition: s(parsed.condition),
+    notes: s(parsed.notes),
+    defects: s(parsed.defects),
+    description: s(parsed.description),
+    category: s(parsed.category),
+    confidence: n(parsed.confidence),
+  };
+}
+
+function parseScanJson(raw: string): ScannedProduct {
+  if (!raw.trim()) {
+    throw new Error("AI returned an empty response. Please try again.");
+  }
+  let parsed: Partial<ScannedProduct>;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error("AI returned an unreadable response. Please try again.");
+    try {
+      parsed = JSON.parse(m[0]);
+    } catch {
+      throw new Error("AI returned invalid JSON. Please try again.");
+    }
+  }
+  return normalizeScan(parsed);
+}
 
 export const analyzeProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -75,9 +116,8 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }): Promise<ScannedProduct> => {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error("Gemini AI is not configured on the server (missing GEMINI_API_KEY).");
-    }
+    const lovableApiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey && !lovableApiKey) throw new Error("AI scanning is not configured on the server.");
 
     // Parse data URL: data:image/jpeg;base64,XXXX
     const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(data.imageDataUrl);
@@ -106,6 +146,51 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
         responseSchema: RESPONSE_SCHEMA,
       },
     };
+
+    // Prefer Lovable AI Gateway when available so scans are not blocked by the custom Gemini key's quota.
+    if (lovableApiKey) {
+      const gatewayRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${lovableApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: LOVABLE_AI_MODEL,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            {
+              role: "user",
+              content: [
+                { type: "text", text: userText },
+                { type: "image_url", image_url: { url: data.imageDataUrl } },
+              ],
+            },
+          ],
+          temperature: 0.2,
+          response_format: { type: "json_object" },
+        }),
+      }).catch((err) => {
+        console.error("[analyzeProductImage] Lovable AI network error", (err as Error).message);
+        return null;
+      });
+
+      if (gatewayRes?.ok) {
+        const gatewayJson = (await gatewayRes.json()) as {
+          choices?: { message?: { content?: string | { type?: string; text?: string }[] } }[];
+        };
+        const content = gatewayJson.choices?.[0]?.message?.content;
+        const raw = Array.isArray(content) ? content.map((part) => part.text ?? "").join("") : (content ?? "");
+        return parseScanJson(raw);
+      }
+
+      if (gatewayRes) {
+        const text = await gatewayRes.text().catch(() => "");
+        console.error("[analyzeProductImage] Lovable AI error", gatewayRes.status, text.slice(0, 800));
+      }
+    }
+
+    if (!apiKey) throw new Error("AI scanning is temporarily unavailable. Please try again shortly.");
 
     // Retry transient failures (5xx / 429) and fail over to alternate Gemini Vision models.
     let res: Response | null = null;
@@ -186,39 +271,5 @@ export const analyzeProductImage = createServerFn({ method: "POST" })
     }
 
     const raw = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
-    if (!raw.trim()) {
-      throw new Error("Gemini returned an empty response. Please try again.");
-    }
-
-    let parsed: Partial<ScannedProduct>;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      const m = raw.match(/\{[\s\S]*\}/);
-      if (!m) throw new Error("Gemini returned an unreadable response. Please try again.");
-      try {
-        parsed = JSON.parse(m[0]);
-      } catch {
-        throw new Error("Gemini returned invalid JSON. Please try again.");
-      }
-    }
-
-    const s = (v: unknown) => (typeof v === "string" ? v.trim() : "");
-    const n = (v: unknown) => (typeof v === "number" && isFinite(v) ? v : 0);
-    return {
-      brand: s(parsed.brand),
-      model: s(parsed.model),
-      variant: s(parsed.variant),
-      storage: s(parsed.storage),
-      ram: s(parsed.ram),
-      color: s(parsed.color),
-      sellingPrice: s(parsed.sellingPrice),
-      stickerPrice: s(parsed.stickerPrice),
-      condition: s(parsed.condition),
-      notes: s(parsed.notes),
-      defects: s(parsed.defects),
-      description: s(parsed.description),
-      category: s(parsed.category),
-      confidence: n(parsed.confidence),
-    };
+    return parseScanJson(raw);
   });
