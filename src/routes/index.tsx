@@ -297,31 +297,9 @@ function HomePage() {
             />
           )}
 
-          {/* Browse by brand */}
-          <section className="mx-auto max-w-6xl px-4 mt-12">
-            <h2 className="font-display text-2xl font-bold mb-1">Browse by brand</h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              Tap a brand to see every model we have in stock
-            </p>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-              {brands.map((b, i) => (
-                <motion.div
-                  key={b.id}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03, duration: 0.2 }}
-                >
-                  <Link
-                    to="/brand/$slug"
-                    params={{ slug: b.slug }}
-                    className="flex aspect-square flex-col items-center justify-center rounded-xl border border-border bg-card font-display font-bold text-foreground hover:border-primary hover:bg-accent transition text-center px-2"
-                  >
-                    <span className="text-sm md:text-base">{b.name}</span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </section>
+          {/* Browse by brand — premium showcase */}
+          <BrandShowcase brands={brands} products={products} />
+
 
           {/* Recently Sold — social proof */}
           {recentlySold.length > 0 && (
