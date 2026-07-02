@@ -31,7 +31,7 @@ export type ProductCard = {
 
 const PRODUCT_SELECT = `
   id, name, slug, storage, ram, color, condition, selling_price, is_featured, created_at,
-  brand:brands ( name, slug ),
+  brand:brands ( name, slug, display_order ),
   images:product_images ( url, is_primary, display_order ),
   inventory:inventory_units ( id, status )
 `;
