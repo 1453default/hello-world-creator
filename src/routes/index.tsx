@@ -10,9 +10,9 @@ import { brandsQuery, allProductsQuery, recentlySoldQuery } from "@/lib/catalog"
 import { whatsappLink } from "@/lib/shop";
 import { InstagramReels } from "@/components/public/InstagramReels";
 import { latestStockReels, testimonialReels } from "@/lib/instagram";
-import heroMain from "@/assets/um-counter.jpg.asset.json";
-import heroEnt from "@/assets/um-ent.jpg.asset.json";
-import heroLeft from "@/assets/um-left.jpg.asset.json";
+import heroMain from "@/assets/um-counter.jpg";
+import heroEnt from "@/assets/um-ent.jpg";
+import heroLeft from "@/assets/um-left.jpg";
 
 
 export const Route = createFileRoute("/")({
