@@ -102,6 +102,7 @@ function CatalogPage() {
                 onChange={(e) => setSort(e.target.value as Sort)}
                 className="h-9 rounded-full border border-border bg-card px-3 text-sm font-medium text-foreground focus:border-primary outline-none"
               >
+                <option value="default">Recommended</option>
                 <option value="newest">Newest</option>
                 <option value="price_asc">Price: Low to High</option>
                 <option value="price_desc">Price: High to Low</option>
