@@ -412,19 +412,24 @@ function ProductRow({
 const BRAND_PRIORITY_ORDER = [
   "apple","samsung","oneplus","xiaomi","vivo","oppo","realme","motorola","nothing","iqoo","honor",
 ];
-const BRAND_ACCENTS: Record<string, { grad: string; text: string; ring: string }> = {
-  apple:    { grad: "from-zinc-900 to-zinc-700",   text: "text-white",   ring: "group-hover:ring-zinc-900/20" },
-  samsung:  { grad: "from-blue-700 to-blue-500",   text: "text-white",   ring: "group-hover:ring-blue-500/20" },
-  oneplus:  { grad: "from-red-600 to-rose-500",    text: "text-white",   ring: "group-hover:ring-red-500/20" },
-  xiaomi:   { grad: "from-orange-500 to-amber-400",text: "text-white",   ring: "group-hover:ring-orange-500/20" },
-  vivo:     { grad: "from-sky-600 to-cyan-400",    text: "text-white",   ring: "group-hover:ring-sky-500/20" },
-  oppo:     { grad: "from-emerald-600 to-green-500",text:"text-white",   ring: "group-hover:ring-emerald-500/20" },
-  realme:   { grad: "from-yellow-400 to-amber-500",text: "text-ink",     ring: "group-hover:ring-amber-500/20" },
-  motorola: { grad: "from-indigo-700 to-violet-500",text:"text-white",   ring: "group-hover:ring-indigo-500/20" },
-  nothing:  { grad: "from-neutral-800 to-neutral-600",text:"text-white", ring: "group-hover:ring-neutral-500/20" },
-  iqoo:     { grad: "from-slate-800 to-slate-600", text: "text-white",   ring: "group-hover:ring-slate-500/20" },
-  honor:    { grad: "from-cyan-700 to-teal-500",   text: "text-white",   ring: "group-hover:ring-teal-500/20" },
+const BRAND_DOMAIN: Record<string, string> = {
+  apple: "apple.com",
+  samsung: "samsung.com",
+  oneplus: "oneplus.com",
+  xiaomi: "mi.com",
+  vivo: "vivo.com",
+  oppo: "oppo.com",
+  realme: "realme.com",
+  motorola: "motorola.com",
+  nothing: "nothing.tech",
+  iqoo: "iqoo.com",
+  honor: "hihonor.com",
+  google: "store.google.com",
+  asus: "asus.com",
+  poco: "po.co",
+  redmi: "mi.com",
 };
+const LOGO_DEV_KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_LOGO_DEV_API_KEY as string | undefined;
 
 function BrandShowcase({
   brands,
