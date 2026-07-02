@@ -1,8 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ChevronLeft, MessageCircle, Phone, ShieldCheck, Smartphone } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { allProductsQuery, productBySlugQuery } from "@/lib/catalog";
@@ -10,15 +9,44 @@ import { SHOP_PHONE, conditionLabel, formatINR, whatsappLink } from "@/lib/shop"
 import { useState } from "react";
 
 export const Route = createFileRoute("/phone/$slug")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.slug.replace(/-/g, " ")} — USED MOBILES` },
-      { name: "description", content: "Pre-owned smartphone in stock at USED MOBILES Hyderabad." },
-    ],
-  }),
   loader: async ({ context, params }) => {
-    await context.queryClient.ensureQueryData(productBySlugQuery(params.slug));
+    const product = await context.queryClient.ensureQueryData(
+      productBySlugQuery(params.slug),
+    );
     await context.queryClient.ensureQueryData(allProductsQuery);
+    return { product };
+  },
+  head: ({ loaderData }) => {
+    const p: any = loaderData?.product;
+    if (!p) {
+      return {
+        meta: [
+          { title: "Phone — USED MOBILES" },
+          { name: "description", content: "Pre-owned smartphone in stock at USED MOBILES Hyderabad." },
+        ],
+      };
+    }
+    const brand = p.brand?.name ? `${p.brand.name} ` : "";
+    const title = `${brand}${p.name} — ₹${Math.round(Number(p.selling_price)).toLocaleString("en-IN")} | USED MOBILES`;
+    const desc = `${brand}${p.name}${p.storage ? ` ${p.storage}` : ""}${p.color ? `, ${p.color}` : ""} · ${conditionLabel[p.condition] ?? p.condition} · Tested & warranted at USED MOBILES, Hyderabad.`;
+    const image = p.images?.[0]?.url;
+    const meta: Array<Record<string, string>> = [
+      { title },
+      { name: "description", content: desc },
+      { property: "og:type", content: "product" },
+      { property: "og:title", content: title },
+      { property: "og:description", content: desc },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: desc },
+    ];
+
+    if (image && /^https?:\/\//i.test(image)) {
+      meta.push(
+        { property: "og:image", content: image },
+        { name: "twitter:image", content: image },
+      );
+    }
+    return { meta };
   },
   component: PhoneDetail,
   errorComponent: ({ error }) => (
@@ -32,6 +60,7 @@ export const Route = createFileRoute("/phone/$slug")({
     </PublicLayout>
   ),
 });
+
 
 function PhoneDetail() {
   const { slug } = Route.useParams();

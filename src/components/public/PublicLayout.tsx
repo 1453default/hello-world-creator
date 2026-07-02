@@ -6,7 +6,7 @@ import { Dock } from "@/components/public/Dock";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-dvh flex flex-col bg-background">
       <PublicHeader />
       <main className="flex-1 pb-28 md:pb-12">{children}</main>
       <PublicFooter />
