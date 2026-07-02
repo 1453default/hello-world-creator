@@ -21,7 +21,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           const { data: brands } = await supabaseAdmin
             .from("brands")
             .select("slug, updated_at")
-            .eq("is_active", true);
+            .eq("is_visible", true);
           for (const b of brands ?? []) {
             dynamicEntries.push({ path: `/brand/${b.slug}`, lastmod: b.updated_at ?? undefined });
           }

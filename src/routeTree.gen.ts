@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CatalogRouteImport } from './routes/catalog'
@@ -32,6 +33,11 @@ import { Route as AuthenticatedAdminBillsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin/audit'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/catalog': typeof CatalogRoute
   '/contact': typeof ContactRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/catalog': typeof CatalogRoute
   '/contact': typeof ContactRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/catalog': typeof CatalogRoute
   '/contact': typeof ContactRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/contact'
     | '/search'
+    | '/sitemap.xml'
     | '/admin'
     | '/brand/$slug'
     | '/phone/$slug'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/contact'
     | '/search'
+    | '/sitemap.xml'
     | '/brand/$slug'
     | '/phone/$slug'
     | '/admin/audit'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/catalog'
     | '/contact'
     | '/search'
+    | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/brand/$slug'
     | '/phone/$slug'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   CatalogRoute: typeof CatalogRoute
   ContactRoute: typeof ContactRoute
   SearchRoute: typeof SearchRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
@@ -304,6 +317,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -515,6 +535,7 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogRoute: CatalogRoute,
   ContactRoute: ContactRoute,
   SearchRoute: SearchRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
@@ -522,13 +543,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
