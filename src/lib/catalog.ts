@@ -56,32 +56,48 @@ function parseStorageRef(url: string | null | undefined): { bucket: string; path
 /** Synchronous best-effort URL (used as a fallback / before signing). Empty string → placeholder. */
 export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  if (/^https?:\/\//i.test(url)) {
-    // Rewrite legacy signed/public Supabase storage URLs to the stable proxy.
-    const ref = parseStorageRef(url);
-    if (ref) return `/api/public/img/${ref.bucket}/${ref.path}`;
-    return url;
-  }
+  if (/^https?:\/\//i.test(url)) return url;
   return url;
 }
 
 /**
- * Return a stable, hydration-safe URL for every stored image reference.
- *
- * Previously this minted per-request Supabase signed URLs, which produced a
- * different `src` on SSR vs client hydration (hydration mismatch on every
- * product card) and eventually expired in production. The `/api/public/img`
- * proxy route redirects to a freshly-signed URL server-side, so embedded HTML
- * URLs are stable forever.
+ * Return browser-loadable storage URLs for every stored image reference.
+ * This intentionally signs directly through the publishable storage client so
+ * Vercel/static deployments do not depend on the app server route being
+ * available for image bytes.
  */
 export async function signImageList<T extends { url: string }>(images: T[]): Promise<T[]> {
   if (!images || images.length === 0) return images;
-  return images.map((img) => {
-    if (!img.url) return img;
-    const ref = parseStorageRef(img.url);
-    if (ref) return { ...img, url: `/api/public/img/${ref.bucket}/${ref.path}` };
-    if (/^https?:\/\//i.test(img.url)) return img; // external URL, keep as-is
-    return { ...img, url: "" };
+  const refs = images.map((img) => ({ img, ref: parseStorageRef(img.url) }));
+  const byBucket = new Map<string, string[]>();
+
+  for (const { ref } of refs) {
+    if (!ref) continue;
+    const list = byBucket.get(ref.bucket) ?? [];
+    list.push(ref.path);
+    byBucket.set(ref.bucket, list);
+  }
+
+  const signed = new Map<string, string>();
+  await Promise.all(
+    Array.from(byBucket.entries()).map(async ([bucket, paths]) => {
+      const unique = Array.from(new Set(paths));
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .createSignedUrls(unique, 60 * 60 * 6);
+      if (error || !data) return;
+      for (const row of data) {
+        if (row.path && row.signedUrl) signed.set(`${bucket}::${row.path}`, row.signedUrl);
+      }
+    }),
+  );
+
+  return refs.map(({ img, ref }) => {
+    if (!ref) {
+      if (/^https?:\/\//i.test(img.url)) return img;
+      return { ...img, url: "" };
+    }
+    return { ...img, url: signed.get(`${ref.bucket}::${ref.path}`) ?? "" };
   });
 }
 
