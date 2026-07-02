@@ -121,11 +121,11 @@ function HomePage() {
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald" /> Tested · Warranted · Fairly Priced
                 </div>
                 <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
-                  Pre-owned phones <br />
+                  Used phones <br />
                   <span className="text-primary">Hyderabad trusts.</span>
                 </h1>
                 <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-xl">
-                  Carefully refurbished iPhone, Samsung, OnePlus & more — at honest prices, with a
+                  iPhone, Samsung, OnePlus & more — at honest prices, with a
                   warranty. Visit our Toli Chowki store or chat on WhatsApp.
                 </p>
               </motion.div>
