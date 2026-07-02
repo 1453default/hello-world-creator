@@ -989,6 +989,11 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
           </div>
         </div>
 
+        {/* AI-Assisted Scan — only when creating a brand new product */}
+        {!product && !createdId && (
+          <AiProductScanner onAccept={applyScan} />
+        )}
+
         {/* 1. General Information */}
         <Section title="General Information" subtitle="Core product details shown on the storefront">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
