@@ -93,47 +93,105 @@ function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber/5 via-background to-info/5" />
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-8 md:pt-16 md:pb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="max-w-2xl"
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald" /> Tested · Warranted · Fairly Priced
-            </div>
-            <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
-              Pre-owned phones <br />
-              <span className="text-primary">Hyderabad trusts.</span>
-            </h1>
-            <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-xl">
-              Carefully refurbished iPhone, Samsung, OnePlus & more — at honest prices, with a
-              warranty. Visit our Toli Chowki store or chat on WhatsApp.
-            </p>
-          </motion.div>
+        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:pt-16 md:pb-16">
+          <div className="grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+            {/* Left: Copy + Search */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald" /> Tested · Warranted · Fairly Priced
+                </div>
+                <h1 className="mt-4 font-display text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight text-foreground">
+                  Pre-owned phones <br />
+                  <span className="text-primary">Hyderabad trusts.</span>
+                </h1>
+                <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-xl">
+                  Carefully refurbished iPhone, Samsung, OnePlus & more — at honest prices, with a
+                  warranty. Visit our Toli Chowki store or chat on WhatsApp.
+                </p>
+              </motion.div>
 
-          {/* Search bar */}
-          <motion.form
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            action="/search"
-            className="mt-6 flex h-14 max-w-xl items-center gap-2 rounded-2xl border border-border bg-card pl-4 pr-2 shadow-sm focus-within:border-primary transition"
-          >
-            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-            <input
-              name="q"
-              type="search"
-              placeholder="Search iPhone 13, Galaxy S23, OnePlus…"
-              className="flex-1 min-w-0 bg-transparent outline-none text-[15px] placeholder:text-muted-foreground"
-            />
-            <button className="h-10 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-amber-dark transition">
-              Search
-            </button>
-          </motion.form>
+              <motion.form
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                action="/search"
+                className="mt-6 flex h-14 max-w-xl items-center gap-2 rounded-2xl border border-border bg-card pl-4 pr-2 shadow-sm focus-within:border-primary transition"
+              >
+                <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+                <input
+                  name="q"
+                  type="search"
+                  placeholder="Search iPhone 13, Galaxy S23, OnePlus…"
+                  className="flex-1 min-w-0 bg-transparent outline-none text-[15px] placeholder:text-muted-foreground"
+                />
+                <button className="h-10 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-amber-dark transition">
+                  Search
+                </button>
+              </motion.form>
+            </div>
+
+            {/* Right: Store showcase — 1 large + 2 supporting */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="relative"
+            >
+              <div className="grid grid-cols-5 grid-rows-2 gap-3 h-[380px] sm:h-[440px] md:h-[500px]">
+                {/* Main hero image */}
+                <figure className="relative col-span-3 row-span-2 overflow-hidden rounded-2xl border border-border bg-muted shadow-xl">
+                  <img
+                    src={heroMain.url}
+                    alt="USED MOBILES store counter with premium pre-owned smartphones on display"
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent p-4">
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-ink">
+                      <MapPin className="h-3 w-3 text-primary" /> Toli Chowki · Hyderabad
+                    </div>
+                  </div>
+                </figure>
+
+                {/* Supporting top */}
+                <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
+                  <img
+                    src={heroEnt.url}
+                    alt="USED MOBILES store interior with Samsung counter and accessory display"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+
+                {/* Supporting bottom */}
+                <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
+                  <img
+                    src={heroLeft.url}
+                    alt="Side view of USED MOBILES shop showing organized phone accessory wall"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="absolute right-2 bottom-2 rounded-full bg-emerald/95 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
+                    ● Open Today
+                  </div>
+                </figure>
+              </div>
+
+              {/* Decorative glow */}
+              <div className="pointer-events-none absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-br from-amber/10 via-transparent to-info/10 blur-2xl" />
+            </motion.div>
+          </div>
         </div>
       </section>
+
 
       {/* Brand chips */}
       <section className="border-b border-border bg-card/40">
