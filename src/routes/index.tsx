@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle } from "lucide-react";
+import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
@@ -10,6 +10,9 @@ import { brandsQuery, allProductsQuery, recentlySoldQuery } from "@/lib/catalog"
 import { whatsappLink } from "@/lib/shop";
 import { InstagramReels } from "@/components/public/InstagramReels";
 import { latestStockReels, testimonialReels } from "@/lib/instagram";
+import heroMain from "@/assets/um-counter.jpg.asset.json";
+import heroEnt from "@/assets/um-ent.jpg.asset.json";
+import heroLeft from "@/assets/um-left.jpg.asset.json";
 
 
 export const Route = createFileRoute("/")({
