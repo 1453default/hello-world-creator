@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Smartphone } from "lucide-react";
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { type ProductCard as P } from "@/lib/catalog";
 import { conditionLabel, formatINR, whatsappLink } from "@/lib/shop";
 
 export function ProductCard({ product, index = 0 }: { product: P; index?: number }) {
-  const img = product.images[0]?.url;
+  const img = useSignedImageUrl(product.images[0]?.url);
   const sold = product.available_count === 0;
   const enquire = whatsappLink(
     `Hi, I'd like to enquire about the ${product.brand?.name ?? ""} ${product.name} (${product.storage ?? ""}, ${product.color ?? ""}).`,

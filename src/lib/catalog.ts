@@ -42,7 +42,7 @@ const PRODUCT_SELECT = `
  *  - https://*.supabase.co/storage/v1/object/{public|sign|authenticated}/<bucket>/<path>
  *  - <bucket>::<path>                            (new compact form, future-proof)
  */
-function parseStorageRef(url: string | null | undefined): { bucket: string; path: string } | null {
+export function parseStorageRef(url: string | null | undefined): { bucket: string; path: string } | null {
   if (!url) return null;
   const proxy = url.match(/^\/api\/public\/img\/([^/]+)\/(.+)$/);
   if (proxy) return { bucket: proxy[1], path: proxy[2].split("?")[0] };
@@ -56,31 +56,22 @@ function parseStorageRef(url: string | null | undefined): { bucket: string; path
 /** Synchronous best-effort URL (used as a fallback / before signing). Empty string → placeholder. */
 export function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  if (/^https?:\/\//i.test(url)) {
-    // Rewrite legacy signed/public Supabase storage URLs to the stable proxy.
-    const ref = parseStorageRef(url);
-    if (ref) return `/api/public/img/${ref.bucket}/${ref.path}`;
-    return url;
-  }
+  if (/^https?:\/\//i.test(url)) return url;
   return url;
 }
 
 /**
- * Return a stable, hydration-safe URL for every stored image reference.
- *
- * Previously this minted per-request Supabase signed URLs, which produced a
- * different `src` on SSR vs client hydration (hydration mismatch on every
- * product card) and eventually expired in production. The `/api/public/img`
- * proxy route redirects to a freshly-signed URL server-side, so embedded HTML
- * URLs are stable forever.
+ * Return stable storage references for every image. Product components sign
+ * these client-side so SSR never embeds expiring/mismatched signed URLs, and
+ * Vercel deployments do not depend on the app image proxy route.
  */
 export async function signImageList<T extends { url: string }>(images: T[]): Promise<T[]> {
   if (!images || images.length === 0) return images;
   return images.map((img) => {
     if (!img.url) return img;
     const ref = parseStorageRef(img.url);
-    if (ref) return { ...img, url: `/api/public/img/${ref.bucket}/${ref.path}` };
-    if (/^https?:\/\//i.test(img.url)) return img; // external URL, keep as-is
+    if (ref) return { ...img, url: `${ref.bucket}::${ref.path}` };
+    if (/^https?:\/\//i.test(img.url)) return img;
     return { ...img, url: "" };
   });
 }

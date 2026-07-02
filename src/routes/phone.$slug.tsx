@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, MessageCircle, Phone, ShieldCheck, Smartphone } from "lucide-react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { allProductsQuery, productBySlugQuery } from "@/lib/catalog";
 import { SHOP_PHONE, conditionLabel, formatINR, whatsappLink } from "@/lib/shop";
 import { useState } from "react";
@@ -70,6 +71,7 @@ function PhoneDetail() {
   const sold = product.available_count === 0;
   const [activeImg, setActiveImg] = useState(0);
   const images = product.images?.length ? product.images : [];
+  const activeImageUrl = useSignedImageUrl(images[activeImg]?.url);
   const similar = allProducts
     .filter((p) => p.id !== product.id && p.brand?.slug === product.brand?.slug)
     .slice(0, 4);
@@ -96,9 +98,9 @@ function PhoneDetail() {
               animate={{ opacity: 1 }}
               className="aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted"
             >
-              {images[activeImg]?.url ? (
+              {activeImageUrl ? (
                 <img
-                  src={images[activeImg].url}
+                  src={activeImageUrl}
                   alt={product.name}
                   className="h-full w-full object-contain p-4"
                 />
@@ -118,7 +120,7 @@ function PhoneDetail() {
                       i === activeImg ? "border-primary" : "border-border"
                     }`}
                   >
-                    <img src={img.url} alt="" className="h-full w-full object-contain p-1" />
+                    <ProductThumbnail src={img.url} />
                   </button>
                 ))}
               </div>
@@ -215,6 +217,12 @@ function PhoneDetail() {
       </div>
     </PublicLayout>
   );
+}
+
+function ProductThumbnail({ src }: { src: string }) {
+  const signedSrc = useSignedImageUrl(src);
+  if (!signedSrc) return null;
+  return <img src={signedSrc} alt="" className="h-full w-full object-contain p-1" />;
 }
 
 function Spec({ label, value }: { label: string; value: string }) {
