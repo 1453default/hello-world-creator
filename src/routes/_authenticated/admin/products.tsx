@@ -11,7 +11,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/admin-utils";
 import { formatINR } from "@/lib/shop";
 import { ProductImagesManager } from "@/components/admin/ProductImagesManager";
-import { AiProductScanner, type AiScanResult } from "@/components/admin/AiProductScanner";
+import { type AiScanResult } from "@/components/admin/AiProductScanner";
+import { featureFlags } from "@/lib/feature-flags";
+import { lazy, Suspense } from "react";
+const AiProductScanner = featureFlags.enableAIProductCreation
+  ? lazy(() => import("@/components/admin/AiProductScanner").then((m) => ({ default: m.AiProductScanner })))
+  : null;
 import { parseSearchQuery, priceMatches } from "@/lib/price-search";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
