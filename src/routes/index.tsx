@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin } from "lucide-react";
+import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin, ChevronRight, BadgeCheck, RotateCcw, Store } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
@@ -297,31 +297,9 @@ function HomePage() {
             />
           )}
 
-          {/* Browse by brand */}
-          <section className="mx-auto max-w-6xl px-4 mt-12">
-            <h2 className="font-display text-2xl font-bold mb-1">Browse by brand</h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              Tap a brand to see every model we have in stock
-            </p>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-              {brands.map((b, i) => (
-                <motion.div
-                  key={b.id}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03, duration: 0.2 }}
-                >
-                  <Link
-                    to="/brand/$slug"
-                    params={{ slug: b.slug }}
-                    className="flex aspect-square flex-col items-center justify-center rounded-xl border border-border bg-card font-display font-bold text-foreground hover:border-primary hover:bg-accent transition text-center px-2"
-                  >
-                    <span className="text-sm md:text-base">{b.name}</span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </section>
+          {/* Browse by brand — premium showcase */}
+          <BrandShowcase brands={brands} products={products} />
+
 
           {/* Recently Sold — social proof */}
           {recentlySold.length > 0 && (
@@ -425,6 +403,156 @@ function ProductRow({
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         {products.slice(0, 12).map((p, i) => (
           <ProductCard key={p.id} product={p} index={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const BRAND_PRIORITY_ORDER = [
+  "apple","samsung","oneplus","xiaomi","vivo","oppo","realme","motorola","nothing","iqoo","honor",
+];
+const BRAND_ACCENTS: Record<string, { grad: string; text: string; ring: string }> = {
+  apple:    { grad: "from-zinc-900 to-zinc-700",   text: "text-white",   ring: "group-hover:ring-zinc-900/20" },
+  samsung:  { grad: "from-blue-700 to-blue-500",   text: "text-white",   ring: "group-hover:ring-blue-500/20" },
+  oneplus:  { grad: "from-red-600 to-rose-500",    text: "text-white",   ring: "group-hover:ring-red-500/20" },
+  xiaomi:   { grad: "from-orange-500 to-amber-400",text: "text-white",   ring: "group-hover:ring-orange-500/20" },
+  vivo:     { grad: "from-sky-600 to-cyan-400",    text: "text-white",   ring: "group-hover:ring-sky-500/20" },
+  oppo:     { grad: "from-emerald-600 to-green-500",text:"text-white",   ring: "group-hover:ring-emerald-500/20" },
+  realme:   { grad: "from-yellow-400 to-amber-500",text: "text-ink",     ring: "group-hover:ring-amber-500/20" },
+  motorola: { grad: "from-indigo-700 to-violet-500",text:"text-white",   ring: "group-hover:ring-indigo-500/20" },
+  nothing:  { grad: "from-neutral-800 to-neutral-600",text:"text-white", ring: "group-hover:ring-neutral-500/20" },
+  iqoo:     { grad: "from-slate-800 to-slate-600", text: "text-white",   ring: "group-hover:ring-slate-500/20" },
+  honor:    { grad: "from-cyan-700 to-teal-500",   text: "text-white",   ring: "group-hover:ring-teal-500/20" },
+};
+
+function BrandShowcase({
+  brands,
+  products,
+}: {
+  brands: Array<{ id: string; name: string; slug: string; logo_url: string | null }>;
+  products: Array<{ brand?: { slug?: string | null } | null }>;
+}) {
+  const counts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of products) {
+      const s = p.brand?.slug;
+      if (s) m.set(s, (m.get(s) ?? 0) + 1);
+    }
+    return m;
+  }, [products]);
+
+  const ordered = useMemo(() => {
+    const withCounts = brands
+      .map((b) => ({ ...b, count: counts.get(b.slug) ?? 0 }))
+      .filter((b) => b.count > 0);
+    return withCounts.sort((a, b) => {
+      const ia = BRAND_PRIORITY_ORDER.indexOf(a.slug.toLowerCase());
+      const ib = BRAND_PRIORITY_ORDER.indexOf(b.slug.toLowerCase());
+      const ra = ia === -1 ? 999 : ia;
+      const rb = ib === -1 ? 999 : ib;
+      if (ra !== rb) return ra - rb;
+      return b.count - a.count;
+    });
+  }, [brands, counts]);
+
+  const topBySlug = ordered.reduce((top, b) => (b.count > (top?.count ?? 0) ? b : top), null as (typeof ordered)[number] | null);
+
+  return (
+    <section className="mx-auto max-w-6xl px-4 mt-14">
+      <div className="flex items-end justify-between gap-4 mb-6">
+        <div className="min-w-0">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-2">
+            <BadgeCheck className="h-3 w-3 text-emerald" /> Verified Stock
+          </div>
+          <h2 className="font-display text-2xl md:text-3xl font-extrabold tracking-tight">Browse by Brand</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Explore phones by the brands we currently have in stock.
+          </p>
+        </div>
+      </div>
+
+      {/* Grid: horizontal scroll on mobile, grid from sm up */}
+      <div className="-mx-4 px-4 flex gap-3 overflow-x-auto no-scrollbar sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4 sm:overflow-visible snap-x snap-mandatory">
+        {ordered.map((b, i) => {
+          const accent = BRAND_ACCENTS[b.slug.toLowerCase()] ?? {
+            grad: "from-slate-700 to-slate-500",
+            text: "text-white",
+            ring: "group-hover:ring-slate-500/20",
+          };
+          const label =
+            b.slug === topBySlug?.slug ? "Most Stock" : b.slug.toLowerCase() === "apple" ? "Premium Picks" : null;
+          const initials = b.name.trim().slice(0, 2).toUpperCase();
+          return (
+            <motion.div
+              key={b.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03, duration: 0.25 }}
+              className="snap-start shrink-0 w-[44vw] xs:w-[38vw] sm:w-auto"
+            >
+              <Link
+                to="/brand/$slug"
+                params={{ slug: b.slug }}
+                className="group relative flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-sm ring-1 ring-transparent transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/40"
+              >
+                {label && (
+                  <span className="absolute top-3 right-3 rounded-full bg-amber/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-dark">
+                    {label}
+                  </span>
+                )}
+
+                {/* Logo / monogram tile */}
+                <div
+                  className={`grid h-14 w-14 place-items-center rounded-xl bg-gradient-to-br ${accent.grad} ${accent.text} shadow-inner ring-1 ring-black/5 ${accent.ring}`}
+                >
+                  {b.logo_url ? (
+                    <img
+                      src={b.logo_url}
+                      alt={`${b.name} logo`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-8 w-8 object-contain"
+                    />
+                  ) : (
+                    <span className="font-display text-lg font-black tracking-tight">{initials}</span>
+                  )}
+                </div>
+
+                <div className="mt-4 flex-1">
+                  <div className="font-display text-base font-bold text-foreground leading-tight">{b.name}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    {b.count} {b.count === 1 ? "model" : "models"} in stock
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground group-hover:text-primary transition-colors">
+                    Shop
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
+                </div>
+              </Link>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Trust benefits strip */}
+      <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+        {[
+          { icon: ShieldCheck, label: "Quality Checked" },
+          { icon: BadgeCheck, label: "Warranty Included" },
+          { icon: RotateCcw, label: "Easy Returns" },
+          { icon: Store, label: "Trusted Local Shop" },
+        ].map(({ icon: Icon, label }) => (
+          <div
+            key={label}
+            className="flex items-center gap-2 rounded-xl border border-border bg-card/60 px-3 py-2.5"
+          >
+            <Icon className="h-4 w-4 text-emerald shrink-0" />
+            <span className="text-xs font-semibold text-foreground truncate">{label}</span>
+          </div>
         ))}
       </div>
     </section>
