@@ -42,7 +42,7 @@ const PRODUCT_SELECT = `
  *  - https://*.supabase.co/storage/v1/object/{public|sign|authenticated}/<bucket>/<path>
  *  - <bucket>::<path>                            (new compact form, future-proof)
  */
-function parseStorageRef(url: string | null | undefined): { bucket: string; path: string } | null {
+export function parseStorageRef(url: string | null | undefined): { bucket: string; path: string } | null {
   if (!url) return null;
   const proxy = url.match(/^\/api\/public\/img\/([^/]+)\/(.+)$/);
   if (proxy) return { bucket: proxy[1], path: proxy[2].split("?")[0] };
@@ -61,43 +61,18 @@ export function resolveImageUrl(url: string | null | undefined): string {
 }
 
 /**
- * Return browser-loadable storage URLs for every stored image reference.
- * This intentionally signs directly through the publishable storage client so
- * Vercel/static deployments do not depend on the app server route being
- * available for image bytes.
+ * Return stable storage references for every image. Product components sign
+ * these client-side so SSR never embeds expiring/mismatched signed URLs, and
+ * Vercel deployments do not depend on the app image proxy route.
  */
 export async function signImageList<T extends { url: string }>(images: T[]): Promise<T[]> {
   if (!images || images.length === 0) return images;
-  const refs = images.map((img) => ({ img, ref: parseStorageRef(img.url) }));
-  const byBucket = new Map<string, string[]>();
-
-  for (const { ref } of refs) {
-    if (!ref) continue;
-    const list = byBucket.get(ref.bucket) ?? [];
-    list.push(ref.path);
-    byBucket.set(ref.bucket, list);
-  }
-
-  const signed = new Map<string, string>();
-  await Promise.all(
-    Array.from(byBucket.entries()).map(async ([bucket, paths]) => {
-      const unique = Array.from(new Set(paths));
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .createSignedUrls(unique, 60 * 60 * 6);
-      if (error || !data) return;
-      for (const row of data) {
-        if (row.path && row.signedUrl) signed.set(`${bucket}::${row.path}`, row.signedUrl);
-      }
-    }),
-  );
-
-  return refs.map(({ img, ref }) => {
-    if (!ref) {
-      if (/^https?:\/\//i.test(img.url)) return img;
-      return { ...img, url: "" };
-    }
-    return { ...img, url: signed.get(`${ref.bucket}::${ref.path}`) ?? "" };
+  return images.map((img) => {
+    if (!img.url) return img;
+    const ref = parseStorageRef(img.url);
+    if (ref) return { ...img, url: `${ref.bucket}::${ref.path}` };
+    if (/^https?:\/\//i.test(img.url)) return img;
+    return { ...img, url: "" };
   });
 }
 

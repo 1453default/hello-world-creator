@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Smartphone } from "lucide-react";
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { type RecentlySoldCard as R } from "@/lib/catalog";
 import { conditionLabel } from "@/lib/shop";
 
@@ -22,7 +23,7 @@ function relativeSold(iso: string): string {
 }
 
 export function RecentlySoldCard({ product, index = 0 }: { product: R; index?: number }) {
-  const img = product.images[0]?.url;
+  const img = useSignedImageUrl(product.images[0]?.url);
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
