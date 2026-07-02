@@ -36,14 +36,14 @@ export const Route = createFileRoute("/catalog")({
   ),
 });
 
-type Sort = "newest" | "price_asc" | "price_desc";
+type Sort = "default" | "newest" | "price_asc" | "price_desc";
 
 function CatalogPage() {
   const { data: products } = useSuspenseQuery(allProductsQuery);
   const { data: brands } = useSuspenseQuery(brandsQuery);
   const [brand, setBrand] = useState<string | null>(null);
   const [condition, setCondition] = useState<string | null>(null);
-  const [sort, setSort] = useState<Sort>("newest");
+  const [sort, setSort] = useState<Sort>("default");
 
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
@@ -53,7 +53,9 @@ function CatalogPage() {
     });
     if (sort === "price_asc") list = [...list].sort((a, b) => a.selling_price - b.selling_price);
     else if (sort === "price_desc") list = [...list].sort((a, b) => b.selling_price - a.selling_price);
-    else list = [...list].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+    else if (sort === "newest")
+      list = [...list].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+    // "default" → keep query's global ordering (brand → price desc → newest)
     return list;
   }, [products, brand, condition, sort]);
 
@@ -100,6 +102,7 @@ function CatalogPage() {
                 onChange={(e) => setSort(e.target.value as Sort)}
                 className="h-9 rounded-full border border-border bg-card px-3 text-sm font-medium text-foreground focus:border-primary outline-none"
               >
+                <option value="default">Recommended</option>
                 <option value="newest">Newest</option>
                 <option value="price_asc">Price: Low to High</option>
                 <option value="price_desc">Price: High to Low</option>
