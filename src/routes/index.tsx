@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin } from "lucide-react";
+import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin, ChevronRight, BadgeCheck, RotateCcw, Store } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
