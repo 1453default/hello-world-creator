@@ -30,7 +30,7 @@ export const Route = createFileRoute("/phone/$slug")({
     const title = `${brand}${p.name} — ₹${Math.round(Number(p.selling_price)).toLocaleString("en-IN")} | USED MOBILES`;
     const desc = `${brand}${p.name}${p.storage ? ` ${p.storage}` : ""}${p.color ? `, ${p.color}` : ""} · ${conditionLabel[p.condition] ?? p.condition} · Tested & warranted at USED MOBILES, Hyderabad.`;
     const image = p.images?.[0]?.url;
-    const meta: { name?: string; property?: string; content: string; title?: string }[] = [
+    const meta: Array<Record<string, string>> = [
       { title },
       { name: "description", content: desc },
       { property: "og:type", content: "product" },
@@ -39,6 +39,7 @@ export const Route = createFileRoute("/phone/$slug")({
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: desc },
     ];
+
     if (image && /^https?:\/\//i.test(image)) {
       meta.push(
         { property: "og:image", content: image },
