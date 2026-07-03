@@ -222,6 +222,9 @@ export type Database = {
           id: string
           is_primary: boolean
           original_url: string | null
+          process_error: string | null
+          process_status: string | null
+          processed_at: string | null
           product_id: string
           url: string
           white_bg_error: string | null
@@ -235,6 +238,9 @@ export type Database = {
           id?: string
           is_primary?: boolean
           original_url?: string | null
+          process_error?: string | null
+          process_status?: string | null
+          processed_at?: string | null
           product_id: string
           url: string
           white_bg_error?: string | null
@@ -248,6 +254,9 @@ export type Database = {
           id?: string
           is_primary?: boolean
           original_url?: string | null
+          process_error?: string | null
+          process_status?: string | null
+          processed_at?: string | null
           product_id?: string
           url?: string
           white_bg_error?: string | null
