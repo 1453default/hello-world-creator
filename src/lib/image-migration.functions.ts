@@ -302,7 +302,13 @@ export const processProductImage = createServerFn({ method: "POST" })
       if (up.error) throw new Error(`upload: ${up.error.message}`);
 
       const newCompact = `${ref.bucket}::${processedPath}`;
-      const patch: Record<string, unknown> = {
+      const patch: {
+        url: string;
+        process_status: string;
+        processed_at: string;
+        process_error: string | null;
+        original_url?: string;
+      } = {
         url: newCompact,
         process_status: "done",
         processed_at: new Date().toISOString(),
@@ -315,6 +321,7 @@ export const processProductImage = createServerFn({ method: "POST" })
         .update(patch)
         .eq("id", row.id);
       if (updErr) throw new Error(`db: ${updErr.message}`);
+
 
       return { id: row.id, status: "done", newUrl: newCompact };
     } catch (e) {
