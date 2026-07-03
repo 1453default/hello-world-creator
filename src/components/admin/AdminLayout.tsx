@@ -16,6 +16,7 @@ import {
   X,
   LogOut,
   ExternalLink,
+  Wand2,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
