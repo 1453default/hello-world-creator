@@ -12,6 +12,7 @@ import {
   BarChart3,
   Settings,
   ScrollText,
+  Image as ImageIcon,
   Menu,
   X,
   LogOut,
@@ -41,6 +42,7 @@ const NAV: NavItem[] = [
   { to: "/admin/users", label: "Users", icon: Users, adminOnly: true },
   { to: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
   { to: "/admin/audit", label: "Audit Log", icon: ScrollText, adminOnly: true },
+  { to: "/admin/image-tools", label: "Image Tools", icon: ImageIcon, adminOnly: true },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
