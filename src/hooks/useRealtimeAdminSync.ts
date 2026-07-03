@@ -62,8 +62,6 @@ const TABLE_INVALIDATIONS: Record<string, string[][]> = {
   ],
   product_images: [
     ["admin", "products"],
-    ["admin", "product-images"],
-    ["admin", "white-bg-images"],
     ["products", "all"],
     ["product"],
     ["products", "recently-sold"],
