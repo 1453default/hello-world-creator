@@ -221,48 +221,24 @@ export type Database = {
           display_order: number
           id: string
           is_primary: boolean
-          original_url: string | null
-          process_error: string | null
-          process_status: string | null
-          processed_at: string | null
           product_id: string
           url: string
-          white_bg_error: string | null
-          white_bg_processed_at: string | null
-          white_bg_status: string | null
-          white_bg_url: string | null
         }
         Insert: {
           created_at?: string
           display_order?: number
           id?: string
           is_primary?: boolean
-          original_url?: string | null
-          process_error?: string | null
-          process_status?: string | null
-          processed_at?: string | null
           product_id: string
           url: string
-          white_bg_error?: string | null
-          white_bg_processed_at?: string | null
-          white_bg_status?: string | null
-          white_bg_url?: string | null
         }
         Update: {
           created_at?: string
           display_order?: number
           id?: string
           is_primary?: boolean
-          original_url?: string | null
-          process_error?: string | null
-          process_status?: string | null
-          processed_at?: string | null
           product_id?: string
           url?: string
-          white_bg_error?: string | null
-          white_bg_processed_at?: string | null
-          white_bg_status?: string | null
-          white_bg_url?: string | null
         }
         Relationships: [
           {
