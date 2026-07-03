@@ -16,6 +16,7 @@ import {
   X,
   LogOut,
   ExternalLink,
+  Wand2,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,7 @@ const NAV: NavItem[] = [
   { to: "/admin/customers", label: "Customers", icon: Users },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
   { to: "/admin/users", label: "Users", icon: Users, adminOnly: true },
+  { to: "/admin/image-tools", label: "Image Tools", icon: Wand2, adminOnly: true },
   { to: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
   { to: "/admin/audit", label: "Audit Log", icon: ScrollText, adminOnly: true },
 ];
