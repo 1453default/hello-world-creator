@@ -151,7 +151,7 @@ export type WhiteBgImageRow = {
 
 export const listWhiteBgImages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => (input ?? {}) as { brandSlug?: string; productId?: string; statusFilter?: string })
+  .inputValidator((input: unknown) => (input ?? {}) as { brandSlug?: string; productId?: string; statusFilter?: string })
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
     let q = context.supabase
@@ -176,7 +176,7 @@ export const listWhiteBgImages = createServerFn({ method: "POST" })
 
 export const processImageWhiteBg = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => input as { imageId: string; force?: boolean })
+  .inputValidator((input: unknown) => input as { imageId: string; force?: boolean })
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
     const apiKey = process.env.GEMINI_API_KEY;
@@ -241,7 +241,7 @@ export const processImageWhiteBg = createServerFn({ method: "POST" })
 
 export const approveImageWhiteBg = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => input as { imageId: string })
+  .inputValidator((input: unknown) => input as { imageId: string })
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
     const { data: row, error } = await context.supabase
@@ -266,7 +266,7 @@ export const approveImageWhiteBg = createServerFn({ method: "POST" })
 
 export const revertImageWhiteBg = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => input as { imageId: string })
+  .inputValidator((input: unknown) => input as { imageId: string })
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
     const { data: row, error } = await context.supabase
@@ -290,7 +290,7 @@ export const revertImageWhiteBg = createServerFn({ method: "POST" })
 
 export const rejectImageWhiteBg = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => input as { imageId: string })
+  .inputValidator((input: unknown) => input as { imageId: string })
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
     // Just clear the pending variant metadata. The physical file (if any) is left in
