@@ -366,22 +366,37 @@ function ReceiptPage() {
             min-height: 0;
           }
         }
+
+        /* ── Print stylesheet ─────────────────────────────── */
         @media print {
-          @page { size: A4; margin: 0; }
+          @page {
+            size: A4 portrait;
+            margin: 0;
+          }
+
           html, body {
-            background: #fff !important;
+            background: #ffffff !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 210mm !important;
             min-height: 297mm !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
-          .no-print { display: none !important; }
-          /* Neutralise on-screen wrappers so the sheet fills the sheet of paper */
+
+          /* Hide any non-print UI (toolbar, dev overlays, toasts, sidebars) */
+          .no-print,
+          [data-no-print],
+          nav[role="navigation"],
+          [role="toolbar"] {
+            display: none !important;
+          }
+
+          /* Neutralise on-screen wrappers so the sheet is the page */
           .print-root,
           .print-root > * {
-            background: #fff !important;
+            background: #ffffff !important;
             margin: 0 !important;
             padding: 0 !important;
             min-height: 0 !important;
@@ -389,18 +404,46 @@ function ReceiptPage() {
             width: 100% !important;
             box-shadow: none !important;
           }
+
           .invoice-sheet {
             width: 210mm !important;
             min-height: 297mm !important;
-            margin: 0 auto !important;
+            margin: 0 auto !important;   /* center on page */
             padding: 0 !important;
             box-shadow: none !important;
-            ring: 0 !important;
             border-radius: 0 !important;
+            overflow: hidden !important;  /* no accidental horizontal scroll */
+            page-break-after: avoid;
           }
+
+          /* Force color fidelity for accent bars, dark totals, badges */
+          .invoice-sheet,
           .invoice-sheet * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+
+          /* Keep structural blocks from being split across pages */
+          .invoice-sheet header,
+          .invoice-sheet section,
+          .invoice-sheet footer,
+          .invoice-sheet table thead,
+          .invoice-sheet table tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
+          /* Firefox: prevent tables from stretching outside the page box */
+          .invoice-sheet table {
+            width: 100% !important;
+            table-layout: auto;
+          }
+
+          /* Images (logo) must not overflow */
+          .invoice-sheet img {
+            max-width: 100% !important;
+            height: auto;
           }
         }
       `}</style>
