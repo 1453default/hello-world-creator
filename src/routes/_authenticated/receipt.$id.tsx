@@ -1,13 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer, ArrowLeft, Phone, MapPin, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR, SHOP_ADDRESS, SHOP_PHONE, SHOP_WHATSAPP_DISPLAY } from "@/lib/shop";
-import logoAsset from "@/assets/used-mobiles-logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/receipt/$id")({
-  head: () => ({ meta: [{ title: "Receipt · USED MOBILES" }] }),
+  head: () => ({ meta: [{ title: "Invoice · USED MOBILES" }] }),
   component: ReceiptPage,
   errorComponent: ({ error }) => (
     <div className="p-10 text-center text-sm text-muted-foreground">{error.message}</div>
@@ -75,150 +74,191 @@ function ReceiptPage() {
     }
   }, [auto, data]);
 
-  if (isLoading) return <div className="p-10 text-center text-sm">Loading receipt…</div>;
+  if (isLoading) return <div className="p-10 text-center text-sm">Loading invoice…</div>;
   if (error) return <div className="p-10 text-center text-sm text-red-600">{(error as Error).message}</div>;
   if (!data) return null;
 
   const { bill, items } = data;
   const created = new Date(bill.created_at);
+  const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
 
   return (
-    <div className="min-h-screen bg-neutral-100 text-black print:bg-white">
+    <div className="min-h-screen bg-neutral-100 text-neutral-900 print:bg-white">
       {/* Toolbar (hidden on print) */}
-      <div className="no-print sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-neutral-300 bg-white px-4 py-3 shadow-sm">
-        <Link
-          to="/admin/bills"
-          className="inline-flex h-9 items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to Bills
-        </Link>
-        <div className="text-xs text-neutral-500">Invoice {bill.bill_number}</div>
-        <button
-          onClick={() => window.print()}
-          className="inline-flex h-9 items-center gap-1.5 rounded-md bg-black px-4 text-sm font-bold text-white hover:bg-neutral-800"
-        >
-          <Printer className="h-4 w-4" /> Print
-        </button>
+      <div className="no-print sticky top-0 z-10 border-b border-neutral-200 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-[880px] items-center justify-between gap-3 px-4 py-3">
+          <Link
+            to="/admin/bills"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-neutral-300 bg-white px-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          >
+            <ArrowLeft className="h-4 w-4" /> Bills
+          </Link>
+          <div className="text-xs font-medium uppercase tracking-widest text-neutral-500">
+            Invoice · <span className="font-mono normal-case tracking-normal text-neutral-800">{bill.bill_number}</span>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-neutral-900 px-4 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800"
+          >
+            <Printer className="h-4 w-4" /> Print / Save PDF
+          </button>
+        </div>
       </div>
 
-      {/* Receipt sheet */}
-      <div className="mx-auto my-6 max-w-[820px] bg-white p-10 shadow-md print:m-0 print:max-w-none print:p-12 print:shadow-none">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-6 border-b border-neutral-200 pb-6">
-          <div className="flex items-center gap-3">
-            <img src="/USED_MOBILE_LOGO.png" alt="USED MOBILES" className="h-14 w-14 object-contain" />
-            <div>
-              <div className="font-display text-xl font-extrabold leading-tight tracking-tight text-black">
-                USED MOBILES
+      {/* Invoice sheet */}
+      <div className="mx-auto my-8 max-w-[820px] print:my-0 print:max-w-none">
+        <div className="invoice-sheet rounded-xl bg-white p-10 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.25)] ring-1 ring-neutral-200/70 print:rounded-none print:p-10 print:shadow-none print:ring-0">
+          {/* Header band */}
+          <header className="flex items-start justify-between gap-8">
+            <div className="flex items-center gap-3">
+              <img src="/USED_MOBILE_LOGO.png" alt="USED MOBILES" className="h-12 w-12 shrink-0 object-contain" />
+              <div className="min-w-0">
+                <div className="font-display text-lg font-extrabold leading-tight tracking-tight text-neutral-900">
+                  USED MOBILES
+                </div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+                  Pre-owned Smartphones
+                </div>
               </div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-neutral-500">
-                Pre-owned Smartphones
+            </div>
+            <div className="text-right">
+              <div className="font-display text-3xl font-bold tracking-tight text-neutral-900">INVOICE</div>
+              <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-0.5 text-[11px] font-medium text-neutral-600">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                {bill.status?.toUpperCase() || "PAID"}
               </div>
             </div>
-          </div>
-          <h1 className="font-display text-4xl italic font-semibold text-black">Invoice</h1>
-        </div>
+          </header>
 
-        {/* Billed to + Invoice meta */}
-        <div className="mt-6 grid grid-cols-2 gap-6">
-          <div>
-            <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Billed to:</div>
-            <div className="mt-1 font-semibold text-black">{bill.customer_name || "Walk-in Customer"}</div>
-            {bill.customer_phone && <div className="text-sm text-neutral-700">{bill.customer_phone}</div>}
-          </div>
-          <div className="text-right text-sm">
-            <div>
-              <span className="font-bold text-black">Invoice No.</span>{" "}
-              <span className="font-mono">{bill.bill_number}</span>
+          {/* Meta grid */}
+          <section className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-neutral-200 bg-neutral-50/60 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Billed To</div>
+              <div className="mt-1.5 truncate text-sm font-semibold text-neutral-900">
+                {bill.customer_name || "Walk-in Customer"}
+              </div>
+              {bill.customer_phone && (
+                <div className="mt-0.5 font-mono text-xs text-neutral-600">{bill.customer_phone}</div>
+              )}
             </div>
-            <div className="text-neutral-700">
-              {created.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}
+            <div className="rounded-lg border border-neutral-200 bg-neutral-50/60 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Invoice No.</div>
+              <div className="mt-1.5 font-mono text-sm font-semibold text-neutral-900">{bill.bill_number}</div>
+              <div className="mt-0.5 text-xs text-neutral-600">
+                {created.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}
+                {" · "}
+                {created.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+              </div>
             </div>
-            <div className="text-xs text-neutral-500">
-              {created.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+            <div className="rounded-lg border border-neutral-200 bg-neutral-50/60 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Payment</div>
+              <div className="mt-1.5 text-sm font-semibold capitalize text-neutral-900">
+                {bill.payment_method || "—"}
+              </div>
+              <div className="mt-0.5 text-xs text-neutral-600">
+                {items.length} item{items.length === 1 ? "" : "s"} · Qty {totalQty}
+              </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* Items */}
-        <div className="mt-8">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b-2 border-black text-left">
-                <th className="py-3 font-bold text-black">Item</th>
-                <th className="py-3 font-bold text-black">IMEI</th>
-                <th className="py-3 text-center font-bold text-black">Qty</th>
-                <th className="py-3 text-right font-bold text-black">Unit Price</th>
-                <th className="py-3 text-right font-bold text-black">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((it) => {
-                const productName = it.product
-                  ? `${it.product.brand?.name ?? ""} ${it.product.name}`.trim()
-                  : it.description ?? "—";
-                return (
-                  <tr key={it.id} className="border-b border-neutral-200 align-top">
-                    <td className="py-3 pr-2 text-black">{productName}</td>
-                    <td className="py-3 pr-2 font-mono text-xs text-neutral-700">
-                      {it.inventory_unit?.imei || "—"}
-                      {it.inventory_unit?.imei2 && (
-                        <div className="text-[11px] text-neutral-500">{it.inventory_unit.imei2}</div>
-                      )}
-                    </td>
-                    <td className="py-3 text-center text-black">{it.quantity}</td>
-                    <td className="py-3 text-right font-num text-black">{formatINR(it.unit_price)}</td>
-                    <td className="py-3 text-right font-num font-semibold text-black">
-                      {formatINR(it.line_total)}
-                    </td>
+          {/* Items table */}
+          <section className="mt-8">
+            <div className="overflow-hidden rounded-lg border border-neutral-200">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-neutral-900 text-left text-white">
+                    <th className="w-10 px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider">#</th>
+                    <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider">Description</th>
+                    <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider">IMEI</th>
+                    <th className="w-14 px-3 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider">Qty</th>
+                    <th className="w-28 px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider">Unit Price</th>
+                    <th className="w-28 px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider">Amount</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Totals */}
-        <div className="mt-6 flex justify-end">
-          <div className="w-full max-w-xs space-y-1.5 text-sm">
-            <div className="flex justify-between">
-              <span className="font-semibold text-black">Subtotal</span>
-              <span className="font-num text-black">{formatINR(bill.subtotal)}</span>
+                </thead>
+                <tbody>
+                  {items.map((it, i) => {
+                    const productName = it.product
+                      ? `${it.product.brand?.name ?? ""} ${it.product.name}`.trim()
+                      : it.description ?? "—";
+                    return (
+                      <tr key={it.id} className="border-t border-neutral-200 align-top odd:bg-white even:bg-neutral-50/50">
+                        <td className="px-3 py-3 text-center text-xs text-neutral-500">{i + 1}</td>
+                        <td className="px-3 py-3 font-medium text-neutral-900">{productName}</td>
+                        <td className="px-3 py-3 font-mono text-xs text-neutral-600">
+                          {it.inventory_unit?.imei || "—"}
+                          {it.inventory_unit?.imei2 && (
+                            <div className="text-[11px] text-neutral-400">{it.inventory_unit.imei2}</div>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-center text-neutral-900">{it.quantity}</td>
+                        <td className="px-3 py-3 text-right font-num text-neutral-900">{formatINR(it.unit_price)}</td>
+                        <td className="px-3 py-3 text-right font-num font-semibold text-neutral-900">
+                          {formatINR(it.line_total)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-            {Number(bill.discount) > 0 && (
-              <div className="flex justify-between">
-                <span className="font-semibold text-black">Discount</span>
-                <span className="font-num text-black">− {formatINR(bill.discount)}</span>
-              </div>
-            )}
-            {Number(bill.tax) > 0 && (
-              <div className="flex justify-between">
-                <span className="font-semibold text-black">Tax</span>
-                <span className="font-num text-black">{formatINR(bill.tax)}</span>
-              </div>
-            )}
-            <div className="mt-2 flex items-center justify-between bg-black px-4 py-2.5 text-white">
-              <span className="font-bold tracking-wide">Total</span>
-              <span className="font-num text-lg font-extrabold">{formatINR(bill.grand_total)}</span>
+          </section>
+
+          {/* Notes + Totals */}
+          <section className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-5">
+            <div className="sm:col-span-3">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Notes</div>
+              <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">
+                Thank you for your purchase. All pre-owned devices are quality-checked and covered under our shop warranty policy.
+                Please retain this invoice for warranty and service claims.
+              </p>
             </div>
-            {bill.payment_method && (
-              <div className="pt-2 text-right text-xs text-neutral-500">
-                Payment: {bill.payment_method}
+
+            <div className="sm:col-span-2">
+              <dl className="space-y-1.5 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-neutral-600">Subtotal</dt>
+                  <dd className="font-num text-neutral-900">{formatINR(bill.subtotal)}</dd>
+                </div>
+                {Number(bill.discount) > 0 && (
+                  <div className="flex justify-between">
+                    <dt className="text-neutral-600">Discount</dt>
+                    <dd className="font-num text-neutral-900">− {formatINR(bill.discount)}</dd>
+                  </div>
+                )}
+                {Number(bill.tax) > 0 && (
+                  <div className="flex justify-between">
+                    <dt className="text-neutral-600">Tax</dt>
+                    <dd className="font-num text-neutral-900">{formatINR(bill.tax)}</dd>
+                  </div>
+                )}
+                <div className="mt-2 flex items-center justify-between rounded-md bg-neutral-900 px-4 py-3 text-white">
+                  <dt className="text-[11px] font-semibold uppercase tracking-widest">Total Due</dt>
+                  <dd className="font-num text-xl font-extrabold">{formatINR(bill.grand_total)}</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="mt-10 border-t border-neutral-200 pt-5">
+            <div className="grid grid-cols-1 gap-3 text-[11px] text-neutral-600 sm:grid-cols-3">
+              <div className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                <span>{SHOP_ADDRESS}</span>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Thank you */}
-        <div className="mt-16 font-display text-3xl italic text-black">Thank You!</div>
-
-        {/* Footer */}
-        <div className="mt-12 border-t border-neutral-200 pt-4 text-right text-xs text-neutral-700">
-          <div className="font-display text-base font-bold text-black">Used Mobiles</div>
-          <div>{SHOP_ADDRESS}</div>
-          <div>
-            Phone: {SHOP_PHONE} · WhatsApp: {SHOP_WHATSAPP_DISPLAY}
-          </div>
+              <div className="flex items-start gap-2">
+                <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                <span>{SHOP_PHONE}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <MessageCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                <span>WhatsApp {SHOP_WHATSAPP_DISPLAY}</span>
+              </div>
+            </div>
+            <div className="mt-4 text-center text-[10px] uppercase tracking-[0.25em] text-neutral-400">
+              This is a computer-generated invoice
+            </div>
+          </footer>
         </div>
       </div>
 
@@ -227,6 +267,7 @@ function ReceiptPage() {
           @page { size: A4; margin: 12mm; }
           html, body { background: #fff !important; }
           .no-print { display: none !important; }
+          .invoice-sheet { padding: 0 !important; }
         }
       `}</style>
     </div>
