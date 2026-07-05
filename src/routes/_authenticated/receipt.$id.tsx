@@ -92,7 +92,7 @@ function ReceiptPage() {
   const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
 
   return (
-    <div className="min-h-screen bg-neutral-100 text-neutral-900 print:bg-white">
+    <div className="print-root min-h-screen bg-neutral-100 text-neutral-900 print:bg-white">
       {/* Toolbar (hidden on print) */}
       <div className="no-print sticky top-0 z-10 border-b border-neutral-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-[210mm] items-center justify-between gap-3 px-4 py-3">
