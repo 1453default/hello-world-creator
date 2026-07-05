@@ -92,7 +92,7 @@ function ReceiptPage() {
   const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
 
   return (
-    <div className="min-h-screen bg-neutral-100 text-neutral-900 print:bg-white">
+    <div className="print-root min-h-screen bg-neutral-100 text-neutral-900 print:bg-white">
       {/* Toolbar (hidden on print) */}
       <div className="no-print sticky top-0 z-10 border-b border-neutral-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-[210mm] items-center justify-between gap-3 px-4 py-3">
@@ -368,14 +368,39 @@ function ReceiptPage() {
         }
         @media print {
           @page { size: A4; margin: 0; }
-          html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+          html, body {
+            background: #fff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            min-height: 297mm !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           .no-print { display: none !important; }
+          /* Neutralise on-screen wrappers so the sheet fills the sheet of paper */
+          .print-root,
+          .print-root > * {
+            background: #fff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+            max-width: none !important;
+            width: 100% !important;
+            box-shadow: none !important;
+          }
           .invoice-sheet {
             width: 210mm !important;
             min-height: 297mm !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
             box-shadow: none !important;
             ring: 0 !important;
+            border-radius: 0 !important;
+          }
+          .invoice-sheet * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         }
       `}</style>
