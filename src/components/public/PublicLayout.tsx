@@ -72,7 +72,7 @@ function PublicFooter() {
             <img src="/USED_MOBILE_LOGO.png" alt="" className="h-9 w-9 object-contain" />
             <div>
               <div className="font-display font-extrabold text-foreground">USED MOBILES</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">BUY - SELL - TRUST</div>
+              <div className="mt-1.5"><BrandTagline /></div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
