@@ -20,9 +20,7 @@ export const listReservations = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(Math.min(data.limit ?? 100, 500));
     if (data.status) q = q.eq("status", data.status);
-    const { data: rows, error } = await q;
-    if (error) throw new Error(error.message);
-    return rows as unknown[];
+    return (rows ?? []) as any[];
   });
 
 /** Fetch a single reservation with its audit trail. */
