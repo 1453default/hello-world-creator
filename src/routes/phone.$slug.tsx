@@ -313,7 +313,7 @@ function Gallery({
       </div>
 
       {hasMany && (
-        <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="mt-3 flex w-full max-w-full gap-2 overflow-x-auto no-scrollbar">
           {images.map((img: any, i: number) => (
             <button
               key={i}
