@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { bannerImageUrl, type PromoBanner } from "@/lib/banners";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { bannerImageRef, type PromoBanner } from "@/lib/banners";
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 
 type Props = {
   banners: PromoBanner[];
@@ -11,12 +12,8 @@ type Props = {
 
 /**
  * Premium promotional banner carousel.
- * - Auto-play with infinite loop
- * - Touch/swipe support
- * - Prev/Next arrows + dot pagination
- * - Pause on hover (desktop)
- * - Keyboard arrow-key navigation when focused
- * - Fills its container height; images use object-cover (never stretched)
+ * - Signs storage URLs client-side (no dependency on SSR image proxy — works on Vercel)
+ * - Auto-play, infinite loop, swipe, arrows, dots, pause-on-hover, keyboard nav
  */
 export function PromoBannerSlider({ banners, autoplayMs = 5500, className = "" }: Props) {
   const [index, setIndex] = useState(0);
@@ -44,7 +41,6 @@ export function PromoBannerSlider({ banners, autoplayMs = 5500, className = "" }
   };
 
   if (count === 0) return null;
-  const banner = banners[index];
 
   return (
     <div
@@ -63,56 +59,10 @@ export function PromoBannerSlider({ banners, autoplayMs = 5500, className = "" }
         if (Math.abs(dx) > 40) (dx < 0 ? next : prev)();
         touchStartX.current = null;
       }}
-      className={`relative w-full h-full overflow-hidden rounded-2xl border border-border bg-muted shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
+      className={`group relative w-full h-full overflow-hidden rounded-3xl border border-border/60 bg-muted shadow-2xl ring-1 ring-ink/5 outline-none focus-visible:ring-2 focus-visible:ring-primary ${className}`}
     >
       <AnimatePresence initial={false} mode="wait">
-        <motion.div
-          key={banner.id}
-          initial={{ opacity: 0, scale: 1.03 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0"
-          aria-roledescription="slide"
-          aria-label={`${index + 1} of ${count}`}
-        >
-          <img
-            src={bannerImageUrl(banner.image_path)}
-            alt={banner.heading ?? "Promotional banner"}
-            className="h-full w-full object-cover"
-            loading={index === 0 ? "eager" : "lazy"}
-            decoding="async"
-            draggable={false}
-          />
-          {/* Readability overlay — always subtle so real images shine */}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
-
-          {(banner.heading || banner.subheading || (banner.button_text && banner.button_link)) && (
-            <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7 md:p-8">
-              <div className="max-w-lg">
-                {banner.heading && (
-                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold leading-tight text-white drop-shadow-md">
-                    {banner.heading}
-                  </h3>
-                )}
-                {banner.subheading && (
-                  <p className="mt-1.5 text-xs sm:text-sm md:text-base text-white/85 max-w-md line-clamp-2">
-                    {banner.subheading}
-                  </p>
-                )}
-                {banner.button_text && banner.button_link && (
-                  <a
-                    href={banner.button_link}
-                    className="mt-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground shadow-lg hover:bg-amber-dark transition"
-                  >
-                    {banner.button_text}
-                    <ChevronRight className="h-4 w-4" />
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </motion.div>
+        <BannerSlide key={banners[index].id} banner={banners[index]} index={index} count={count} />
       </AnimatePresence>
 
       {count > 1 && (
@@ -121,7 +71,7 @@ export function PromoBannerSlider({ banners, autoplayMs = 5500, className = "" }
             type="button"
             aria-label="Previous banner"
             onClick={prev}
-            className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-10 grid h-9 w-9 sm:h-10 sm:w-10 place-items-center rounded-full bg-white/85 text-ink shadow-md backdrop-blur hover:bg-white transition"
+            className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-10 grid h-9 w-9 sm:h-11 sm:w-11 place-items-center rounded-full bg-white/85 text-ink shadow-lg backdrop-blur-md ring-1 ring-white/60 hover:bg-white hover:scale-105 active:scale-95 transition"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -129,12 +79,12 @@ export function PromoBannerSlider({ banners, autoplayMs = 5500, className = "" }
             type="button"
             aria-label="Next banner"
             onClick={next}
-            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-10 grid h-9 w-9 sm:h-10 sm:w-10 place-items-center rounded-full bg-white/85 text-ink shadow-md backdrop-blur hover:bg-white transition"
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-10 grid h-9 w-9 sm:h-11 sm:w-11 place-items-center rounded-full bg-white/85 text-ink shadow-lg backdrop-blur-md ring-1 ring-white/60 hover:bg-white hover:scale-105 active:scale-95 transition"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
 
-          <div className="absolute inset-x-0 bottom-2 sm:bottom-3 z-10 flex justify-center gap-1.5">
+          <div className="absolute inset-x-0 bottom-3 sm:bottom-4 z-10 flex justify-center gap-1.5">
             {banners.map((b, i) => (
               <button
                 key={b.id}
@@ -142,12 +92,88 @@ export function PromoBannerSlider({ banners, autoplayMs = 5500, className = "" }
                 onClick={() => setIndex(i)}
                 aria-label={`Go to banner ${i + 1}`}
                 aria-current={i === index}
-                className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-white" : "w-1.5 bg-white/60 hover:bg-white/90"}`}
+                className={`h-1.5 rounded-full transition-all duration-500 ${i === index ? "w-8 bg-white shadow-md" : "w-1.5 bg-white/50 hover:bg-white/80"}`}
               />
             ))}
           </div>
         </>
       )}
     </div>
+  );
+}
+
+function BannerSlide({ banner, index, count }: { banner: PromoBanner; index: number; count: number }) {
+  const src = useSignedImageUrl(bannerImageRef(banner.image_path));
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 1.04 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.01 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="absolute inset-0"
+      aria-roledescription="slide"
+      aria-label={`${index + 1} of ${count}`}
+    >
+      {/* Skeleton shimmer while image loads */}
+      {!loaded && !failed && (
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-muted via-accent to-muted" />
+      )}
+
+      {src && !failed && (
+        <img
+          src={src}
+          alt={banner.heading ?? "Promotional banner"}
+          className={`h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+          loading={index === 0 ? "eager" : "lazy"}
+          decoding="async"
+          draggable={false}
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+        />
+      )}
+
+      {/* Fallback gradient panel if image fails */}
+      {failed && (
+        <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/90 to-primary/40" />
+      )}
+
+      {/* Premium multi-stop overlay — always readable, never washes out image */}
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-ink/60 via-transparent to-transparent" />
+
+      {(banner.heading || banner.subheading || (banner.button_text && banner.button_link)) && (
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 md:p-10">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-xl"
+          >
+            {banner.heading && (
+              <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
+                {banner.heading}
+              </h3>
+            )}
+            {banner.subheading && (
+              <p className="mt-2 sm:mt-3 text-sm sm:text-base md:text-lg text-white/90 max-w-md line-clamp-2 drop-shadow-[0_1px_6px_rgba(0,0,0,0.4)]">
+                {banner.subheading}
+              </p>
+            )}
+            {banner.button_text && banner.button_link && (
+              <a
+                href={banner.button_link}
+                className="group/cta mt-4 sm:mt-5 inline-flex h-11 sm:h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm sm:text-base font-bold text-primary-foreground shadow-[0_10px_30px_-8px_rgba(245,158,11,0.55)] hover:shadow-[0_14px_36px_-8px_rgba(245,158,11,0.7)] hover:-translate-y-0.5 active:translate-y-0 transition"
+              >
+                {banner.button_text}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/cta:translate-x-1" />
+              </a>
+            )}
+          </motion.div>
+        </div>
+      )}
+    </motion.div>
   );
 }
