@@ -74,6 +74,7 @@ export type Database = {
       }
       bills: {
         Row: {
+          advance_paid: number
           bill_number: string | null
           created_at: string
           created_by: string | null
@@ -83,12 +84,14 @@ export type Database = {
           grand_total: number
           id: string
           payment_method: string | null
+          reservation_id: string | null
           status: string
           subtotal: number
           tax: number
           updated_at: string
         }
         Insert: {
+          advance_paid?: number
           bill_number?: string | null
           created_at?: string
           created_by?: string | null
@@ -98,12 +101,14 @@ export type Database = {
           grand_total?: number
           id?: string
           payment_method?: string | null
+          reservation_id?: string | null
           status?: string
           subtotal?: number
           tax?: number
           updated_at?: string
         }
         Update: {
+          advance_paid?: number
           bill_number?: string | null
           created_at?: string
           created_by?: string | null
@@ -113,12 +118,21 @@ export type Database = {
           grand_total?: number
           id?: string
           payment_method?: string | null
+          reservation_id?: string | null
           status?: string
           subtotal?: number
           tax?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bills_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       brands: {
         Row: {
@@ -381,6 +395,168 @@ export type Database = {
         }
         Relationships: []
       }
+      reservation_events: {
+        Row: {
+          actor: string
+          created_at: string
+          event_type: string
+          id: string
+          new_status: string | null
+          payload: Json | null
+          payload_hash: string | null
+          prev_status: string | null
+          reservation_id: string | null
+        }
+        Insert: {
+          actor?: string
+          created_at?: string
+          event_type: string
+          id?: string
+          new_status?: string | null
+          payload?: Json | null
+          payload_hash?: string | null
+          prev_status?: string | null
+          reservation_id?: string | null
+        }
+        Update: {
+          actor?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          new_status?: string | null
+          payload?: Json | null
+          payload_hash?: string | null
+          prev_status?: string | null
+          reservation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservation_events_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservations: {
+        Row: {
+          balance_due: number
+          cancelled_at: string | null
+          confirmed_at: string | null
+          converted_at: string | null
+          converted_bill_id: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          hold_expires_at: string
+          id: string
+          inventory_unit_id: string
+          ip_address: string | null
+          product_id: string
+          product_price: number
+          public_token: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          razorpay_signature: string | null
+          refund_amount: number
+          refund_id: string | null
+          refund_reason: string | null
+          refunded_at: string | null
+          reservation_amount: number
+          reservation_expires_at: string | null
+          reservation_number: string | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          balance_due: number
+          cancelled_at?: string | null
+          confirmed_at?: string | null
+          converted_at?: string | null
+          converted_bill_id?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name: string
+          customer_phone: string
+          hold_expires_at?: string
+          id?: string
+          inventory_unit_id: string
+          ip_address?: string | null
+          product_id: string
+          product_price: number
+          public_token?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          razorpay_signature?: string | null
+          refund_amount?: number
+          refund_id?: string | null
+          refund_reason?: string | null
+          refunded_at?: string | null
+          reservation_amount: number
+          reservation_expires_at?: string | null
+          reservation_number?: string | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          balance_due?: number
+          cancelled_at?: string | null
+          confirmed_at?: string | null
+          converted_at?: string | null
+          converted_bill_id?: string | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string
+          hold_expires_at?: string
+          id?: string
+          inventory_unit_id?: string
+          ip_address?: string | null
+          product_id?: string
+          product_price?: number
+          public_token?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          razorpay_signature?: string | null
+          refund_amount?: number
+          refund_id?: string | null
+          refund_reason?: string | null
+          refunded_at?: string | null
+          reservation_amount?: number
+          reservation_expires_at?: string | null
+          reservation_number?: string | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_converted_bill_id_fkey"
+            columns: ["converted_bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_inventory_unit_id_fkey"
+            columns: ["inventory_unit_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shop_settings: {
         Row: {
           key: string
@@ -439,6 +615,150 @@ export type Database = {
       }
     }
     Functions: {
+      attach_razorpay_order: {
+        Args: { _razorpay_order_id: string; _reservation_id: string }
+        Returns: undefined
+      }
+      calc_reservation_amount: { Args: { _price: number }; Returns: number }
+      check_refund_eligibility: {
+        Args: { _reservation_id: string }
+        Returns: {
+          amount: number
+          eligible: boolean
+          percent: number
+          reason: string
+        }[]
+      }
+      confirm_reservation: {
+        Args: {
+          _razorpay_order_id: string
+          _razorpay_payment_id: string
+          _razorpay_signature: string
+          _reservation_id: string
+        }
+        Returns: {
+          balance_due: number
+          cancelled_at: string | null
+          confirmed_at: string | null
+          converted_at: string | null
+          converted_bill_id: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          hold_expires_at: string
+          id: string
+          inventory_unit_id: string
+          ip_address: string | null
+          product_id: string
+          product_price: number
+          public_token: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          razorpay_signature: string | null
+          refund_amount: number
+          refund_id: string | null
+          refund_reason: string | null
+          refunded_at: string | null
+          reservation_amount: number
+          reservation_expires_at: string | null
+          reservation_number: string | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "reservations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      convert_reservation_to_sale: {
+        Args: {
+          _discount?: number
+          _payment_method: string
+          _reservation_id: string
+          _tax?: number
+        }
+        Returns: {
+          advance_paid: number
+          bill_number: string | null
+          created_at: string
+          created_by: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          discount: number
+          grand_total: number
+          id: string
+          payment_method: string | null
+          reservation_id: string | null
+          status: string
+          subtotal: number
+          tax: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bills"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_reservation_hold: {
+        Args: {
+          _customer_email: string
+          _customer_name: string
+          _customer_phone: string
+          _inventory_unit_id: string
+          _ip?: string
+          _user_agent?: string
+        }
+        Returns: {
+          balance_due: number
+          cancelled_at: string | null
+          confirmed_at: string | null
+          converted_at: string | null
+          converted_bill_id: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          hold_expires_at: string
+          id: string
+          inventory_unit_id: string
+          ip_address: string | null
+          product_id: string
+          product_price: number
+          public_token: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          razorpay_signature: string | null
+          refund_amount: number
+          refund_id: string | null
+          refund_reason: string | null
+          refunded_at: string | null
+          reservation_amount: number
+          reservation_expires_at: string | null
+          reservation_number: string | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "reservations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      expire_stale_reservations: {
+        Args: never
+        Returns: {
+          expired_confirmed: number
+          expired_pending: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -447,6 +767,52 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      record_reservation_cancellation: {
+        Args: {
+          _actor?: string
+          _reason: string
+          _refund_amount: number
+          _refund_id: string
+          _reservation_id: string
+        }
+        Returns: {
+          balance_due: number
+          cancelled_at: string | null
+          confirmed_at: string | null
+          converted_at: string | null
+          converted_bill_id: string | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          hold_expires_at: string
+          id: string
+          inventory_unit_id: string
+          ip_address: string | null
+          product_id: string
+          product_price: number
+          public_token: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          razorpay_signature: string | null
+          refund_amount: number
+          refund_id: string | null
+          refund_reason: string | null
+          refunded_at: string | null
+          reservation_amount: number
+          reservation_expires_at: string | null
+          reservation_number: string | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "reservations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "staff"
