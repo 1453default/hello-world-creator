@@ -12,7 +12,12 @@ export const Route = createFileRoute("/sitemap.xml")({
         const staticEntries: { path: string; changefreq: string; priority: string }[] = [
           { path: "/", changefreq: "daily", priority: "1.0" },
           { path: "/catalog", changefreq: "daily", priority: "0.9" },
+          { path: "/about", changefreq: "monthly", priority: "0.6" },
           { path: "/contact", changefreq: "monthly", priority: "0.6" },
+          { path: "/privacy", changefreq: "yearly", priority: "0.3" },
+          { path: "/refund-policy", changefreq: "yearly", priority: "0.3" },
+          { path: "/return-policy", changefreq: "yearly", priority: "0.3" },
+          { path: "/disclaimer", changefreq: "yearly", priority: "0.3" },
         ];
 
         const dynamicEntries: { path: string; lastmod?: string }[] = [];
