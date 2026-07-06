@@ -10,8 +10,8 @@ export function PublicLayout({ children }: { children: ReactNode }) {
     <div className="min-h-dvh flex flex-col bg-background">
       <PublicHeader />
       <main
-        className="flex-1 pb-32 md:pb-12"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8rem)" }}
+        className="flex-1"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 7rem)" }}
       >
         {children}
       </main>
