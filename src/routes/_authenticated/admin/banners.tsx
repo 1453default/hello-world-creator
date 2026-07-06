@@ -95,12 +95,7 @@ function BannersPage() {
             {banners.map((b) => (
               <li key={b.id} className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
                 <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-lg bg-admin-surface-2">
-                  <img
-                    src={bannerImageUrl(b.image_path)}
-                    alt={b.heading ?? "Banner"}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
+                  <BannerThumb path={b.image_path} alt={b.heading ?? "Banner"} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
