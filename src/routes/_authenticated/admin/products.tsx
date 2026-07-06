@@ -902,8 +902,18 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
       if (!next.ram && r.ram) next.ram = r.ram;
       if (!next.color && r.color) next.color = r.color;
       if (!next.description && r.description) next.description = r.description;
-      const cond = r.condition?.toLowerCase();
-      if (cond && ["like_new", "good", "fair", "poor"].includes(cond)) next.condition = cond;
+      const cond = r.condition?.toLowerCase().trim();
+      const condMap: Record<string, string> = {
+        // New grades
+        "a++": "a_plus_plus", "grade a++": "a_plus_plus", a_plus_plus: "a_plus_plus",
+        "a+": "a_plus", "grade a+": "a_plus", a_plus: "a_plus",
+        a: "a", "grade a": "a",
+        b: "b", "grade b": "b",
+        c: "c", "grade c": "c",
+        // Legacy mapping
+        like_new: "a_plus", good: "a", fair: "b", poor: "c",
+      };
+      if (cond && condMap[cond]) next.condition = condMap[cond];
       const price = Number(r.sellingPrice || r.stickerPrice || 0);
       if (!next.selling_price && price > 0) next.selling_price = price;
       if (!next.brand_id && r.brand) {
