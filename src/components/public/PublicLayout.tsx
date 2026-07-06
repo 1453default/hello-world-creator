@@ -41,6 +41,7 @@ function PublicHeader() {
           {[
             { to: "/", label: "Home" },
             { to: "/catalog", label: "Catalog" },
+            { to: "/about", label: "About" },
             { to: "/contact", label: "Contact" },
           ].map((n) => (
             <Link
