@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin, ChevronRight, BadgeCheck, RotateCcw, Store } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { RecentlySoldCard } from "@/components/public/RecentlySoldCard";
+import { PromoBannerSlider } from "@/components/public/PromoBannerSlider";
 import { brandsQuery, allProductsQuery, recentlySoldQuery } from "@/lib/catalog";
+import { activeBannersQuery } from "@/lib/banners";
 import { whatsappLink } from "@/lib/shop";
 import { InstagramReels } from "@/components/public/InstagramReels";
 import { latestStockReels, testimonialReels } from "@/lib/instagram";
@@ -36,6 +38,7 @@ export const Route = createFileRoute("/")({
       context.queryClient.ensureQueryData(brandsQuery),
       context.queryClient.ensureQueryData(allProductsQuery),
       context.queryClient.ensureQueryData(recentlySoldQuery),
+      context.queryClient.ensureQueryData(activeBannersQuery),
     ]);
   },
 
@@ -67,6 +70,7 @@ function HomePage() {
   const { data: brands } = useSuspenseQuery(brandsQuery);
   const { data: products } = useSuspenseQuery(allProductsQuery);
   const { data: recentlySold } = useSuspenseQuery(recentlySoldQuery);
+  const { data: banners = [] } = useQuery(activeBannersQuery);
 
   const [activeBudget, setActiveBudget] = useState<number | null>(null);
   const [activeBrand, setActiveBrand] = useState<string | null>(null);
@@ -157,48 +161,54 @@ function HomePage() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="relative"
             >
-              <div className="grid grid-cols-5 grid-rows-2 gap-3 h-[380px] sm:h-[440px] md:h-[500px]">
-                {/* Main hero image */}
-                <figure className="relative col-span-3 row-span-2 overflow-hidden rounded-2xl border border-border bg-muted shadow-xl">
-                  <img
-                    src={heroMain}
-                    alt="USED MOBILES store counter with premium pre-owned smartphones on display"
-                    className="h-full w-full object-cover"
-                    loading="eager"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent p-4">
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-ink">
-                      <MapPin className="h-3 w-3 text-primary" /> Toli Chowki · Hyderabad
+              {banners.length > 0 ? (
+                <div className="h-[280px] sm:h-[380px] md:h-[440px] lg:h-[500px]">
+                  <PromoBannerSlider banners={banners} />
+                </div>
+              ) : (
+                <div className="grid grid-cols-5 grid-rows-2 gap-3 h-[380px] sm:h-[440px] md:h-[500px]">
+                  {/* Main hero image */}
+                  <figure className="relative col-span-3 row-span-2 overflow-hidden rounded-2xl border border-border bg-muted shadow-xl">
+                    <img
+                      src={heroMain}
+                      alt="USED MOBILES store counter with premium pre-owned smartphones on display"
+                      className="h-full w-full object-cover"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent p-4">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-ink">
+                        <MapPin className="h-3 w-3 text-primary" /> Toli Chowki · Hyderabad
+                      </div>
                     </div>
-                  </div>
-                </figure>
+                  </figure>
 
-                {/* Supporting top */}
-                <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
-                  <img
-                    src={heroEnt}
-                    alt="USED MOBILES store interior with Samsung counter and accessory display"
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </figure>
+                  {/* Supporting top */}
+                  <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
+                    <img
+                      src={heroEnt}
+                      alt="USED MOBILES store interior with Samsung counter and accessory display"
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </figure>
 
-                {/* Supporting bottom */}
-                <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
-                  <img
-                    src={heroLeft}
-                    alt="Side view of USED MOBILES shop showing organized phone accessory wall"
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute right-2 bottom-2 rounded-full bg-emerald/95 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
-                    ● Open Today
-                  </div>
-                </figure>
-              </div>
+                  {/* Supporting bottom */}
+                  <figure className="relative col-span-2 row-span-1 overflow-hidden rounded-2xl border border-border bg-muted shadow-md">
+                    <img
+                      src={heroLeft}
+                      alt="Side view of USED MOBILES shop showing organized phone accessory wall"
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute right-2 bottom-2 rounded-full bg-emerald/95 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
+                      ● Open Today
+                    </div>
+                  </figure>
+                </div>
+              )}
 
               {/* Decorative glow */}
               <div className="pointer-events-none absolute -inset-6 -z-10 rounded-3xl bg-gradient-to-br from-amber/10 via-transparent to-info/10 blur-2xl" />
