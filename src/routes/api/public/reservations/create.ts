@@ -119,7 +119,7 @@ export const Route = createFileRoute("/api/public/reservations/create")({
           });
         } catch (err) {
           // Rollback the hold if order creation fails.
-          await supabaseAdmin.rpc("record_reservation_cancellation", {
+          await (supabaseAdmin.rpc as any)("record_reservation_cancellation", {
             _reservation_id: res.id,
             _refund_amount: 0,
             _refund_id: null,
