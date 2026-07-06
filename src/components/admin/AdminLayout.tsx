@@ -16,6 +16,7 @@ import {
   X,
   LogOut,
   ExternalLink,
+  BookmarkCheck,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +37,7 @@ const NAV: NavItem[] = [
   { to: "/admin/products", label: "Products", icon: Smartphone },
   { to: "/admin/banners", label: "Banners", icon: Megaphone },
   { to: "/admin/pos", label: "POS / Billing", icon: ShoppingCart },
+  { to: "/admin/reservations", label: "Reservations", icon: BookmarkCheck },
   { to: "/admin/bills", label: "Bills", icon: Receipt },
   { to: "/admin/customers", label: "Customers", icon: Users },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
