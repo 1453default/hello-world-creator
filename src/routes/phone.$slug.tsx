@@ -177,9 +177,6 @@ function PhoneDetail() {
               >
                 <CalendarCheck className="h-5 w-5" />
                 Reserve Now
-                <span className="hidden sm:inline text-primary-foreground/80 font-num text-sm font-semibold">
-                  · advance from ₹—
-                </span>
               </button>
             ) : reservationState === "pending" ? (
               <div className="mt-6 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 flex items-start gap-3">
