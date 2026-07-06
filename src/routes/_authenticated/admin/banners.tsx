@@ -4,7 +4,13 @@ import { useRef, useState } from "react";
 import { Pencil, Trash2, Plus, Eye, EyeOff, Upload, Loader2, ExternalLink, ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { BANNER_BUCKET, bannerImageUrl, type PromoBanner } from "@/lib/banners";
+import { BANNER_BUCKET, bannerImageRef, type PromoBanner } from "@/lib/banners";
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
+
+function BannerThumb({ path, alt }: { path: string; alt: string }) {
+  const url = useSignedImageUrl(bannerImageRef(path));
+  return <img src={url} alt={alt} className="h-full w-full object-cover" loading="lazy" />;
+}
 
 export const Route = createFileRoute("/_authenticated/admin/banners")({
   head: () => ({ meta: [{ title: "Promotional Banners · Admin" }] }),
