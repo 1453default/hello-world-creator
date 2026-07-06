@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminBrandsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminBillsRouteImport } from './routes/_authenticated/admin/bills'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin/audit'
+import { Route as ApiPublicWebhooksRazorpayRouteImport } from './routes/api/public/webhooks/razorpay'
 import { Route as ApiPublicReservationsVerifyRouteImport } from './routes/api/public/reservations/verify'
 import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
@@ -157,6 +158,12 @@ const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const ApiPublicWebhooksRazorpayRoute =
+  ApiPublicWebhooksRazorpayRouteImport.update({
+    id: '/api/public/webhooks/razorpay',
+    path: '/api/public/webhooks/razorpay',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicReservationsVerifyRoute =
   ApiPublicReservationsVerifyRouteImport.update({
     id: '/api/public/reservations/verify',
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
+  '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -227,6 +235,7 @@ export interface FileRoutesByTo {
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
+  '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -256,6 +265,7 @@ export interface FileRoutesById {
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
+  '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/api/public/img/$'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
+    | '/api/public/webhooks/razorpay'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/api/public/img/$'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
+    | '/api/public/webhooks/razorpay'
   id:
     | '__root__'
     | '/'
@@ -339,6 +351,7 @@ export interface FileRouteTypes {
     | '/api/public/img/$'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
+    | '/api/public/webhooks/razorpay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -354,6 +367,7 @@ export interface RootRouteChildren {
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   ApiPublicReservationsCreateRoute: typeof ApiPublicReservationsCreateRoute
   ApiPublicReservationsVerifyRoute: typeof ApiPublicReservationsVerifyRoute
+  ApiPublicWebhooksRazorpayRoute: typeof ApiPublicWebhooksRazorpayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -519,6 +533,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/webhooks/razorpay': {
+      id: '/api/public/webhooks/razorpay'
+      path: '/api/public/webhooks/razorpay'
+      fullPath: '/api/public/webhooks/razorpay'
+      preLoaderRoute: typeof ApiPublicWebhooksRazorpayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/reservations/verify': {
       id: '/api/public/reservations/verify'
       path: '/api/public/reservations/verify'
@@ -605,6 +626,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   ApiPublicReservationsCreateRoute: ApiPublicReservationsCreateRoute,
   ApiPublicReservationsVerifyRoute: ApiPublicReservationsVerifyRoute,
+  ApiPublicWebhooksRazorpayRoute: ApiPublicWebhooksRazorpayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
