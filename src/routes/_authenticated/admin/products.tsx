@@ -9,7 +9,7 @@ import {
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/admin-utils";
-import { formatINR } from "@/lib/shop";
+import { formatINR, CONDITION_GRADES } from "@/lib/shop";
 import { ProductImagesManager } from "@/components/admin/ProductImagesManager";
 import { type AiScanResult } from "@/components/admin/AiProductScanner";
 import { featureFlags } from "@/lib/feature-flags";
@@ -877,7 +877,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
     storage: product?.storage ?? "",
     ram: product?.ram ?? "",
     color: product?.color ?? "",
-    condition: product?.condition ?? "good",
+    condition: product?.condition ?? "a",
     selling_price: product?.selling_price ?? 0,
     description: product?.description ?? "",
     is_featured: product?.is_featured ?? false,
@@ -902,8 +902,18 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
       if (!next.ram && r.ram) next.ram = r.ram;
       if (!next.color && r.color) next.color = r.color;
       if (!next.description && r.description) next.description = r.description;
-      const cond = r.condition?.toLowerCase();
-      if (cond && ["like_new", "good", "fair", "poor"].includes(cond)) next.condition = cond;
+      const cond = r.condition?.toLowerCase().trim();
+      const condMap: Record<string, string> = {
+        // New grades
+        "a++": "a_plus_plus", "grade a++": "a_plus_plus", a_plus_plus: "a_plus_plus",
+        "a+": "a_plus", "grade a+": "a_plus", a_plus: "a_plus",
+        a: "a", "grade a": "a",
+        b: "b", "grade b": "b",
+        c: "c", "grade c": "c",
+        // Legacy mapping
+        like_new: "a_plus", good: "a", fair: "b", poor: "c",
+      };
+      if (cond && condMap[cond]) next.condition = condMap[cond];
       const price = Number(r.sellingPrice || r.stickerPrice || 0);
       if (!next.selling_price && price > 0) next.selling_price = price;
       if (!next.brand_id && r.brand) {
@@ -1022,10 +1032,9 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
             <Field label="Color"><input value={form.color} onChange={(e) => set("color", e.target.value)} className="admin-input" /></Field>
             <Field label="Condition">
               <select value={form.condition} onChange={(e) => set("condition", e.target.value)} className="admin-input">
-                <option value="like_new">Like New</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
+                {CONDITION_GRADES.map((g) => (
+                  <option key={g.value} value={g.value}>{g.label}</option>
+                ))}
               </select>
             </Field>
             <Field label="Selling Price (₹)">

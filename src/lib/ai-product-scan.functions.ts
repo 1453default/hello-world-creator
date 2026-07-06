@@ -25,7 +25,7 @@ Rules:
 - Return ONLY a single JSON object matching the given schema. No prose, no markdown, no code fences.
 - Never invent data. If a field is not clearly visible or inferable, return an empty string "".
 - "sellingPrice" and "stickerPrice" are numbers as plain digits (e.g. "15500"), no currency symbols. Empty string if not visible.
-- "condition" is one of: "like_new", "good", "fair", "poor", or "".
+- "condition" is one of these professional grades: "a_plus_plus" (near-mint), "a_plus" (excellent), "a" (very good), "b" (good, visible wear), "c" (fair, heavy wear), or "".
 - "confidence" is a number 0..1 indicating overall extraction confidence.
 - Prefer the sticker text if a shop price sticker is visible.
 - For "description", write ONE short marketing line (max ~120 chars) only if brand+model are known, otherwise "".`;

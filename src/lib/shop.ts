@@ -22,11 +22,29 @@ export function formatINR(n: number | string | null | undefined): string {
   return "₹" + (v as number).toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
+/**
+ * Professional grading system used across the storefront and admin.
+ * Highest → lowest quality. Codes are the DB values; labels are user-facing.
+ */
+export const CONDITION_GRADES = [
+  { value: "a_plus_plus", label: "Grade A++" },
+  { value: "a_plus", label: "Grade A+" },
+  { value: "a", label: "Grade A" },
+  { value: "b", label: "Grade B" },
+  { value: "c", label: "Grade C" },
+] as const;
+
 export const conditionLabel: Record<string, string> = {
-  like_new: "Like New",
-  good: "Good",
-  fair: "Fair",
-  poor: "Poor",
+  a_plus_plus: "Grade A++",
+  a_plus: "Grade A+",
+  a: "Grade A",
+  b: "Grade B",
+  c: "Grade C",
+  // Legacy fallbacks (pre-migration). Map to the closest new grade.
+  like_new: "Grade A+",
+  good: "Grade A",
+  fair: "Grade B",
+  poor: "Grade C",
 };
 
 export const shopSettingsQuery = queryOptions({
