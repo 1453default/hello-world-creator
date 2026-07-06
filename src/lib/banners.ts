@@ -16,8 +16,13 @@ export type PromoBanner = {
 
 export const BANNER_BUCKET = "promo-banners";
 
-export function bannerImageUrl(path: string) {
-  return `/api/public/img/${BANNER_BUCKET}/${path}`;
+/**
+ * Return a stable storage reference (`bucket::path`) that components sign
+ * client-side via `useSignedImageUrl`. Avoids depending on the SSR image
+ * proxy route, which is unavailable on static Vercel deployments.
+ */
+export function bannerImageRef(path: string) {
+  return `${BANNER_BUCKET}::${path}`;
 }
 
 export const activeBannersQuery = queryOptions({

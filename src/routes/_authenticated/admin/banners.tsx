@@ -4,7 +4,13 @@ import { useRef, useState } from "react";
 import { Pencil, Trash2, Plus, Eye, EyeOff, Upload, Loader2, ExternalLink, ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { BANNER_BUCKET, bannerImageUrl, type PromoBanner } from "@/lib/banners";
+import { BANNER_BUCKET, bannerImageRef, type PromoBanner } from "@/lib/banners";
+import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
+
+function BannerThumb({ path, alt }: { path: string; alt: string }) {
+  const url = useSignedImageUrl(bannerImageRef(path));
+  return <img src={url} alt={alt} className="h-full w-full object-cover" loading="lazy" />;
+}
 
 export const Route = createFileRoute("/_authenticated/admin/banners")({
   head: () => ({ meta: [{ title: "Promotional Banners · Admin" }] }),
@@ -89,12 +95,7 @@ function BannersPage() {
             {banners.map((b) => (
               <li key={b.id} className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
                 <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-lg bg-admin-surface-2">
-                  <img
-                    src={bannerImageUrl(b.image_path)}
-                    alt={b.heading ?? "Banner"}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
+                  <BannerThumb path={b.image_path} alt={b.heading ?? "Banner"} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -171,7 +172,9 @@ function BannerDialog({
   const [isActive, setIsActive] = useState(banner?.is_active ?? true);
   const [order, setOrder] = useState(banner?.display_order ?? 0);
   const [imagePath, setImagePath] = useState(banner?.image_path ?? "");
-  const [preview, setPreview] = useState<string | null>(banner ? bannerImageUrl(banner.image_path) : null);
+  const initialPreview = useSignedImageUrl(banner ? bannerImageRef(banner.image_path) : "");
+  const [previewOverride, setPreviewOverride] = useState<string | null>(null);
+  const preview = previewOverride ?? initialPreview;
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -198,7 +201,7 @@ function BannerDialog({
         await supabase.storage.from(BANNER_BUCKET).remove([imagePath]).catch(() => null);
       }
       setImagePath(path);
-      setPreview(bannerImageUrl(path));
+      setPreviewOverride(URL.createObjectURL(file));
       toast.success("Image uploaded");
     } catch (e) {
       toast.error((e as Error).message);
