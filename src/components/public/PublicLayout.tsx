@@ -9,7 +9,12 @@ export function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh flex flex-col bg-background">
       <PublicHeader />
-      <main className="flex-1 pb-28 md:pb-12">{children}</main>
+      <main
+        className="flex-1 pb-32 md:pb-12"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8rem)" }}
+      >
+        {children}
+      </main>
       <PublicFooter />
       <Dock />
     </div>
