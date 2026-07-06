@@ -126,14 +126,26 @@ export const cancelReservation = createServerFn({ method: "POST" })
       const amt = data.force_full_refund
         ? Number(reservation.reservation_amount)
         : Number(eligibility.amount);
-      const { createRazorpayRefund } = await import("@/lib/razorpay.server");
-      const refund = await createRazorpayRefund({
-        paymentId: reservation.razorpay_payment_id,
-        amountInPaise: Math.round(amt * 100),
-        notes: { reservation_id: data.reservation_id, reason: data.reason },
-      });
-      refundAmount = amt;
-      refundId = refund.id;
+      const { getPaymentProvider, PaymentNotConfiguredError } = await import(
+        "@/lib/payments/index.server"
+      );
+      try {
+        const provider = getPaymentProvider();
+        const refund = await provider.refund({
+          providerPaymentId: reservation.razorpay_payment_id,
+          amount: { amount: amt, currency: "INR" },
+          notes: { reservation_id: data.reservation_id, reason: data.reason },
+        });
+        refundAmount = amt;
+        refundId = refund.providerRefundId;
+      } catch (err) {
+        if (err instanceof PaymentNotConfiguredError) {
+          throw new Error(
+            "Cannot refund yet: payment provider is not configured. Cancel without refund or configure Razorpay credentials.",
+          );
+        }
+        throw err;
+      }
     }
 
     const { data: updated, error } = await (supabaseAdmin.rpc as any)(
