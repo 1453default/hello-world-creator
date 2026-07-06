@@ -122,12 +122,12 @@ function PhoneDetail() {
               </span>
             </div>
 
-            <h1 className="mt-3 font-display text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
               {product.name}
             </h1>
 
-            <div className="mt-4 flex items-baseline gap-3">
-              <div className="font-num text-4xl font-extrabold text-primary">
+            <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <div className="font-num text-3xl sm:text-4xl font-extrabold text-primary">
                 {formatINR(product.selling_price)}
               </div>
               <span className="text-xs text-muted-foreground">Final price · taxes incl.</span>
@@ -168,7 +168,7 @@ function PhoneDetail() {
               </a>
               <a
                 href={`tel:${SHOP_PHONE.replace(/\s/g, "")}`}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-border bg-card px-5 font-bold text-foreground hover:border-primary transition"
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full border-2 border-border bg-card px-5 font-bold text-foreground hover:border-primary transition"
               >
                 <Phone className="h-5 w-5" /> Call shop
               </a>

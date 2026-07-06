@@ -31,7 +31,10 @@ export function Dock() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-3 pointer-events-none">
+    <div
+      className="fixed inset-x-0 z-40 flex justify-center px-3 pointer-events-none"
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
+    >
       <motion.div
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
