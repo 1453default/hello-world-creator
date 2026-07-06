@@ -30,6 +30,7 @@ import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin/customers'
 import { Route as AuthenticatedAdminBrandsRouteImport } from './routes/_authenticated/admin/brands'
 import { Route as AuthenticatedAdminBillsRouteImport } from './routes/_authenticated/admin/bills'
+import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin/audit'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 
@@ -143,6 +144,12 @@ const AuthenticatedAdminBillsRoute = AuthenticatedAdminBillsRouteImport.update({
   path: '/bills',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminBannersRoute =
+  AuthenticatedAdminBannersRouteImport.update({
+    id: '/banners',
+    path: '/banners',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -165,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
   '/admin/brands': typeof AuthenticatedAdminBrandsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -188,6 +196,7 @@ export interface FileRoutesByTo {
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
   '/admin/brands': typeof AuthenticatedAdminBrandsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -214,6 +223,7 @@ export interface FileRoutesById {
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/bills': typeof AuthenticatedAdminBillsRoute
   '/_authenticated/admin/brands': typeof AuthenticatedAdminBrandsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/brand/$slug'
     | '/phone/$slug'
     | '/admin/audit'
+    | '/admin/banners'
     | '/admin/bills'
     | '/admin/brands'
     | '/admin/customers'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/brand/$slug'
     | '/phone/$slug'
     | '/admin/audit'
+    | '/admin/banners'
     | '/admin/bills'
     | '/admin/brands'
     | '/admin/customers'
@@ -288,6 +300,7 @@ export interface FileRouteTypes {
     | '/brand/$slug'
     | '/phone/$slug'
     | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/banners'
     | '/_authenticated/admin/bills'
     | '/_authenticated/admin/brands'
     | '/_authenticated/admin/customers'
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBillsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/banners': {
+      id: '/_authenticated/admin/banners'
+      path: '/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AuthenticatedAdminBannersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/audit': {
       id: '/_authenticated/admin/audit'
       path: '/audit'
@@ -483,6 +503,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminBannersRoute: typeof AuthenticatedAdminBannersRoute
   AuthenticatedAdminBillsRoute: typeof AuthenticatedAdminBillsRoute
   AuthenticatedAdminBrandsRoute: typeof AuthenticatedAdminBrandsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
@@ -498,6 +519,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+    AuthenticatedAdminBannersRoute: AuthenticatedAdminBannersRoute,
     AuthenticatedAdminBillsRoute: AuthenticatedAdminBillsRoute,
     AuthenticatedAdminBrandsRoute: AuthenticatedAdminBrandsRoute,
     AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
