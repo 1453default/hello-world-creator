@@ -168,8 +168,43 @@ function PhoneDetail() {
               </div>
             </div>
 
-            {/* CTAs */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-2">
+            {/* Reserve CTA */}
+            {reservationState === "available" ? (
+              <button
+                type="button"
+                onClick={() => setReserveOpen(true)}
+                className="mt-6 group inline-flex w-full h-14 items-center justify-center gap-2 rounded-full bg-primary px-6 font-bold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-95 hover:shadow-primary/30 active:scale-[0.99] transition"
+              >
+                <CalendarCheck className="h-5 w-5" />
+                Reserve Now
+                <span className="hidden sm:inline text-primary-foreground/80 font-num text-sm font-semibold">
+                  · advance from ₹—
+                </span>
+              </button>
+            ) : reservationState === "pending" ? (
+              <div className="mt-6 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 flex items-start gap-3">
+                <Clock className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-sm text-foreground">
+                  <div className="font-semibold">Reservation in progress</div>
+                  <p className="mt-0.5 text-muted-foreground leading-relaxed">
+                    Another customer is completing payment. If not confirmed shortly, this phone will become available again — check back in a few minutes.
+                  </p>
+                </div>
+              </div>
+            ) : reservationState === "reserved" ? (
+              <div className="mt-6 rounded-2xl border border-border bg-card p-4 flex items-start gap-3">
+                <CalendarCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <div className="text-sm text-foreground">
+                  <div className="font-semibold">Currently reserved</div>
+                  <p className="mt-0.5 text-muted-foreground leading-relaxed">
+                    This exact unit is reserved. If it becomes available again we'll list it back on the catalog.
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Secondary CTAs */}
+            <div className="mt-3 flex flex-col sm:flex-row gap-2">
               <a
                 href={enquire}
                 target="_blank"
@@ -200,6 +235,21 @@ function PhoneDetail() {
           </section>
         )}
       </div>
+
+      <ReserveDialog
+        open={reserveOpen}
+        onOpenChange={setReserveOpen}
+        product={{
+          id: product.id,
+          name: product.name,
+          brand: product.brand,
+          storage: product.storage,
+          ram: product.ram,
+          color: product.color,
+          selling_price: product.selling_price,
+          inventory: inventory,
+        }}
+      />
     </PublicLayout>
   );
 }
