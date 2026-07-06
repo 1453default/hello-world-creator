@@ -71,7 +71,6 @@ function PhoneDetail() {
   const sold = product.available_count === 0;
   const [activeImg, setActiveImg] = useState(0);
   const images = product.images?.length ? product.images : [];
-  const activeImageUrl = useSignedImageUrl(images[activeImg]?.url);
   const similar = allProducts
     .filter((p) => p.id !== product.id && p.brand?.slug === product.brand?.slug)
     .slice(0, 4);
