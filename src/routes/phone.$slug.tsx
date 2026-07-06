@@ -278,7 +278,7 @@ function Gallery({
               type="button"
               aria-label="Previous image"
               onClick={() => go(-1)}
-              className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 grid h-10 w-10 md:h-11 md:w-11 place-items-center rounded-full bg-background/70 backdrop-blur-md border border-border/70 shadow-md text-foreground hover:bg-background hover:border-primary hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition md:opacity-0 md:group-hover:opacity-100"
+              className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 grid h-10 w-10 md:h-11 md:w-11 place-items-center rounded-full bg-background/70 backdrop-blur-md border border-border/70 shadow-md text-foreground hover:bg-background hover:border-primary hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -286,7 +286,7 @@ function Gallery({
               type="button"
               aria-label="Next image"
               onClick={() => go(1)}
-              className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 grid h-10 w-10 md:h-11 md:w-11 place-items-center rounded-full bg-background/70 backdrop-blur-md border border-border/70 shadow-md text-foreground hover:bg-background hover:border-primary hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition md:opacity-0 md:group-hover:opacity-100"
+              className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 grid h-10 w-10 md:h-11 md:w-11 place-items-center rounded-full bg-background/70 backdrop-blur-md border border-border/70 shadow-md text-foreground hover:bg-background hover:border-primary hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
