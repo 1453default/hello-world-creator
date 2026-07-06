@@ -1,7 +1,12 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "default" | "muted" | "print";
+type Tone = "default" | "print";
 
+/**
+ * Premium brand tagline: BUY — SELL — EXCHANGE
+ * Editorial styling: uppercase display, wide tracking, hairline amber rules
+ * as separators. Uses existing theme tokens only (primary/amber + foreground).
+ */
 export function BrandTagline({
   className,
   tone = "default",
@@ -9,36 +14,23 @@ export function BrandTagline({
   className?: string;
   tone?: Tone;
 }) {
-  const textCls =
-    tone === "print"
-      ? "text-neutral-800"
-      : tone === "muted"
-      ? "text-muted-foreground"
-      : "text-foreground/90";
-  const dotCls = tone === "print" ? "bg-amber-500" : "bg-primary";
+  const textCls = tone === "print" ? "text-neutral-700" : "text-foreground/75";
+  const ruleCls = tone === "print" ? "bg-amber-500/80" : "bg-primary/70";
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-display text-[10px] font-bold uppercase leading-none tracking-[0.28em]",
+        "inline-flex items-center gap-2 font-display text-[10px] font-semibold uppercase leading-none tracking-[0.32em]",
         textCls,
         className,
       )}
       aria-label="Buy, Sell, Exchange"
     >
       <span>Buy</span>
-      <span
-        aria-hidden="true"
-        className={cn("h-[3px] w-[3px] shrink-0 rounded-full", dotCls)}
-      />
+      <span aria-hidden="true" className={cn("h-px w-2.5 shrink-0", ruleCls)} />
       <span>Sell</span>
-      <span
-        aria-hidden="true"
-        className={cn("h-[3px] w-[3px] shrink-0 rounded-full", dotCls)}
-      />
-      <span className={tone === "print" ? "text-amber-600" : "text-primary"}>
-        Exchange
-      </span>
+      <span aria-hidden="true" className={cn("h-px w-2.5 shrink-0", ruleCls)} />
+      <span>Exchange</span>
     </span>
   );
 }
