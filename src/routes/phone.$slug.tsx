@@ -92,38 +92,12 @@ function PhoneDetail() {
         <div className="mt-4 grid gap-6 md:grid-cols-[1.1fr_1fr] md:gap-10">
           {/* Gallery */}
           <div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted"
-            >
-              {activeImageUrl ? (
-                <img
-                  src={activeImageUrl}
-                  alt={product.name}
-                  className="h-full w-full object-contain p-4"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                  <Smartphone className="h-24 w-24 opacity-20" strokeWidth={1.25} />
-                </div>
-              )}
-            </motion.div>
-            {images.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
-                {images.map((img: any, i: number) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImg(i)}
-                    className={`h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${
-                      i === activeImg ? "border-primary" : "border-border"
-                    }`}
-                  >
-                    <ProductThumbnail src={img.url} />
-                  </button>
-                ))}
-              </div>
-            )}
+            <Gallery
+              images={images}
+              activeImg={activeImg}
+              setActiveImg={setActiveImg}
+              productName={product.name}
+            />
           </div>
 
           {/* Info */}
