@@ -9,20 +9,36 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const idInput = z.object({ reservation_id: z.string().uuid() });
 
-/** List reservations with optional status filter (RLS: staff only). */
+/** List reservations for the admin panel (staff only). Supports status
+ *  filter and free-text search on customer/reservation number. */
 export const listReservations = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { status?: string; limit?: number }) => data)
+  .inputValidator(
+    (data: {
+      status?: string;
+      search?: string;
+      limit?: number;
+      offset?: number;
+    }) => data,
+  )
   .handler(async ({ data, context }) => {
+    const limit = Math.min(data.limit ?? 50, 200);
+    const offset = Math.max(data.offset ?? 0, 0);
     let q = (context.supabase as any)
       .from("reservations")
-      .select("*")
+      .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
-      .limit(Math.min(data.limit ?? 100, 500));
+      .range(offset, offset + limit - 1);
     if (data.status) q = q.eq("status", data.status);
-    const { data: rows, error } = await q;
+    if (data.search && data.search.trim().length > 0) {
+      const s = data.search.trim().replace(/[%_]/g, "");
+      q = q.or(
+        `reservation_number.ilike.%${s}%,customer_name.ilike.%${s}%,customer_phone.ilike.%${s}%`,
+      );
+    }
+    const { data: rows, error, count } = await q;
     if (error) throw new Error(error.message);
-    return (rows ?? []) as any[];
+    return { rows: (rows ?? []) as any[], total: count ?? 0, limit, offset };
   });
 
 /** Fetch a single reservation with its audit trail. */

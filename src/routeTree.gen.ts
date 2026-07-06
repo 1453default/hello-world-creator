@@ -16,6 +16,7 @@ import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReservationTokenRouteImport } from './routes/reservation.$token'
 import { Route as PhoneSlugRouteImport } from './routes/phone.$slug'
 import { Route as BrandSlugRouteImport } from './routes/brand.$slug'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
@@ -71,6 +72,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReservationTokenRoute = ReservationTokenRouteImport.update({
+  id: '/reservation/$token',
+  path: '/reservation/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PhoneSlugRoute = PhoneSlugRouteImport.update({
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
+  '/reservation/$token': typeof ReservationTokenRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
+  '/reservation/$token': typeof ReservationTokenRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
+  '/reservation/$token': typeof ReservationTokenRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -299,6 +308,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/brand/$slug'
     | '/phone/$slug'
+    | '/reservation/$token'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/bills'
@@ -328,6 +338,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/brand/$slug'
     | '/phone/$slug'
+    | '/reservation/$token'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/bills'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/brand/$slug'
     | '/phone/$slug'
+    | '/reservation/$token'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/bills'
@@ -390,6 +402,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
+  ReservationTokenRoute: typeof ReservationTokenRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   ApiPublicReservationsAvailabilityRoute: typeof ApiPublicReservationsAvailabilityRoute
   ApiPublicReservationsCreateRoute: typeof ApiPublicReservationsCreateRoute
@@ -447,6 +460,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reservation/$token': {
+      id: '/reservation/$token'
+      path: '/reservation/$token'
+      fullPath: '/reservation/$token'
+      preLoaderRoute: typeof ReservationTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/phone/$slug': {
@@ -665,6 +685,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,
+  ReservationTokenRoute: ReservationTokenRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   ApiPublicReservationsAvailabilityRoute:
     ApiPublicReservationsAvailabilityRoute,
