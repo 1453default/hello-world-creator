@@ -87,13 +87,13 @@ function CatalogPage() {
             ))}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {(["like_new", "good", "fair"] as const).map((c) => (
+            {CONDITION_GRADES.map((g) => (
               <button
-                key={c}
-                onClick={() => setCondition(condition === c ? null : c)}
-                className={`chip ${condition === c ? "chip-active" : ""}`}
+                key={g.value}
+                onClick={() => setCondition(condition === g.value ? null : g.value)}
+                className={`chip ${condition === g.value ? "chip-active" : ""}`}
               >
-                {c === "like_new" ? "Like New" : c[0].toUpperCase() + c.slice(1)}
+                {g.label}
               </button>
             ))}
             <div className="ml-auto">
