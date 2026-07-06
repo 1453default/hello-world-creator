@@ -36,6 +36,7 @@ import { Route as ApiPublicWebhooksRazorpayRouteImport } from './routes/api/publ
 import { Route as ApiPublicReservationsVerifyRouteImport } from './routes/api/public/reservations/verify'
 import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
+import { Route as ApiPublicReservationsStatusTokenRouteImport } from './routes/api/public/reservations/status.$token'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -181,6 +182,12 @@ const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
   path: '/api/public/img/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicReservationsStatusTokenRoute =
+  ApiPublicReservationsStatusTokenRouteImport.update({
+    id: '/api/public/reservations/status/$token',
+    path: '/api/public/reservations/status/$token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
+  '/api/public/reservations/status/$token': typeof ApiPublicReservationsStatusTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -236,6 +244,7 @@ export interface FileRoutesByTo {
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
+  '/api/public/reservations/status/$token': typeof ApiPublicReservationsStatusTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -266,6 +275,7 @@ export interface FileRoutesById {
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
+  '/api/public/reservations/status/$token': typeof ApiPublicReservationsStatusTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
+    | '/api/public/reservations/status/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
+    | '/api/public/reservations/status/$token'
   id:
     | '__root__'
     | '/'
@@ -352,6 +364,7 @@ export interface FileRouteTypes {
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
+    | '/api/public/reservations/status/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -368,6 +381,7 @@ export interface RootRouteChildren {
   ApiPublicReservationsCreateRoute: typeof ApiPublicReservationsCreateRoute
   ApiPublicReservationsVerifyRoute: typeof ApiPublicReservationsVerifyRoute
   ApiPublicWebhooksRazorpayRoute: typeof ApiPublicWebhooksRazorpayRoute
+  ApiPublicReservationsStatusTokenRoute: typeof ApiPublicReservationsStatusTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -561,6 +575,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicImgSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/reservations/status/$token': {
+      id: '/api/public/reservations/status/$token'
+      path: '/api/public/reservations/status/$token'
+      fullPath: '/api/public/reservations/status/$token'
+      preLoaderRoute: typeof ApiPublicReservationsStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -627,6 +648,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicReservationsCreateRoute: ApiPublicReservationsCreateRoute,
   ApiPublicReservationsVerifyRoute: ApiPublicReservationsVerifyRoute,
   ApiPublicWebhooksRazorpayRoute: ApiPublicWebhooksRazorpayRoute,
+  ApiPublicReservationsStatusTokenRoute: ApiPublicReservationsStatusTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
