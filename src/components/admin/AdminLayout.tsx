@@ -34,6 +34,7 @@ const NAV: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/brands", label: "Brands", icon: Tags },
   { to: "/admin/products", label: "Products", icon: Smartphone },
+  { to: "/admin/banners", label: "Banners", icon: Megaphone },
   { to: "/admin/pos", label: "POS / Billing", icon: ShoppingCart },
   { to: "/admin/bills", label: "Bills", icon: Receipt },
   { to: "/admin/customers", label: "Customers", icon: Users },
