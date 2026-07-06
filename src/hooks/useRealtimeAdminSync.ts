@@ -77,6 +77,21 @@ const TABLE_INVALIDATIONS: Record<string, string[][]> = {
   shop_settings: [
     ["shop_settings"],
   ],
+  reservations: [
+    ["admin", "reservations"],
+    ["admin", "reservation-detail"],
+    ["admin", "reservation-kpis"],
+    ["admin", "dashboard-kpis"],
+    ["admin", "audit"],
+    ["pos", "available"],
+    ["pos", "reservations"],
+    ["reservation"],
+    ["product"],
+  ],
+  reservation_events: [
+    ["admin", "reservation-detail"],
+    ["admin", "audit"],
+  ],
 };
 
 export function useRealtimeAdminSync() {
