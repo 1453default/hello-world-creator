@@ -1,13 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { ChevronLeft, MessageCircle, Phone, ShieldCheck, Smartphone } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, MessageCircle, Phone, ShieldCheck, Smartphone } from "lucide-react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { allProductsQuery, productBySlugQuery } from "@/lib/catalog";
 import { SHOP_PHONE, conditionLabel, formatINR, whatsappLink } from "@/lib/shop";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/phone/$slug")({
   loader: async ({ context, params }) => {
