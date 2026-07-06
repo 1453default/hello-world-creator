@@ -26,8 +26,8 @@ function PublicHeader() {
             <div className="font-display text-base font-extrabold leading-none tracking-tight text-foreground">
               USED MOBILES
             </div>
-            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              BUY - SELL - TRUST
+            <div className="mt-1.5">
+              <BrandTagline />
             </div>
           </div>
         </Link>
