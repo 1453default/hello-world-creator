@@ -1,13 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { ChevronLeft, MessageCircle, Phone, ShieldCheck, Smartphone } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, MessageCircle, Phone, ShieldCheck, Smartphone } from "lucide-react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { useSignedImageUrl } from "@/hooks/useSignedImageUrl";
 import { allProductsQuery, productBySlugQuery } from "@/lib/catalog";
 import { SHOP_PHONE, conditionLabel, formatINR, whatsappLink } from "@/lib/shop";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/phone/$slug")({
   loader: async ({ context, params }) => {
@@ -71,7 +71,6 @@ function PhoneDetail() {
   const sold = product.available_count === 0;
   const [activeImg, setActiveImg] = useState(0);
   const images = product.images?.length ? product.images : [];
-  const activeImageUrl = useSignedImageUrl(images[activeImg]?.url);
   const similar = allProducts
     .filter((p) => p.id !== product.id && p.brand?.slug === product.brand?.slug)
     .slice(0, 4);
@@ -93,38 +92,12 @@ function PhoneDetail() {
         <div className="mt-4 grid gap-6 md:grid-cols-[1.1fr_1fr] md:gap-10">
           {/* Gallery */}
           <div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted"
-            >
-              {activeImageUrl ? (
-                <img
-                  src={activeImageUrl}
-                  alt={product.name}
-                  className="h-full w-full object-contain p-4"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                  <Smartphone className="h-24 w-24 opacity-20" strokeWidth={1.25} />
-                </div>
-              )}
-            </motion.div>
-            {images.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
-                {images.map((img: any, i: number) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImg(i)}
-                    className={`h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${
-                      i === activeImg ? "border-primary" : "border-border"
-                    }`}
-                  >
-                    <ProductThumbnail src={img.url} />
-                  </button>
-                ))}
-              </div>
-            )}
+            <Gallery
+              images={images}
+              activeImg={activeImg}
+              setActiveImg={setActiveImg}
+              productName={product.name}
+            />
           </div>
 
           {/* Info */}
@@ -223,6 +196,143 @@ function ProductThumbnail({ src }: { src: string }) {
   const signedSrc = useSignedImageUrl(src);
   if (!signedSrc) return null;
   return <img src={signedSrc} alt="" className="h-full w-full object-contain p-1" />;
+}
+
+function Gallery({
+  images,
+  activeImg,
+  setActiveImg,
+  productName,
+}: {
+  images: any[];
+  activeImg: number;
+  setActiveImg: (i: number) => void;
+  productName: string;
+}) {
+  const activeImageUrl = useSignedImageUrl(images[activeImg]?.url);
+  const count = images.length;
+  const hasMany = count > 1;
+  const [direction, setDirection] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const go = (delta: number) => {
+    if (!hasMany) return;
+    setDirection(delta);
+    setActiveImg((activeImg + delta + count) % count);
+  };
+
+  useEffect(() => {
+    if (!hasMany) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") go(-1);
+      else if (e.key === "ArrowRight") go(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeImg, hasMany, count]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  };
+
+  return (
+    <>
+      <div
+        ref={containerRef}
+        className="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted select-none"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+          {activeImageUrl ? (
+            <motion.img
+              key={activeImg}
+              src={activeImageUrl}
+              alt={productName}
+              custom={direction}
+              initial={{ opacity: 0, x: direction > 0 ? 40 : direction < 0 ? -40 : 0 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction > 0 ? -40 : 40 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="absolute inset-0 h-full w-full object-contain p-4"
+              draggable={false}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+              <Smartphone className="h-24 w-24 opacity-20" strokeWidth={1.25} />
+            </div>
+          )}
+        </AnimatePresence>
+
+        {hasMany && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous image"
+              onClick={() => go(-1)}
+              className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 grid h-10 w-10 md:h-11 md:w-11 place-items-center rounded-full bg-background/70 backdrop-blur-md border border-border/70 shadow-md text-foreground hover:bg-background hover:border-primary hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition md:opacity-0 md:group-hover:opacity-100"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next image"
+              onClick={() => go(1)}
+              className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 grid h-10 w-10 md:h-11 md:w-11 place-items-center rounded-full bg-background/70 backdrop-blur-md border border-border/70 shadow-md text-foreground hover:bg-background hover:border-primary hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition md:opacity-0 md:group-hover:opacity-100"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+
+            {/* Dot indicators */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full bg-background/70 backdrop-blur-md border border-border/70 px-2.5 py-1.5">
+              {images.map((_: any, i: number) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Go to image ${i + 1}`}
+                  onClick={() => {
+                    setDirection(i > activeImg ? 1 : -1);
+                    setActiveImg(i);
+                  }}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === activeImg ? "w-5 bg-primary" : "w-1.5 bg-foreground/30 hover:bg-foreground/50"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {hasMany && (
+        <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+          {images.map((img: any, i: number) => (
+            <button
+              key={i}
+              onClick={() => {
+                setDirection(i > activeImg ? 1 : -1);
+                setActiveImg(i);
+              }}
+              className={`h-16 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                i === activeImg ? "border-primary" : "border-border hover:border-primary/50"
+              }`}
+              aria-label={`Show image ${i + 1}`}
+            >
+              <ProductThumbnail src={img.url} />
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  );
 }
 
 function Spec({ label, value }: { label: string; value: string }) {
