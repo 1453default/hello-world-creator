@@ -172,7 +172,9 @@ function BannerDialog({
   const [isActive, setIsActive] = useState(banner?.is_active ?? true);
   const [order, setOrder] = useState(banner?.display_order ?? 0);
   const [imagePath, setImagePath] = useState(banner?.image_path ?? "");
-  const [preview, setPreview] = useState<string | null>(banner ? bannerImageUrl(banner.image_path) : null);
+  const initialPreview = useSignedImageUrl(banner ? bannerImageRef(banner.image_path) : "");
+  const [previewOverride, setPreviewOverride] = useState<string | null>(null);
+  const preview = previewOverride ?? initialPreview;
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
