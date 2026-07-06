@@ -139,12 +139,12 @@ function ReceiptPage() {
                   >
                     USED MOBILES
                   </div>
-                  <div className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase leading-none tracking-[0.28em] text-neutral-800">
+                  <div className="mt-1.5 inline-flex items-center gap-2 text-[10px] font-semibold uppercase leading-none tracking-[0.32em] text-neutral-700">
                     <span>Buy</span>
-                    <span aria-hidden="true" className="h-[3px] w-[3px] shrink-0 rounded-full bg-amber-500" />
+                    <span aria-hidden="true" className="h-px w-2.5 shrink-0 bg-amber-500/80" />
                     <span>Sell</span>
-                    <span aria-hidden="true" className="h-[3px] w-[3px] shrink-0 rounded-full bg-amber-500" />
-                    <span className="text-amber-600">Exchange</span>
+                    <span aria-hidden="true" className="h-px w-2.5 shrink-0 bg-amber-500/80" />
+                    <span>Exchange</span>
                   </div>
                   <div className="mt-2 text-[11px] leading-snug text-neutral-500 max-w-[280px]">
                     Hyder Manzil, 7 Tombs Rd, Toli Chowki,
