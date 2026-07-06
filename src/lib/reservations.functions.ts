@@ -9,20 +9,36 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const idInput = z.object({ reservation_id: z.string().uuid() });
 
-/** List reservations with optional status filter (RLS: staff only). */
+/** List reservations for the admin panel (staff only). Supports status
+ *  filter and free-text search on customer/reservation number. */
 export const listReservations = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { status?: string; limit?: number }) => data)
+  .inputValidator(
+    (data: {
+      status?: string;
+      search?: string;
+      limit?: number;
+      offset?: number;
+    }) => data,
+  )
   .handler(async ({ data, context }) => {
+    const limit = Math.min(data.limit ?? 50, 200);
+    const offset = Math.max(data.offset ?? 0, 0);
     let q = (context.supabase as any)
       .from("reservations")
-      .select("*")
+      .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
-      .limit(Math.min(data.limit ?? 100, 500));
+      .range(offset, offset + limit - 1);
     if (data.status) q = q.eq("status", data.status);
-    const { data: rows, error } = await q;
+    if (data.search && data.search.trim().length > 0) {
+      const s = data.search.trim().replace(/[%_]/g, "");
+      q = q.or(
+        `reservation_number.ilike.%${s}%,customer_name.ilike.%${s}%,customer_phone.ilike.%${s}%`,
+      );
+    }
+    const { data: rows, error, count } = await q;
     if (error) throw new Error(error.message);
-    return (rows ?? []) as any[];
+    return { rows: (rows ?? []) as any[], total: count ?? 0, limit, offset };
   });
 
 /** Fetch a single reservation with its audit trail. */
@@ -110,14 +126,26 @@ export const cancelReservation = createServerFn({ method: "POST" })
       const amt = data.force_full_refund
         ? Number(reservation.reservation_amount)
         : Number(eligibility.amount);
-      const { createRazorpayRefund } = await import("@/lib/razorpay.server");
-      const refund = await createRazorpayRefund({
-        paymentId: reservation.razorpay_payment_id,
-        amountInPaise: Math.round(amt * 100),
-        notes: { reservation_id: data.reservation_id, reason: data.reason },
-      });
-      refundAmount = amt;
-      refundId = refund.id;
+      const { getPaymentProvider, PaymentNotConfiguredError } = await import(
+        "@/lib/payments/index.server"
+      );
+      try {
+        const provider = getPaymentProvider();
+        const refund = await provider.refund({
+          providerPaymentId: reservation.razorpay_payment_id,
+          amount: { amount: amt, currency: "INR" },
+          notes: { reservation_id: data.reservation_id, reason: data.reason },
+        });
+        refundAmount = amt;
+        refundId = refund.providerRefundId;
+      } catch (err) {
+        if (err instanceof PaymentNotConfiguredError) {
+          throw new Error(
+            "Cannot refund yet: payment provider is not configured. Cancel without refund or configure Razorpay credentials.",
+          );
+        }
+        throw err;
+      }
     }
 
     const { data: updated, error } = await (supabaseAdmin.rpc as any)(

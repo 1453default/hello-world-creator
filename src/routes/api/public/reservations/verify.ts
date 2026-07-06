@@ -1,11 +1,8 @@
 /**
  * POST /api/public/reservations/verify
  *
- * Called by the browser after Razorpay Checkout succeeds. Verifies the HMAC
- * signature, then upgrades the reservation to CONFIRMED. Idempotent —
- * webhook may have arrived first.
- *
- * Body: { reservation_id, razorpay_order_id, razorpay_payment_id, razorpay_signature }
+ * Called by the browser after checkout succeeds. Delegates HMAC verification
+ * to the active PaymentProvider, then confirms the reservation. Idempotent.
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
@@ -35,23 +32,26 @@ export const Route = createFileRoute("/api/public/reservations/verify")({
           return json({ error: "Invalid body", detail: String(err) }, 400);
         }
 
-        const { verifyCheckoutSignature } = await import("@/lib/razorpay.server");
-        if (
-          !verifyCheckoutSignature({
-            razorpay_order_id: body.razorpay_order_id,
-            razorpay_payment_id: body.razorpay_payment_id,
-            razorpay_signature: body.razorpay_signature,
-          })
-        ) {
-          return json({ error: "Invalid payment signature" }, 400);
+        const { isPaymentConfigured, getPaymentProvider } = await import(
+          "@/lib/payments/index.server"
+        );
+        if (!isPaymentConfigured()) {
+          return json({ error: "payment_not_configured" }, 503);
         }
+        const provider = getPaymentProvider();
+
+        const valid = provider.verifyPayment({
+          providerOrderId: body.razorpay_order_id,
+          providerPaymentId: body.razorpay_payment_id,
+          providerSignature: body.razorpay_signature,
+        });
+        if (!valid) return json({ error: "Invalid payment signature" }, 400);
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-        // Sanity check: the reservation must own this order id.
         const { data: existing } = await (supabaseAdmin as any)
           .from("reservations")
-          .select("id, public_token, razorpay_order_id")
+          .select("id, razorpay_order_id")
           .eq("id", body.reservation_id)
           .maybeSingle();
 
@@ -68,7 +68,6 @@ export const Route = createFileRoute("/api/public/reservations/verify")({
             _razorpay_signature: body.razorpay_signature,
           },
         );
-
         if (error) return json({ error: error.message }, 500);
 
         return json({
