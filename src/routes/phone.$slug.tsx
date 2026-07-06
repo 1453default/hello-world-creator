@@ -168,7 +168,7 @@ function PhoneDetail() {
               </a>
               <a
                 href={`tel:${SHOP_PHONE.replace(/\s/g, "")}`}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-border bg-card px-5 font-bold text-foreground hover:border-primary transition"
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-full border-2 border-border bg-card px-5 font-bold text-foreground hover:border-primary transition"
               >
                 <Phone className="h-5 w-5" /> Call shop
               </a>
