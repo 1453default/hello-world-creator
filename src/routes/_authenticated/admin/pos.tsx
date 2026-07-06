@@ -36,6 +36,21 @@ type CartItem = {
   imei2_input: string;
 };
 
+type ActiveReservation = {
+  id: string;
+  reservation_number: string | null;
+  status: string;
+  customer_name: string;
+  customer_phone: string;
+  reservation_amount: number;
+  balance_due: number;
+  reservation_expires_at: string | null;
+  hold_expires_at: string;
+  inventory_unit_id: string;
+  product: { name: string | null; brand: { name: string | null } | null } | null;
+  inventory_unit: { imei: string | null; imei2: string | null; serial: string | null } | null;
+};
+
 function POSPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
