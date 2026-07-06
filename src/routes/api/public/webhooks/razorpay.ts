@@ -1,14 +1,12 @@
 /**
  * POST /api/public/webhooks/razorpay
  *
- * Razorpay webhook receiver. Verifies HMAC signature over the raw body, then
- * upgrades matching reservations. Idempotent — dedupes on
- * `reservation_events.payload_hash` (SHA-256 of raw body).
- *
- * Events handled: payment.captured, payment.failed, refund.processed.
+ * Provider-agnostic webhook receiver. Delegates signature/parse to the active
+ * PaymentProvider. Idempotent via `reservation_events.payload_hash` unique
+ * index. Always returns 200 after a valid signature so the provider stops
+ * retrying — failures are recorded in the audit log.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { createHash } from "node:crypto";
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -22,100 +20,81 @@ export const Route = createFileRoute("/api/public/webhooks/razorpay")({
     handlers: {
       POST: async ({ request }) => {
         const rawBody = await request.text();
-        const signature = request.headers.get("x-razorpay-signature") ?? "";
 
-        const { verifyWebhookSignature } = await import("@/lib/razorpay.server");
-        if (!verifyWebhookSignature(rawBody, signature)) {
-          return json({ error: "invalid signature" }, 401);
+        const { isPaymentConfigured, getPaymentProvider } = await import(
+          "@/lib/payments/index.server"
+        );
+        if (!isPaymentConfigured()) {
+          // No secret to verify against yet — refuse rather than accept.
+          return json({ error: "payment_not_configured" }, 503);
         }
+        const provider = getPaymentProvider();
+        const parsed = provider.parseWebhook(rawBody, request.headers);
+        if (!parsed.ok) return json({ error: parsed.reason }, 401);
 
-        let event: any;
-        try {
-          event = JSON.parse(rawBody);
-        } catch {
-          return json({ error: "invalid json" }, 400);
-        }
-
-        const payloadHash = createHash("sha256").update(rawBody).digest("hex");
         const { supabaseAdmin } = await import(
           "@/integrations/supabase/client.server"
         );
 
-        // Idempotency: dedupe on payload_hash unique constraint.
+        // Idempotency insert
         const { error: dedupeError } = await (supabaseAdmin as any)
           .from("reservation_events")
           .insert({
             event_type: "WEBHOOK_RECEIVED",
-            actor: "razorpay",
-            payload_hash: payloadHash,
-            payload: { event_type: event?.event, id: event?.id },
+            actor: "payment_provider",
+            payload_hash: parsed.payloadHash,
+            payload: { event_type: parsed.eventType, provider: provider.name },
           });
+        if (dedupeError && String(dedupeError.code) === "23505") {
+          return json({ status: "duplicate_ignored" });
+        }
         if (dedupeError) {
-          // Unique violation → already processed. Return 200 so Razorpay stops
-          // retrying.
-          if (String(dedupeError.code) === "23505") {
-            return json({ status: "duplicate_ignored" });
-          }
           console.error("webhook dedupe insert failed", dedupeError);
         }
 
         try {
-          const type = event?.event as string;
-          const payment = event?.payload?.payment?.entity;
-
-          if (type === "payment.captured" && payment) {
-            const orderId = payment.order_id;
-            const paymentId = payment.id;
-            if (!orderId || !paymentId) {
+          if (parsed.eventType === "payment.captured") {
+            if (!parsed.providerOrderId || !parsed.providerPaymentId) {
               return json({ status: "ignored", reason: "missing_ids" });
             }
-
             const { data: reservation } = await (supabaseAdmin as any)
               .from("reservations")
               .select("id")
-              .eq("razorpay_order_id", orderId)
+              .eq("razorpay_order_id", parsed.providerOrderId)
               .maybeSingle();
             if (!reservation) {
               return json({ status: "ignored", reason: "reservation_not_found" });
             }
-
-            // Webhook signature is on the whole body — we've already verified.
-            // Pass a placeholder for per-checkout signature so the DB fn accepts it.
             await (supabaseAdmin.rpc as any)("confirm_reservation", {
               _reservation_id: reservation.id,
-              _razorpay_order_id: orderId,
-              _razorpay_payment_id: paymentId,
-              _razorpay_signature: `webhook:${payloadHash.slice(0, 16)}`,
+              _razorpay_order_id: parsed.providerOrderId,
+              _razorpay_payment_id: parsed.providerPaymentId,
+              _razorpay_signature: `webhook:${parsed.payloadHash.slice(0, 16)}`,
             });
             return json({ status: "ok" });
           }
 
-          if (type === "payment.failed" && payment) {
-            const orderId = payment.order_id;
-            if (!orderId) return json({ status: "ignored" });
+          if (parsed.eventType === "payment.failed" && parsed.providerOrderId) {
             const { data: reservation } = await (supabaseAdmin as any)
               .from("reservations")
               .select("id, status")
-              .eq("razorpay_order_id", orderId)
+              .eq("razorpay_order_id", parsed.providerOrderId)
               .maybeSingle();
             if (reservation && reservation.status === "PENDING_PAYMENT") {
               await (supabaseAdmin.rpc as any)("record_reservation_cancellation", {
                 _reservation_id: reservation.id,
                 _refund_amount: 0,
                 _refund_id: null,
-                _reason: `razorpay_payment_failed:${payment.error_code ?? "unknown"}`,
-                _actor: "razorpay",
+                _reason: `payment_failed:${parsed.errorCode ?? "unknown"}`,
+                _actor: "payment_provider",
               });
             }
             return json({ status: "ok" });
           }
 
-          // refund.processed etc. are logged only; the refund UI records the
-          // outcome via record_reservation_cancellation directly.
           return json({ status: "logged" });
         } catch (err) {
-          console.error("razorpay webhook processing failed", err);
-          // Still 200 so Razorpay doesn't retry endlessly; the audit row remains.
+          console.error("webhook processing failed", err);
           return json({ status: "error_logged" });
         }
       },
