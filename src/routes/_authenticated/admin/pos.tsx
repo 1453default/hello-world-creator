@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { Trash2, ShoppingCart, Search, AlertCircle } from "lucide-react";
+import { Trash2, ShoppingCart, Search, AlertCircle, BookmarkCheck, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/shop";
@@ -36,6 +36,21 @@ type CartItem = {
   imei2_input: string;
 };
 
+type ActiveReservation = {
+  id: string;
+  reservation_number: string | null;
+  status: string;
+  customer_name: string;
+  customer_phone: string;
+  reservation_amount: number;
+  balance_due: number;
+  reservation_expires_at: string | null;
+  hold_expires_at: string;
+  inventory_unit_id: string;
+  product: { name: string | null; brand: { name: string | null } | null } | null;
+  inventory_unit: { imei: string | null; imei2: string | null; serial: string | null } | null;
+};
+
 function POSPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
@@ -57,6 +72,25 @@ function POSPage() {
       return data as AvailableUnit[];
     },
   });
+
+  // Active reservations shown alongside search results so staff can't
+  // accidentally re-sell a reserved unit.
+  const { data: activeReservations = [] } = useQuery({
+    queryKey: ["pos", "reservations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reservations")
+        .select(
+          "id, reservation_number, status, customer_name, customer_phone, reservation_amount, balance_due, reservation_expires_at, hold_expires_at, inventory_unit_id, product:products(name, brand:brands(name)), inventory_unit:inventory_units(imei, imei2, serial)",
+        )
+        .in("status", ["PENDING_PAYMENT", "CONFIRMED"])
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data as unknown as ActiveReservation[];
+    },
+  });
+
 
   const filtered = useMemo(() => {
     const raw = search.trim();
@@ -239,6 +273,8 @@ function POSPage() {
             className="h-11 flex-1 bg-transparent outline-none text-sm"
           />
         </div>
+        <ReservedUnitsWarning reservations={activeReservations} search={search} />
+
         <div className="grid gap-2 sm:grid-cols-2">
           {filtered.map((u) => (
             <button
@@ -377,5 +413,77 @@ function POSPage() {
         </button>
       </aside>
     </div>
+  );
+}
+
+function ReservedUnitsWarning({ reservations, search }: { reservations: ActiveReservation[]; search: string }) {
+  const q = search.trim().toLowerCase();
+  const shown = useMemo(() => {
+    if (!q) return reservations.slice(0, 3);
+    return reservations.filter((r) => {
+      const hay = [
+        r.reservation_number,
+        r.customer_name,
+        r.customer_phone,
+        r.product?.name,
+        r.product?.brand?.name,
+        r.inventory_unit?.imei,
+        r.inventory_unit?.imei2,
+        r.inventory_unit?.serial,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [reservations, q]);
+
+  if (shown.length === 0) return null;
+
+  return (
+    <section aria-labelledby="reserved-units-heading" className="rounded-lg border border-amber/40 bg-amber/5 p-3">
+      <div id="reserved-units-heading" className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber">
+        <AlertCircle className="h-3.5 w-3.5" />
+        {q ? `Reservations matching “${search.trim()}”` : "Active reservations"}
+      </div>
+      <ul className="space-y-2">
+        {shown.map((r) => {
+          const expiry = r.status === "PENDING_PAYMENT" ? r.hold_expires_at : r.reservation_expires_at;
+          return (
+            <li key={r.id} className="flex flex-col gap-2 rounded-md border border-amber/30 bg-admin-surface p-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <BookmarkCheck className="h-3.5 w-3.5 text-amber" />
+                  <span className="font-mono font-bold">{r.reservation_number}</span>
+                  <span className="rounded-full border border-amber/40 bg-amber/10 px-1.5 text-[9px] font-bold uppercase tracking-wider text-amber">
+                    {r.status === "PENDING_PAYMENT" ? "Payment pending" : "Reserved"}
+                  </span>
+                </div>
+                <div className="mt-0.5 truncate">
+                  <span className="font-semibold">{r.product?.brand?.name} {r.product?.name}</span>
+                  {" · "}
+                  <span className="font-mono text-[10px] text-admin-muted">{r.inventory_unit?.imei ?? "no IMEI"}</span>
+                </div>
+                <div className="text-[10px] text-admin-muted">
+                  {r.customer_name} · {r.customer_phone} · Advance {formatINR(r.reservation_amount)} · Balance {formatINR(r.balance_due)}
+                  {expiry ? ` · Expires ${new Date(expiry).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}` : ""}
+                </div>
+              </div>
+              <div className="flex flex-shrink-0 items-center gap-2">
+                <Link
+                  to="/admin/reservations"
+                  className="inline-flex h-8 items-center gap-1 rounded-md border border-admin-border bg-admin-surface px-2 text-[11px] font-semibold text-admin-muted hover:border-amber/40 hover:text-admin-text"
+                >
+                  View <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 text-[10px] text-admin-muted">
+        Reserved units are hidden from POS billing until the reservation is converted to a sale or cancelled from the Reservations module.
+      </p>
+    </section>
   );
 }
