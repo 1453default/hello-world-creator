@@ -1,12 +1,12 @@
 /**
  * POST /api/public/reservations/create
  *
- * Body: { inventory_unit_id, customer_name, customer_phone, customer_email? }
+ * 1) Atomically creates an inventory hold via `create_reservation_hold`.
+ * 2) Asks the active PaymentProvider to create an order (backend-computed
+ *    amount — the frontend never dictates money).
  *
- * Creates an atomic reservation hold (unit → RESERVATION_PENDING) via the
- * SECURITY DEFINER Postgres function `create_reservation_hold`, then creates a
- * Razorpay order for the backend-computed amount. Amount is NEVER trusted
- * from the client.
+ * Returns 503 { error: "payment_not_configured" } when merchant credentials
+ * aren't set yet, without leaving a dangling hold.
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
@@ -29,12 +29,27 @@ export const Route = createFileRoute("/api/public/reservations/create")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // ── validate ────────────────────────────────────────────────
         let parsed: z.infer<typeof bodySchema>;
         try {
-          const raw = await request.json();
-          parsed = bodySchema.parse(raw);
+          parsed = bodySchema.parse(await request.json());
         } catch (err) {
           return json({ error: "Invalid request body", detail: String(err) }, 400);
+        }
+
+        // Fail fast if the payment provider isn't configured — do NOT open
+        // a hold that no customer can pay for.
+        const { isPaymentConfigured, getPaymentProvider, PaymentNotConfiguredError } =
+          await import("@/lib/payments/index.server");
+        if (!isPaymentConfigured()) {
+          return json(
+            {
+              error: "payment_not_configured",
+              message:
+                "Online reservations are temporarily unavailable. Please try again later.",
+            },
+            503,
+          );
         }
 
         const ip =
@@ -45,7 +60,7 @@ export const Route = createFileRoute("/api/public/reservations/create")({
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-        // 1. Atomic hold
+        // ── 1) atomic hold ─────────────────────────────────────────
         const { data: reservation, error: holdError } = await (supabaseAdmin.rpc as any)(
           "create_reservation_hold",
           {
@@ -76,24 +91,23 @@ export const Route = createFileRoute("/api/public/reservations/create")({
           customer_email: string | null;
         };
 
-        // 2. Razorpay order
+        // ── 2) provider order ──────────────────────────────────────
         try {
-          const { createRazorpayOrder, getRazorpayKeyId } = await import(
-            "@/lib/razorpay.server"
-          );
-          const amountPaise = Math.round(Number(res.reservation_amount) * 100);
-          const order = await createRazorpayOrder({
-            amountInPaise: amountPaise,
-            receipt: res.reservation_number,
-            notes: {
-              reservation_id: res.id,
-              reservation_number: res.reservation_number,
+          const provider = getPaymentProvider();
+          const order = await provider.createOrder({
+            reservationId: res.id,
+            reservationNumber: res.reservation_number,
+            amount: { amount: Number(res.reservation_amount), currency: "INR" },
+            customer: {
+              name: res.customer_name,
+              phone: res.customer_phone,
+              email: res.customer_email,
             },
           });
 
-          await supabaseAdmin.rpc("attach_razorpay_order", {
+          await (supabaseAdmin.rpc as any)("attach_razorpay_order", {
             _reservation_id: res.id,
-            _razorpay_order_id: order.id,
+            _razorpay_order_id: order.providerOrderId,
           });
 
           return json({
@@ -105,9 +119,10 @@ export const Route = createFileRoute("/api/public/reservations/create")({
               product_price: Number(res.product_price),
               balance_due: Number(res.balance_due),
             },
-            razorpay: {
-              key_id: getRazorpayKeyId(),
-              order_id: order.id,
+            payment: {
+              provider: provider.name,
+              key_id: order.publicKey,
+              order_id: order.providerOrderId,
               amount: order.amount,
               currency: order.currency,
             },
@@ -118,7 +133,7 @@ export const Route = createFileRoute("/api/public/reservations/create")({
             },
           });
         } catch (err) {
-          // Rollback the hold if order creation fails.
+          // Roll back the hold so the unit is immediately available again.
           await (supabaseAdmin.rpc as any)("record_reservation_cancellation", {
             _reservation_id: res.id,
             _refund_amount: 0,
@@ -126,7 +141,10 @@ export const Route = createFileRoute("/api/public/reservations/create")({
             _reason: "order_creation_failed",
             _actor: "system",
           });
-          console.error("Razorpay order failed", err);
+          if (err instanceof PaymentNotConfiguredError) {
+            return json({ error: "payment_not_configured", message: err.message }, 503);
+          }
+          console.error("Payment order failed", err);
           return json(
             { error: "Payment initialization failed. Please try again." },
             502,
