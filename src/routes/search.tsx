@@ -63,8 +63,9 @@ function SearchPage() {
       const hay = normalize(
         `${p.name} ${p.brand?.name ?? ""} ${p.storage ?? ""} ${p.ram ?? ""} ${p.color ?? ""}`,
       );
-      // Every term must appear as a whole token/substring in normalized hay.
-      return terms.every((t) => hay.includes(t));
+      const hayTokens = new Set(hay.split(/\s+/).filter(Boolean));
+      // Every term must match a whole token (prevents "12" matching "128").
+      return terms.every((t) => hayTokens.has(t));
     });
 
     if (price.kind === "exact") return [...filtered].sort(priceRelevanceCompare(price));
