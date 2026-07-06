@@ -1032,10 +1032,9 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
             <Field label="Color"><input value={form.color} onChange={(e) => set("color", e.target.value)} className="admin-input" /></Field>
             <Field label="Condition">
               <select value={form.condition} onChange={(e) => set("condition", e.target.value)} className="admin-input">
-                <option value="like_new">Like New</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
+                {CONDITION_GRADES.map((g) => (
+                  <option key={g.value} value={g.value}>{g.label}</option>
+                ))}
               </select>
             </Field>
             <Field label="Selling Price (₹)">
