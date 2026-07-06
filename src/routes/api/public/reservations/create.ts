@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/public/reservations/create")({
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         // 1. Atomic hold
-        const { data: reservation, error: holdError } = await supabaseAdmin.rpc(
+        const { data: reservation, error: holdError } = await (supabaseAdmin.rpc as any)(
           "create_reservation_hold",
           {
             _inventory_unit_id: parsed.inventory_unit_id,

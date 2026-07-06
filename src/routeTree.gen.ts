@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminBrandsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminBillsRouteImport } from './routes/_authenticated/admin/bills'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin/audit'
+import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -155,6 +156,12 @@ const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const ApiPublicReservationsCreateRoute =
+  ApiPublicReservationsCreateRouteImport.update({
+    id: '/api/public/reservations/create',
+    path: '/api/public/reservations/create',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
   id: '/api/public/img/$',
   path: '/api/public/img/$',
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
+  '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -209,6 +217,7 @@ export interface FileRoutesByTo {
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
+  '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -236,6 +245,7 @@ export interface FileRoutesById {
   '/_authenticated/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
+  '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/receipt/$id'
     | '/admin/'
     | '/api/public/img/$'
+    | '/api/public/reservations/create'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/receipt/$id'
     | '/admin'
     | '/api/public/img/$'
+    | '/api/public/reservations/create'
   id:
     | '__root__'
     | '/'
@@ -313,6 +325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/receipt/$id'
     | '/_authenticated/admin/'
     | '/api/public/img/$'
+    | '/api/public/reservations/create'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -326,6 +339,7 @@ export interface RootRouteChildren {
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
+  ApiPublicReservationsCreateRoute: typeof ApiPublicReservationsCreateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -491,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/reservations/create': {
+      id: '/api/public/reservations/create'
+      path: '/api/public/reservations/create'
+      fullPath: '/api/public/reservations/create'
+      preLoaderRoute: typeof ApiPublicReservationsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/img/$': {
       id: '/api/public/img/$'
       path: '/api/public/img/$'
@@ -561,6 +582,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
+  ApiPublicReservationsCreateRoute: ApiPublicReservationsCreateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
