@@ -38,6 +38,7 @@ export const Route = createFileRoute("/")({
       context.queryClient.ensureQueryData(brandsQuery),
       context.queryClient.ensureQueryData(allProductsQuery),
       context.queryClient.ensureQueryData(recentlySoldQuery),
+      context.queryClient.ensureQueryData(activeBannersQuery),
     ]);
   },
 
