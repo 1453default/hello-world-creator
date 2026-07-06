@@ -877,7 +877,7 @@ function ProductDialog({ product, brands, onClose, onSaved }: {
     storage: product?.storage ?? "",
     ram: product?.ram ?? "",
     color: product?.color ?? "",
-    condition: product?.condition ?? "good",
+    condition: product?.condition ?? "a",
     selling_price: product?.selling_price ?? 0,
     description: product?.description ?? "",
     is_featured: product?.is_featured ?? false,
