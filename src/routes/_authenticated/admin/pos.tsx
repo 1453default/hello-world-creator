@@ -58,6 +58,25 @@ function POSPage() {
     },
   });
 
+  // Active reservations shown alongside search results so staff can't
+  // accidentally re-sell a reserved unit.
+  const { data: activeReservations = [] } = useQuery({
+    queryKey: ["pos", "reservations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reservations")
+        .select(
+          "id, reservation_number, status, customer_name, customer_phone, reservation_amount, balance_due, reservation_expires_at, hold_expires_at, inventory_unit_id, product:products(name, brand:brands(name)), inventory_unit:inventory_units(imei, imei2, serial)",
+        )
+        .in("status", ["PENDING_PAYMENT", "CONFIRMED"])
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data as unknown as ActiveReservation[];
+    },
+  });
+
+
   const filtered = useMemo(() => {
     const raw = search.trim();
     if (!raw) return units.slice(0, 30);
