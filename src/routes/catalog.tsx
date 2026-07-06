@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { allProductsQuery, brandsQuery } from "@/lib/catalog";
+import { CONDITION_GRADES } from "@/lib/shop";
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
