@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Search, ArrowRight, Sparkles, ShieldCheck, MessageCircle, MapPin, ChevronRight, BadgeCheck, RotateCcw, Store } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { ProductCard } from "@/components/public/ProductCard";
 import { RecentlySoldCard } from "@/components/public/RecentlySoldCard";
+import { PromoBannerSlider } from "@/components/public/PromoBannerSlider";
 import { brandsQuery, allProductsQuery, recentlySoldQuery } from "@/lib/catalog";
+import { activeBannersQuery } from "@/lib/banners";
 import { whatsappLink } from "@/lib/shop";
 import { InstagramReels } from "@/components/public/InstagramReels";
 import { latestStockReels, testimonialReels } from "@/lib/instagram";
