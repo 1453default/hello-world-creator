@@ -201,7 +201,7 @@ function BannerDialog({
         await supabase.storage.from(BANNER_BUCKET).remove([imagePath]).catch(() => null);
       }
       setImagePath(path);
-      setPreview(bannerImageUrl(path));
+      setPreviewOverride(URL.createObjectURL(file));
       toast.success("Image uploaded");
     } catch (e) {
       toast.error((e as Error).message);
