@@ -35,6 +35,7 @@ import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authentic
 import { Route as ApiPublicWebhooksRazorpayRouteImport } from './routes/api/public/webhooks/razorpay'
 import { Route as ApiPublicReservationsVerifyRouteImport } from './routes/api/public/reservations/verify'
 import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
+import { Route as ApiPublicReservationsAvailabilityRouteImport } from './routes/api/public/reservations/availability'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 import { Route as ApiPublicReservationsStatusTokenRouteImport } from './routes/api/public/reservations/status.$token'
 
@@ -177,6 +178,12 @@ const ApiPublicReservationsCreateRoute =
     path: '/api/public/reservations/create',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicReservationsAvailabilityRoute =
+  ApiPublicReservationsAvailabilityRouteImport.update({
+    id: '/api/public/reservations/availability',
+    path: '/api/public/reservations/availability',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
   id: '/api/public/img/$',
   path: '/api/public/img/$',
@@ -213,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
+  '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
@@ -241,6 +249,7 @@ export interface FileRoutesByTo {
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
+  '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
@@ -272,6 +281,7 @@ export interface FileRoutesById {
   '/_authenticated/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
+  '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/receipt/$id'
     | '/admin/'
     | '/api/public/img/$'
+    | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/receipt/$id'
     | '/admin'
     | '/api/public/img/$'
+    | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
@@ -361,6 +373,7 @@ export interface FileRouteTypes {
     | '/_authenticated/receipt/$id'
     | '/_authenticated/admin/'
     | '/api/public/img/$'
+    | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
@@ -378,6 +391,7 @@ export interface RootRouteChildren {
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
+  ApiPublicReservationsAvailabilityRoute: typeof ApiPublicReservationsAvailabilityRoute
   ApiPublicReservationsCreateRoute: typeof ApiPublicReservationsCreateRoute
   ApiPublicReservationsVerifyRoute: typeof ApiPublicReservationsVerifyRoute
   ApiPublicWebhooksRazorpayRoute: typeof ApiPublicWebhooksRazorpayRoute
@@ -568,6 +582,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicReservationsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/reservations/availability': {
+      id: '/api/public/reservations/availability'
+      path: '/api/public/reservations/availability'
+      fullPath: '/api/public/reservations/availability'
+      preLoaderRoute: typeof ApiPublicReservationsAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/img/$': {
       id: '/api/public/img/$'
       path: '/api/public/img/$'
@@ -645,6 +666,8 @@ const rootRouteChildren: RootRouteChildren = {
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
+  ApiPublicReservationsAvailabilityRoute:
+    ApiPublicReservationsAvailabilityRoute,
   ApiPublicReservationsCreateRoute: ApiPublicReservationsCreateRoute,
   ApiPublicReservationsVerifyRoute: ApiPublicReservationsVerifyRoute,
   ApiPublicWebhooksRazorpayRoute: ApiPublicWebhooksRazorpayRoute,
