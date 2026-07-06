@@ -71,10 +71,21 @@ function PhoneDetail() {
   if (!product) throw notFound();
   const sold = product.available_count === 0;
   const [activeImg, setActiveImg] = useState(0);
+  const [reserveOpen, setReserveOpen] = useState(false);
   const images = product.images?.length ? product.images : [];
   const similar = allProducts
     .filter((p) => p.id !== product.id && p.brand?.slug === product.brand?.slug)
     .slice(0, 4);
+
+  const inventory = (product.inventory ?? []) as { id: string; status: string }[];
+  const reservationState = useMemo(() => {
+    if (!inventory.length) return sold ? "sold" : "unavailable";
+    if (inventory.some((u) => u.status === "AVAILABLE")) return "available";
+    if (inventory.some((u) => u.status === "RESERVATION_PENDING")) return "pending";
+    if (inventory.some((u) => u.status === "RESERVED")) return "reserved";
+    if (inventory.every((u) => u.status === "SOLD")) return "sold";
+    return "unavailable";
+  }, [inventory, sold]);
 
   const enquire = whatsappLink(
     `Hi USED MOBILES! I'm interested in the *${product.brand?.name ?? ""} ${product.name}* — ${product.storage ?? ""}, ${product.color ?? ""}. Is it still available?`,
