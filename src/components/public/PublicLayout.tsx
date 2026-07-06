@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Phone, Instagram } from "lucide-react";
 import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, whatsappLink } from "@/lib/shop";
 import { Dock } from "@/components/public/Dock";
+import { BrandTagline } from "@/components/public/BrandTagline";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
