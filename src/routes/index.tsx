@@ -108,7 +108,7 @@ function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-amber/5 via-background to-info/5" />
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:pt-16 md:pb-16">
+        <div className="mx-auto max-w-6xl px-4 pt-6 pb-8 md:pt-16 md:pb-16">
           <div className="grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:items-center">
             {/* Left: Copy + Search */}
             <div>
