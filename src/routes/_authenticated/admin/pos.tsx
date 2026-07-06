@@ -273,6 +273,8 @@ function POSPage() {
             className="h-11 flex-1 bg-transparent outline-none text-sm"
           />
         </div>
+        <ReservedUnitsWarning reservations={activeReservations} search={search} />
+
         <div className="grid gap-2 sm:grid-cols-2">
           {filtered.map((u) => (
             <button
