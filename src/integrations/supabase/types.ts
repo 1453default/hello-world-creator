@@ -342,6 +342,45 @@ export type Database = {
           },
         ]
       }
+      promo_banners: {
+        Row: {
+          button_link: string | null
+          button_text: string | null
+          created_at: string
+          display_order: number
+          heading: string | null
+          id: string
+          image_path: string
+          is_active: boolean
+          subheading: string | null
+          updated_at: string
+        }
+        Insert: {
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          display_order?: number
+          heading?: string | null
+          id?: string
+          image_path: string
+          is_active?: boolean
+          subheading?: string | null
+          updated_at?: string
+        }
+        Update: {
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          display_order?: number
+          heading?: string | null
+          id?: string
+          image_path?: string
+          is_active?: boolean
+          subheading?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shop_settings: {
         Row: {
           key: string
