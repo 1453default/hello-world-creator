@@ -91,7 +91,7 @@ function PhoneDetail() {
 
         <div className="mt-4 grid gap-6 md:grid-cols-[1.1fr_1fr] md:gap-10">
           {/* Gallery */}
-          <div>
+          <div className="min-w-0">
             <Gallery
               images={images}
               activeImg={activeImg}
@@ -101,7 +101,7 @@ function PhoneDetail() {
           </div>
 
           {/* Info */}
-          <div>
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 to="/brand/$slug"
@@ -313,7 +313,7 @@ function Gallery({
       </div>
 
       {hasMany && (
-        <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="mt-3 flex w-full max-w-full gap-2 overflow-x-auto no-scrollbar">
           {images.map((img: any, i: number) => (
             <button
               key={i}
