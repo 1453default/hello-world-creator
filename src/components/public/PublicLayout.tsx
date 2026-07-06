@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Phone, Instagram } from "lucide-react";
 import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, whatsappLink } from "@/lib/shop";
 import { Dock } from "@/components/public/Dock";
+import { BrandTagline } from "@/components/public/BrandTagline";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   return (
@@ -25,8 +26,8 @@ function PublicHeader() {
             <div className="font-display text-base font-extrabold leading-none tracking-tight text-foreground">
               USED MOBILES
             </div>
-            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              BUY - SELL - TRUST
+            <div className="mt-1.5">
+              <BrandTagline />
             </div>
           </div>
         </Link>
@@ -71,7 +72,7 @@ function PublicFooter() {
             <img src="/USED_MOBILE_LOGO.png" alt="" className="h-9 w-9 object-contain" />
             <div>
               <div className="font-display font-extrabold text-foreground">USED MOBILES</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">BUY - SELL - TRUST</div>
+              <div className="mt-1.5"><BrandTagline /></div>
             </div>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
