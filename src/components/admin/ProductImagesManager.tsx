@@ -26,9 +26,25 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         .order("display_order")
         .order("created_at");
       if (error) throw error;
-      const { signImageList } = await import("@/lib/catalog");
-      return await signImageList(data as Img[]);
+      const { parseStorageRef } = await import("@/lib/catalog");
+      const rows = (data ?? []) as Img[];
+      // Resolve each stored reference (proxy path, compact bucket::path, or
+      // full storage URL) into a short-lived signed URL so previews render
+      // reliably on every host (Lovable Cloud, Vercel, Netlify, localhost).
+      const signed = await Promise.all(
+        rows.map(async (img) => {
+          if (!img.url) return img;
+          const ref = parseStorageRef(img.url);
+          if (!ref) return img;
+          const { data: s } = await supabase.storage
+            .from(ref.bucket)
+            .createSignedUrl(ref.path, 60 * 60);
+          return { ...img, url: s?.signedUrl ?? img.url };
+        }),
+      );
+      return signed;
     },
+    staleTime: 30 * 60_000,
   });
 
   const [uploading, setUploading] = useState(false);
