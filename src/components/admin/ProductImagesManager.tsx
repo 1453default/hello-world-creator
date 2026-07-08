@@ -179,7 +179,27 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {images.map((img) => (
             <div key={img.id} className="group relative aspect-[3/4] overflow-hidden rounded-md border border-admin-border bg-admin-surface-2">
-              <img src={img.url} alt="" className="h-full w-full object-contain p-1" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+              {img.url ? (
+                <img
+                  src={img.url}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-contain p-1"
+                  onError={(e) => {
+                    const el = e.currentTarget as HTMLImageElement;
+                    el.style.display = "none";
+                    const sib = el.nextElementSibling as HTMLElement | null;
+                    if (sib) sib.style.display = "flex";
+                  }}
+                />
+              ) : null}
+              <div
+                style={{ display: img.url ? "none" : "flex" }}
+                className="absolute inset-0 flex-col items-center justify-center gap-1 bg-admin-surface-2 text-[10px] text-admin-muted"
+              >
+                <div className="text-2xl">🖼️</div>
+                <div>Preview unavailable</div>
+              </div>
 
               {img.is_primary && (
                 <span className="absolute left-1 top-1 rounded bg-amber px-1.5 py-0.5 text-[9px] font-bold text-ink">
