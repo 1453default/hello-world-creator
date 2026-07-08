@@ -9,9 +9,11 @@ type Img = { id: string; url: string; is_primary: boolean; display_order: number
 
 const BUCKET = "product-images";
 
-function proxyUrl(path: string) {
-  // Served through our public image proxy so private buckets render for anonymous visitors.
-  return `/api/public/img/${BUCKET}/${path}`;
+function storageRef(path: string) {
+  // Store a host-agnostic reference. The admin/public renderers sign this
+  // client-side at read time, so it works identically on Lovable Cloud,
+  // Vercel, Netlify, and localhost (no dependency on the SSR image proxy).
+  return `${BUCKET}::${path}`;
 }
 
 export function ProductImagesManager({ productId }: { productId: string }) {
@@ -26,9 +28,25 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         .order("display_order")
         .order("created_at");
       if (error) throw error;
-      const { signImageList } = await import("@/lib/catalog");
-      return await signImageList(data as Img[]);
+      const { parseStorageRef } = await import("@/lib/catalog");
+      const rows = (data ?? []) as Img[];
+      // Resolve each stored reference (proxy path, compact bucket::path, or
+      // full storage URL) into a short-lived signed URL so previews render
+      // reliably on every host (Lovable Cloud, Vercel, Netlify, localhost).
+      const signed = await Promise.all(
+        rows.map(async (img) => {
+          if (!img.url) return img;
+          const ref = parseStorageRef(img.url);
+          if (!ref) return img;
+          const { data: s } = await supabase.storage
+            .from(ref.bucket)
+            .createSignedUrl(ref.path, 60 * 60);
+          return { ...img, url: s?.signedUrl ?? img.url };
+        }),
+      );
+      return signed;
     },
+    staleTime: 30 * 60_000,
   });
 
   const [uploading, setUploading] = useState(false);
@@ -75,7 +93,7 @@ export function ProductImagesManager({ productId }: { productId: string }) {
           .from(BUCKET)
           .upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
         if (upErr) throw upErr;
-        const url = proxyUrl(path);
+        const url = storageRef(path);
         const { error: insErr } = await supabase.from("product_images").insert({
           product_id: productId,
           url,
@@ -108,12 +126,17 @@ export function ProductImagesManager({ productId }: { productId: string }) {
 
   const del = useMutation({
     mutationFn: async (img: Img) => {
-      // Best-effort delete storage file if from our bucket
-      const marker = `/${BUCKET}/`;
-      const idx = img.url.indexOf(marker);
-      if (idx > -1) {
-        const path = img.url.substring(idx + marker.length).split("?")[0];
-        await supabase.storage.from(BUCKET).remove([path]);
+      // Best-effort delete storage file — look up the original stored ref,
+      // not the signed URL we're rendering with.
+      const { data: row } = await supabase
+        .from("product_images")
+        .select("url")
+        .eq("id", img.id)
+        .maybeSingle();
+      const { parseStorageRef } = await import("@/lib/catalog");
+      const ref = parseStorageRef(row?.url ?? img.url);
+      if (ref && ref.bucket === BUCKET) {
+        await supabase.storage.from(BUCKET).remove([ref.path]);
       }
       const { error } = await supabase.from("product_images").delete().eq("id", img.id);
       if (error) throw error;
@@ -156,7 +179,27 @@ export function ProductImagesManager({ productId }: { productId: string }) {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {images.map((img) => (
             <div key={img.id} className="group relative aspect-[3/4] overflow-hidden rounded-md border border-admin-border bg-admin-surface-2">
-              <img src={img.url} alt="" className="h-full w-full object-contain p-1" onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }} />
+              {img.url ? (
+                <img
+                  src={img.url}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-contain p-1"
+                  onError={(e) => {
+                    const el = e.currentTarget as HTMLImageElement;
+                    el.style.display = "none";
+                    const sib = el.nextElementSibling as HTMLElement | null;
+                    if (sib) sib.style.display = "flex";
+                  }}
+                />
+              ) : null}
+              <div
+                style={{ display: img.url ? "none" : "flex" }}
+                className="absolute inset-0 flex-col items-center justify-center gap-1 bg-admin-surface-2 text-[10px] text-admin-muted"
+              >
+                <div className="text-2xl">🖼️</div>
+                <div>Preview unavailable</div>
+              </div>
 
               {img.is_primary && (
                 <span className="absolute left-1 top-1 rounded bg-amber px-1.5 py-0.5 text-[9px] font-bold text-ink">
