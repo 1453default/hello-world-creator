@@ -9,9 +9,11 @@ type Img = { id: string; url: string; is_primary: boolean; display_order: number
 
 const BUCKET = "product-images";
 
-function proxyUrl(path: string) {
-  // Served through our public image proxy so private buckets render for anonymous visitors.
-  return `/api/public/img/${BUCKET}/${path}`;
+function storageRef(path: string) {
+  // Store a host-agnostic reference. The admin/public renderers sign this
+  // client-side at read time, so it works identically on Lovable Cloud,
+  // Vercel, Netlify, and localhost (no dependency on the SSR image proxy).
+  return `${BUCKET}::${path}`;
 }
 
 export function ProductImagesManager({ productId }: { productId: string }) {
