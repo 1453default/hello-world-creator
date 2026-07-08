@@ -126,12 +126,17 @@ export function ProductImagesManager({ productId }: { productId: string }) {
 
   const del = useMutation({
     mutationFn: async (img: Img) => {
-      // Best-effort delete storage file if from our bucket
-      const marker = `/${BUCKET}/`;
-      const idx = img.url.indexOf(marker);
-      if (idx > -1) {
-        const path = img.url.substring(idx + marker.length).split("?")[0];
-        await supabase.storage.from(BUCKET).remove([path]);
+      // Best-effort delete storage file — look up the original stored ref,
+      // not the signed URL we're rendering with.
+      const { data: row } = await supabase
+        .from("product_images")
+        .select("url")
+        .eq("id", img.id)
+        .maybeSingle();
+      const { parseStorageRef } = await import("@/lib/catalog");
+      const ref = parseStorageRef(row?.url ?? img.url);
+      if (ref && ref.bucket === BUCKET) {
+        await supabase.storage.from(BUCKET).remove([ref.path]);
       }
       const { error } = await supabase.from("product_images").delete().eq("id", img.id);
       if (error) throw error;
