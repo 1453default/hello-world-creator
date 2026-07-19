@@ -405,11 +405,18 @@ function POSPage() {
           </div>
         )}
         <button
-          onClick={() => checkout.mutate()}
-          disabled={cart.length === 0 || checkout.isPending || missingImei.length > 0}
+          onClick={() => {
+            // TEMPORARY: Bill generation disabled until Razorpay credentials are configured.
+            // To restore, replace this handler with: checkout.mutate()
+            toast.error(
+              "Unable to generate bill. Razorpay credentials are missing or not configured. Please configure the Razorpay API credentials before generating bills.",
+              { duration: 6000 },
+            );
+          }}
+          disabled={cart.length === 0 || missingImei.length > 0}
           className="w-full h-11 rounded-md bg-amber font-bold text-ink hover:bg-amber-dark disabled:opacity-40"
         >
-          {checkout.isPending ? "Processing…" : "Complete Sale"}
+          Complete Sale
         </button>
       </aside>
     </div>
