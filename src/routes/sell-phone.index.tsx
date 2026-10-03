@@ -55,11 +55,10 @@ function SellHome() {
                   className="group flex h-24 md:h-28 flex-col items-center justify-center gap-1 rounded-2xl border border-border bg-card px-4 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   {b.logo ? (
-                    <img src={b.logo} alt={`${b.name} logo`} className="h-10 md:h-12 w-auto max-w-[75%] object-contain" decoding="async" />
+                    <img src={b.logo} alt={`${b.name} logo`} className="h-16 md:h-18 w-auto max-w-[75%] object-contain" decoding="async" />
                   ) : (
                     <span className="font-display text-lg font-bold">{b.name}</span>
                   )}
-                  <span className="text-[11px] text-muted-foreground">{b.models.length} models</span>
                 </Link>
               </li>
             ))}
