@@ -77,7 +77,7 @@ def series_key_match(key_toks, model_toks):
                 rest = t[len(k):]
                 if k.isdigit() and rest.isalpha() and len(rest) <= 2:
                     continue
-                if not k.isdigit() and len(k) <= 2 and (rest[:1].isdigit() or (len(k) == 1 and len(rest) <= 2 and rest.isalpha())):
+                if not k.isdigit() and (rest[:1].isdigit() or (len(k) == 1 and len(rest) <= 2 and rest.isalpha())):
                     continue
             ok = False
             break
