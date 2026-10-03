@@ -53,7 +53,7 @@ export const Route = createFileRoute("/phone/$slug")({
   component: PhoneDetail,
   errorComponent: ({ error }) => (
     <PublicLayout>
-      <div className="p-10 text-center text-muted-foreground">{error.message}</div>
+      <div className="p-10 text-center text-muted-foreground">{error instanceof Error ? error.message : String(error)}</div>
     </PublicLayout>
   ),
   notFoundComponent: () => (
