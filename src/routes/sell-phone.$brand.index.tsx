@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
-import { z } from "zod";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { Crumbs, PhoneImg, SearchBox } from "@/components/sell/SellParts";
 import { getSellBrand, normalizeSearch } from "@/data/sellPhoneCatalog";
 
 export const Route = createFileRoute("/sell-phone/$brand/")({
-  validateSearch: zodValidator(z.object({ series: fallback(z.string(), "").default("") })),
+  validateSearch: (s: Record<string, unknown>): { series?: string } =>
+    typeof s.series === "string" && s.series ? { series: s.series } : {},
   loader: ({ params }) => {
     const brand = getSellBrand(params.brand);
     if (!brand) throw notFound();
@@ -45,7 +44,7 @@ function BrandPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const brand = getSellBrand(slug)!;
   const [q, setQ] = useState("");
-  const active = brand.series.includes(series) ? series : "";
+  const active = series && brand.series.includes(series) ? series : "";
 
   const models = useMemo(() => {
     const n = normalizeSearch(q);
@@ -60,7 +59,7 @@ function BrandPage() {
       key={label}
       type="button"
       aria-pressed={active === value}
-      onClick={() => navigate({ search: { series: value }, replace: true, resetScroll: false })}
+      onClick={() => navigate({ search: value ? { series: value } : {}, replace: true, resetScroll: false })}
       className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
         active === value ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary"
       }`}
