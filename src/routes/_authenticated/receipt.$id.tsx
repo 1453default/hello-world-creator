@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/receipt/$id")({
   head: () => ({ meta: [{ title: "Invoice · USED MOBILES" }] }),
   component: ReceiptPage,
   errorComponent: ({ error }) => (
-    <div className="p-10 text-center text-sm text-muted-foreground">{error.message}</div>
+    <div className="p-10 text-center text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</div>
   ),
   notFoundComponent: () => (
     <div className="p-10 text-center text-sm text-muted-foreground">Receipt not found.</div>

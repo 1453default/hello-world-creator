@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SellPhoneRouteImport } from './routes/sell-phone'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ReturnPolicyRouteImport } from './routes/return-policy'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
@@ -21,12 +22,15 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SellPhoneIndexRouteImport } from './routes/sell-phone.index'
 import { Route as ReservationTokenRouteImport } from './routes/reservation.$token'
 import { Route as ReservationStatusTokenRouteImport } from './routes/reservation-status.$token'
 import { Route as PhoneSlugRouteImport } from './routes/phone.$slug'
 import { Route as BrandSlugRouteImport } from './routes/brand.$slug'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as SellPhoneBrandIndexRouteImport } from './routes/sell-phone.$brand.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as SellPhoneBrandModelRouteImport } from './routes/sell-phone.$brand.$model'
 import { Route as AuthenticatedReceiptIdRouteImport } from './routes/_authenticated/receipt.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
@@ -50,6 +54,11 @@ import { Route as ApiPublicReservationsStatusTokenRouteImport } from './routes/a
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellPhoneRoute = SellPhoneRouteImport.update({
+  id: '/sell-phone',
+  path: '/sell-phone',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -106,6 +115,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellPhoneIndexRoute = SellPhoneIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SellPhoneRoute,
+} as any)
 const ReservationTokenRoute = ReservationTokenRouteImport.update({
   id: '/reservation/$token',
   path: '/reservation/$token',
@@ -131,10 +145,20 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const SellPhoneBrandIndexRoute = SellPhoneBrandIndexRouteImport.update({
+  id: '/$brand/',
+  path: '/$brand/',
+  getParentRoute: () => SellPhoneRoute,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const SellPhoneBrandModelRoute = SellPhoneBrandModelRouteImport.update({
+  id: '/$brand/$model',
+  path: '/$brand/$model',
+  getParentRoute: () => SellPhoneRoute,
 } as any)
 const AuthenticatedReceiptIdRoute = AuthenticatedReceiptIdRouteImport.update({
   id: '/receipt/$id',
@@ -256,12 +280,14 @@ export interface FileRoutesByFullPath {
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/search': typeof SearchRoute
+  '/sell-phone': typeof SellPhoneRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/reservation-status/$token': typeof ReservationStatusTokenRoute
   '/reservation/$token': typeof ReservationTokenRoute
+  '/sell-phone/': typeof SellPhoneIndexRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -275,7 +301,9 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
+  '/sell-phone/$brand/$model': typeof SellPhoneBrandModelRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/sell-phone/$brand/': typeof SellPhoneBrandIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
@@ -299,6 +327,7 @@ export interface FileRoutesByTo {
   '/phone/$slug': typeof PhoneSlugRoute
   '/reservation-status/$token': typeof ReservationStatusTokenRoute
   '/reservation/$token': typeof ReservationTokenRoute
+  '/sell-phone': typeof SellPhoneIndexRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -312,7 +341,9 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
+  '/sell-phone/$brand/$model': typeof SellPhoneBrandModelRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/sell-phone/$brand': typeof SellPhoneBrandIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
@@ -333,12 +364,14 @@ export interface FileRoutesById {
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/search': typeof SearchRoute
+  '/sell-phone': typeof SellPhoneRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/reservation-status/$token': typeof ReservationStatusTokenRoute
   '/reservation/$token': typeof ReservationTokenRoute
+  '/sell-phone/': typeof SellPhoneIndexRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -352,7 +385,9 @@ export interface FileRoutesById {
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/receipt/$id': typeof AuthenticatedReceiptIdRoute
+  '/sell-phone/$brand/$model': typeof SellPhoneBrandModelRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/sell-phone/$brand/': typeof SellPhoneBrandIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
@@ -373,12 +408,14 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/return-policy'
     | '/search'
+    | '/sell-phone'
     | '/sitemap.xml'
     | '/admin'
     | '/brand/$slug'
     | '/phone/$slug'
     | '/reservation-status/$token'
     | '/reservation/$token'
+    | '/sell-phone/'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/bills'
@@ -392,7 +429,9 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/users'
     | '/receipt/$id'
+    | '/sell-phone/$brand/$model'
     | '/admin/'
+    | '/sell-phone/$brand/'
     | '/api/public/img/$'
     | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
@@ -416,6 +455,7 @@ export interface FileRouteTypes {
     | '/phone/$slug'
     | '/reservation-status/$token'
     | '/reservation/$token'
+    | '/sell-phone'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/bills'
@@ -429,7 +469,9 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/users'
     | '/receipt/$id'
+    | '/sell-phone/$brand/$model'
     | '/admin'
+    | '/sell-phone/$brand'
     | '/api/public/img/$'
     | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
@@ -449,12 +491,14 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/return-policy'
     | '/search'
+    | '/sell-phone'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/brand/$slug'
     | '/phone/$slug'
     | '/reservation-status/$token'
     | '/reservation/$token'
+    | '/sell-phone/'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/bills'
@@ -468,7 +512,9 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/users'
     | '/_authenticated/receipt/$id'
+    | '/sell-phone/$brand/$model'
     | '/_authenticated/admin/'
+    | '/sell-phone/$brand/'
     | '/api/public/img/$'
     | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
@@ -489,6 +535,7 @@ export interface RootRouteChildren {
   RefundPolicyRoute: typeof RefundPolicyRoute
   ReturnPolicyRoute: typeof ReturnPolicyRoute
   SearchRoute: typeof SearchRoute
+  SellPhoneRoute: typeof SellPhoneRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
@@ -509,6 +556,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell-phone': {
+      id: '/sell-phone'
+      path: '/sell-phone'
+      fullPath: '/sell-phone'
+      preLoaderRoute: typeof SellPhoneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -588,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sell-phone/': {
+      id: '/sell-phone/'
+      path: '/'
+      fullPath: '/sell-phone/'
+      preLoaderRoute: typeof SellPhoneIndexRouteImport
+      parentRoute: typeof SellPhoneRoute
+    }
     '/reservation/$token': {
       id: '/reservation/$token'
       path: '/reservation/$token'
@@ -623,12 +684,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/sell-phone/$brand/': {
+      id: '/sell-phone/$brand/'
+      path: '/$brand'
+      fullPath: '/sell-phone/$brand/'
+      preLoaderRoute: typeof SellPhoneBrandIndexRouteImport
+      parentRoute: typeof SellPhoneRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/sell-phone/$brand/$model': {
+      id: '/sell-phone/$brand/$model'
+      path: '/$brand/$model'
+      fullPath: '/sell-phone/$brand/$model'
+      preLoaderRoute: typeof SellPhoneBrandModelRouteImport
+      parentRoute: typeof SellPhoneRoute
     }
     '/_authenticated/receipt/$id': {
       id: '/_authenticated/receipt/$id'
@@ -817,6 +892,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface SellPhoneRouteChildren {
+  SellPhoneIndexRoute: typeof SellPhoneIndexRoute
+  SellPhoneBrandModelRoute: typeof SellPhoneBrandModelRoute
+  SellPhoneBrandIndexRoute: typeof SellPhoneBrandIndexRoute
+}
+
+const SellPhoneRouteChildren: SellPhoneRouteChildren = {
+  SellPhoneIndexRoute: SellPhoneIndexRoute,
+  SellPhoneBrandModelRoute: SellPhoneBrandModelRoute,
+  SellPhoneBrandIndexRoute: SellPhoneBrandIndexRoute,
+}
+
+const SellPhoneRouteWithChildren = SellPhoneRoute._addFileChildren(
+  SellPhoneRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -829,6 +920,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundPolicyRoute: RefundPolicyRoute,
   ReturnPolicyRoute: ReturnPolicyRoute,
   SearchRoute: SearchRoute,
+  SellPhoneRoute: SellPhoneRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,
@@ -845,3 +937,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

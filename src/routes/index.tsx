@@ -43,7 +43,7 @@ export const Route = createFileRoute("/")({
   },
 
   component: HomePage,
-  errorComponent: ({ error }) => <ErrorPage message={error.message} />,
+  errorComponent: ({ error }) => <ErrorPage message={error instanceof Error ? error.message : String(error)} />,
   notFoundComponent: () => <ErrorPage message="Page not found." />,
 });
 
