@@ -41,6 +41,8 @@ function PublicHeader() {
           {[
             { to: "/", label: "Home" },
             { to: "/catalog", label: "Catalog" },
+    { to: "/sell-phone", label: "Sell Your Phone" },
+            { to: "/sell-phone", label: "Sell Phone" },
             { to: "/about", label: "About" },
             { to: "/contact", label: "Contact" },
           ].map((n) => (
@@ -70,9 +72,10 @@ function PublicHeader() {
 }
 
 function PublicFooter() {
-  const explore: { to: "/" | "/catalog" | "/about" | "/contact"; label: string }[] = [
+  const explore: { to: "/" | "/catalog" | "/sell-phone" | "/about" | "/contact"; label: string }[] = [
     { to: "/", label: "Home" },
     { to: "/catalog", label: "Catalog" },
+    { to: "/sell-phone", label: "Sell Your Phone" },
     { to: "/about", label: "About Us" },
     { to: "/contact", label: "Contact Us" },
   ];

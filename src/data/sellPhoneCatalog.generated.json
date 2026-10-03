@@ -1088,7 +1088,7 @@
     {
      "name": "Samsung Galaxy Z Flip5",
      "slug": "galaxy-z-flip5",
-     "series": "Other",
+     "series": "Galaxy Z Flip Series",
      "images": [
       "/sell-phone/phones/samsung/galaxy-z-flip5.webp"
      ],
@@ -1098,7 +1098,7 @@
     {
      "name": "Samsung Galaxy Z Fold5",
      "slug": "galaxy-z-fold5",
-     "series": "Other",
+     "series": "Galaxy Z Fold Series",
      "images": [
       "/sell-phone/phones/samsung/galaxy-z-fold5.webp"
      ],
@@ -1518,7 +1518,7 @@
     {
      "name": "Samsung Galaxy Z Flip3 5G",
      "slug": "galaxy-z-flip3-5g",
-     "series": "Other",
+     "series": "Galaxy Z Flip Series",
      "images": [
       "/sell-phone/phones/samsung/galaxy-z-flip3-5g.webp"
      ],
@@ -1538,7 +1538,7 @@
     {
      "name": "Samsung Galaxy Z Fold3 5G",
      "slug": "galaxy-z-fold3-5g",
-     "series": "Other",
+     "series": "Galaxy Z Fold Series",
      "images": [
       "/sell-phone/phones/samsung/galaxy-z-fold3-5g.webp"
      ],
@@ -1548,7 +1548,7 @@
     {
      "name": "Samsung Galaxy Z Fold2 5G",
      "slug": "galaxy-z-fold2-5g",
-     "series": "Other",
+     "series": "Galaxy Z Fold Series",
      "images": [
       "/sell-phone/phones/samsung/galaxy-z-fold2-5g.webp"
      ],
@@ -2917,8 +2917,7 @@
     "A Series",
     "Find Series",
     "K Series",
-    "R Series",
-    "Other"
+    "R Series"
    ],
    "models": [
     {
@@ -3414,7 +3413,7 @@
     {
      "name": "Oppo Reno12 Pro 5G",
      "slug": "reno12-pro-5g",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno12-pro-5g.webp"
      ],
@@ -3424,7 +3423,7 @@
     {
      "name": "Oppo Reno12 5G",
      "slug": "reno12-5g",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno12-5g.webp"
      ],
@@ -3784,7 +3783,7 @@
     {
      "name": "Oppo Reno6 Pro 5G",
      "slug": "reno6-pro-5g",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno6-pro-5g.webp"
      ],
@@ -3794,7 +3793,7 @@
     {
      "name": "Oppo Reno5 Pro 5G",
      "slug": "reno5-pro-5g",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno5-pro-5g.webp"
      ],
@@ -3814,7 +3813,7 @@
     {
      "name": "Oppo Reno6 5G",
      "slug": "reno6-5g",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno6-5g.webp"
      ],
@@ -3824,7 +3823,7 @@
     {
      "name": "Oppo Reno4 Pro",
      "slug": "reno4-pro",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno4-pro.webp"
      ],
@@ -3834,7 +3833,7 @@
     {
      "name": "Oppo Reno3 Pro",
      "slug": "reno3-pro",
-     "series": "Other",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno3-pro.webp"
      ],
@@ -3844,7 +3843,7 @@
     {
      "name": "Oppo Reno2 F",
      "slug": "reno2-f",
-     "series": "F Series",
+     "series": "Reno Series",
      "images": [
       "/sell-phone/phones/oppo/reno2-f.webp"
      ],
