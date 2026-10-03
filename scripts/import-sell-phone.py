@@ -58,7 +58,7 @@ def save_webp(src, dst, max_side):
     if im.mode not in ("RGBA", "RGB"):
         im = im.convert("RGBA")
     im.thumbnail((max_side, max_side), Image.LANCZOS)
-    im.save(dst, "WEBP", quality=90, method=6)
+    im.save(dst, "WEBP", quality=90, method=3)
     return im.size
 
 
