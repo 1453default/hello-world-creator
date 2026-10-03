@@ -9,96 +9,55 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SellPhoneRouteImport } from './routes/sell-phone'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as ReturnPolicyRouteImport } from './routes/return-policy'
-import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as DisclaimerRouteImport } from './routes/disclaimer'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CatalogRouteImport } from './routes/catalog'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SellPhoneIndexRouteImport } from './routes/sell-phone.index'
-import { Route as ReservationTokenRouteImport } from './routes/reservation.$token'
-import { Route as ReservationStatusTokenRouteImport } from './routes/reservation-status.$token'
-import { Route as PhoneSlugRouteImport } from './routes/phone.$slug'
-import { Route as BrandSlugRouteImport } from './routes/brand.$slug'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DisclaimerRouteImport } from './routes/disclaimer'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
+import { Route as ReturnPolicyRouteImport } from './routes/return-policy'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SellPhoneRouteImport } from './routes/sell-phone'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
-import { Route as SellPhoneBrandIndexRouteImport } from './routes/sell-phone.$brand.index'
+import { Route as BrandSlugRouteImport } from './routes/brand.$slug'
+import { Route as PhoneSlugRouteImport } from './routes/phone.$slug'
+import { Route as ReservationStatusTokenRouteImport } from './routes/reservation-status.$token'
+import { Route as ReservationTokenRouteImport } from './routes/reservation.$token'
+import { Route as SellPhoneIndexRouteImport } from './routes/sell-phone.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
-import { Route as SellPhoneBrandModelRouteImport } from './routes/sell-phone.$brand.$model'
-import { Route as AuthenticatedReceiptIdRouteImport } from './routes/_authenticated/receipt.$id'
-import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
-import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
-import { Route as AuthenticatedAdminReservationsRouteImport } from './routes/_authenticated/admin/reservations'
-import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
-import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
-import { Route as AuthenticatedAdminPosRouteImport } from './routes/_authenticated/admin/pos'
-import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
-import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin/customers'
-import { Route as AuthenticatedAdminBrandsRouteImport } from './routes/_authenticated/admin/brands'
-import { Route as AuthenticatedAdminBillsRouteImport } from './routes/_authenticated/admin/bills'
-import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin/audit'
-import { Route as ApiPublicWebhooksRazorpayRouteImport } from './routes/api/public/webhooks/razorpay'
-import { Route as ApiPublicReservationsVerifyRouteImport } from './routes/api/public/reservations/verify'
-import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
-import { Route as ApiPublicReservationsAvailabilityRouteImport } from './routes/api/public/reservations/availability'
+import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
+import { Route as AuthenticatedAdminBillsRouteImport } from './routes/_authenticated/admin/bills'
+import { Route as AuthenticatedAdminBrandsRouteImport } from './routes/_authenticated/admin/brands'
+import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin/customers'
+import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
+import { Route as AuthenticatedAdminPosRouteImport } from './routes/_authenticated/admin/pos'
+import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
+import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
+import { Route as AuthenticatedAdminReservationsRouteImport } from './routes/_authenticated/admin/reservations'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedReceiptIdRouteImport } from './routes/_authenticated/receipt.$id'
+import { Route as SellPhoneBrandIndexRouteImport } from './routes/sell-phone.$brand.index'
+import { Route as SellPhoneBrandModelRouteImport } from './routes/sell-phone.$brand.$model'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
+import { Route as ApiPublicReservationsAvailabilityRouteImport } from './routes/api/public/reservations/availability'
+import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
+import { Route as ApiPublicReservationsVerifyRouteImport } from './routes/api/public/reservations/verify'
+import { Route as ApiPublicWebhooksRazorpayRouteImport } from './routes/api/public/webhooks/razorpay'
 import { Route as ApiPublicReservationsStatusTokenRouteImport } from './routes/api/public/reservations/status.$token'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellPhoneRoute = SellPhoneRouteImport.update({
-  id: '/sell-phone',
-  path: '/sell-phone',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReturnPolicyRoute = ReturnPolicyRouteImport.update({
-  id: '/return-policy',
-  path: '/return-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RefundPolicyRoute = RefundPolicyRouteImport.update({
-  id: '/refund-policy',
-  path: '/refund-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DisclaimerRoute = DisclaimerRouteImport.update({
-  id: '/disclaimer',
-  path: '/disclaimer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CatalogRoute = CatalogRouteImport.update({
-  id: '/catalog',
-  path: '/catalog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -106,38 +65,54 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CatalogRoute = CatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellPhoneIndexRoute = SellPhoneIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SellPhoneRoute,
-} as any)
-const ReservationTokenRoute = ReservationTokenRouteImport.update({
-  id: '/reservation/$token',
-  path: '/reservation/$token',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReservationStatusTokenRoute = ReservationStatusTokenRouteImport.update({
-  id: '/reservation-status/$token',
-  path: '/reservation-status/$token',
+const DisclaimerRoute = DisclaimerRouteImport.update({
+  id: '/disclaimer',
+  path: '/disclaimer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PhoneSlugRoute = PhoneSlugRouteImport.update({
-  id: '/phone/$slug',
-  path: '/phone/$slug',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrandSlugRoute = BrandSlugRouteImport.update({
-  id: '/brand/$slug',
-  path: '/brand/$slug',
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnPolicyRoute = ReturnPolicyRouteImport.update({
+  id: '/return-policy',
+  path: '/return-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellPhoneRoute = SellPhoneRouteImport.update({
+  id: '/sell-phone',
+  path: '/sell-phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -145,9 +120,29 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const SellPhoneBrandIndexRoute = SellPhoneBrandIndexRouteImport.update({
-  id: '/$brand/',
-  path: '/$brand/',
+const BrandSlugRoute = BrandSlugRouteImport.update({
+  id: '/brand/$slug',
+  path: '/brand/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhoneSlugRoute = PhoneSlugRouteImport.update({
+  id: '/phone/$slug',
+  path: '/phone/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReservationStatusTokenRoute = ReservationStatusTokenRouteImport.update({
+  id: '/reservation-status/$token',
+  path: '/reservation-status/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReservationTokenRoute = ReservationTokenRouteImport.update({
+  id: '/reservation/$token',
+  path: '/reservation/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellPhoneIndexRoute = SellPhoneIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => SellPhoneRoute,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -155,71 +150,9 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
-const SellPhoneBrandModelRoute = SellPhoneBrandModelRouteImport.update({
-  id: '/$brand/$model',
-  path: '/$brand/$model',
-  getParentRoute: () => SellPhoneRoute,
-} as any)
-const AuthenticatedReceiptIdRoute = AuthenticatedReceiptIdRouteImport.update({
-  id: '/receipt/$id',
-  path: '/receipt/$id',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AuthenticatedAdminRouteRoute,
-} as any)
-const AuthenticatedAdminSettingsRoute =
-  AuthenticatedAdminSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminReservationsRoute =
-  AuthenticatedAdminReservationsRouteImport.update({
-    id: '/reservations',
-    path: '/reservations',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminReportsRoute =
-  AuthenticatedAdminReportsRouteImport.update({
-    id: '/reports',
-    path: '/reports',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminProductsRoute =
-  AuthenticatedAdminProductsRouteImport.update({
-    id: '/products',
-    path: '/products',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminPosRoute = AuthenticatedAdminPosRouteImport.update({
-  id: '/pos',
-  path: '/pos',
-  getParentRoute: () => AuthenticatedAdminRouteRoute,
-} as any)
-const AuthenticatedAdminInventoryRoute =
-  AuthenticatedAdminInventoryRouteImport.update({
-    id: '/inventory',
-    path: '/inventory',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminCustomersRoute =
-  AuthenticatedAdminCustomersRouteImport.update({
-    id: '/customers',
-    path: '/customers',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminBrandsRoute =
-  AuthenticatedAdminBrandsRouteImport.update({
-    id: '/brands',
-    path: '/brands',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
-const AuthenticatedAdminBillsRoute = AuthenticatedAdminBillsRouteImport.update({
-  id: '/bills',
-  path: '/bills',
+const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 const AuthenticatedAdminBannersRoute =
@@ -228,21 +161,87 @@ const AuthenticatedAdminBannersRoute =
     path: '/banners',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
-const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
+const AuthenticatedAdminBillsRoute = AuthenticatedAdminBillsRouteImport.update({
+  id: '/bills',
+  path: '/bills',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
-const ApiPublicWebhooksRazorpayRoute =
-  ApiPublicWebhooksRazorpayRouteImport.update({
-    id: '/api/public/webhooks/razorpay',
-    path: '/api/public/webhooks/razorpay',
-    getParentRoute: () => rootRouteImport,
+const AuthenticatedAdminBrandsRoute =
+  AuthenticatedAdminBrandsRouteImport.update({
+    id: '/brands',
+    path: '/brands',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
-const ApiPublicReservationsVerifyRoute =
-  ApiPublicReservationsVerifyRouteImport.update({
-    id: '/api/public/reservations/verify',
-    path: '/api/public/reservations/verify',
+const AuthenticatedAdminCustomersRoute =
+  AuthenticatedAdminCustomersRouteImport.update({
+    id: '/customers',
+    path: '/customers',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminInventoryRoute =
+  AuthenticatedAdminInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminPosRoute = AuthenticatedAdminPosRouteImport.update({
+  id: '/pos',
+  path: '/pos',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminProductsRoute =
+  AuthenticatedAdminProductsRouteImport.update({
+    id: '/products',
+    path: '/products',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminReportsRoute =
+  AuthenticatedAdminReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminReservationsRoute =
+  AuthenticatedAdminReservationsRouteImport.update({
+    id: '/reservations',
+    path: '/reservations',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedReceiptIdRoute = AuthenticatedReceiptIdRouteImport.update({
+  id: '/receipt/$id',
+  path: '/receipt/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const SellPhoneBrandIndexRoute = SellPhoneBrandIndexRouteImport.update({
+  id: '/$brand/',
+  path: '/$brand/',
+  getParentRoute: () => SellPhoneRoute,
+} as any)
+const SellPhoneBrandModelRoute = SellPhoneBrandModelRouteImport.update({
+  id: '/$brand/$model',
+  path: '/$brand/$model',
+  getParentRoute: () => SellPhoneRoute,
+} as any)
+const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
+  id: '/api/public/img/$',
+  path: '/api/public/img/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicReservationsAvailabilityRoute =
+  ApiPublicReservationsAvailabilityRouteImport.update({
+    id: '/api/public/reservations/availability',
+    path: '/api/public/reservations/availability',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicReservationsCreateRoute =
@@ -251,17 +250,18 @@ const ApiPublicReservationsCreateRoute =
     path: '/api/public/reservations/create',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicReservationsAvailabilityRoute =
-  ApiPublicReservationsAvailabilityRouteImport.update({
-    id: '/api/public/reservations/availability',
-    path: '/api/public/reservations/availability',
+const ApiPublicReservationsVerifyRoute =
+  ApiPublicReservationsVerifyRouteImport.update({
+    id: '/api/public/reservations/verify',
+    path: '/api/public/reservations/verify',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
-  id: '/api/public/img/$',
-  path: '/api/public/img/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const ApiPublicWebhooksRazorpayRoute =
+  ApiPublicWebhooksRazorpayRouteImport.update({
+    id: '/api/public/webhooks/razorpay',
+    path: '/api/public/webhooks/razorpay',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicReservationsStatusTokenRoute =
   ApiPublicReservationsStatusTokenRouteImport.update({
     id: '/api/public/reservations/status/$token',
@@ -551,81 +551,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sell-phone': {
-      id: '/sell-phone'
-      path: '/sell-phone'
-      fullPath: '/sell-phone'
-      preLoaderRoute: typeof SellPhoneRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/return-policy': {
-      id: '/return-policy'
-      path: '/return-policy'
-      fullPath: '/return-policy'
-      preLoaderRoute: typeof ReturnPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/refund-policy': {
-      id: '/refund-policy'
-      path: '/refund-policy'
-      fullPath: '/refund-policy'
-      preLoaderRoute: typeof RefundPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/disclaimer': {
-      id: '/disclaimer'
-      path: '/disclaimer'
-      fullPath: '/disclaimer'
-      preLoaderRoute: typeof DisclaimerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalog': {
-      id: '/catalog'
-      path: '/catalog'
-      fullPath: '/catalog'
-      preLoaderRoute: typeof CatalogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -635,46 +565,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sell-phone/': {
-      id: '/sell-phone/'
-      path: '/'
-      fullPath: '/sell-phone/'
-      preLoaderRoute: typeof SellPhoneIndexRouteImport
-      parentRoute: typeof SellPhoneRoute
-    }
-    '/reservation/$token': {
-      id: '/reservation/$token'
-      path: '/reservation/$token'
-      fullPath: '/reservation/$token'
-      preLoaderRoute: typeof ReservationTokenRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reservation-status/$token': {
-      id: '/reservation-status/$token'
-      path: '/reservation-status/$token'
-      fullPath: '/reservation-status/$token'
-      preLoaderRoute: typeof ReservationStatusTokenRouteImport
+    '/catalog': {
+      id: '/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof CatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/phone/$slug': {
-      id: '/phone/$slug'
-      path: '/phone/$slug'
-      fullPath: '/phone/$slug'
-      preLoaderRoute: typeof PhoneSlugRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/brand/$slug': {
-      id: '/brand/$slug'
-      path: '/brand/$slug'
-      fullPath: '/brand/$slug'
-      preLoaderRoute: typeof BrandSlugRouteImport
+    '/disclaimer': {
+      id: '/disclaimer'
+      path: '/disclaimer'
+      fullPath: '/disclaimer'
+      preLoaderRoute: typeof DisclaimerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/return-policy': {
+      id: '/return-policy'
+      path: '/return-policy'
+      fullPath: '/return-policy'
+      preLoaderRoute: typeof ReturnPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell-phone': {
+      id: '/sell-phone'
+      path: '/sell-phone'
+      fullPath: '/sell-phone'
+      preLoaderRoute: typeof SellPhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -684,11 +649,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/sell-phone/$brand/': {
-      id: '/sell-phone/$brand/'
-      path: '/$brand'
-      fullPath: '/sell-phone/$brand/'
-      preLoaderRoute: typeof SellPhoneBrandIndexRouteImport
+    '/brand/$slug': {
+      id: '/brand/$slug'
+      path: '/brand/$slug'
+      fullPath: '/brand/$slug'
+      preLoaderRoute: typeof BrandSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phone/$slug': {
+      id: '/phone/$slug'
+      path: '/phone/$slug'
+      fullPath: '/phone/$slug'
+      preLoaderRoute: typeof PhoneSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reservation-status/$token': {
+      id: '/reservation-status/$token'
+      path: '/reservation-status/$token'
+      fullPath: '/reservation-status/$token'
+      preLoaderRoute: typeof ReservationStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reservation/$token': {
+      id: '/reservation/$token'
+      path: '/reservation/$token'
+      fullPath: '/reservation/$token'
+      preLoaderRoute: typeof ReservationTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell-phone/': {
+      id: '/sell-phone/'
+      path: '/'
+      fullPath: '/sell-phone/'
+      preLoaderRoute: typeof SellPhoneIndexRouteImport
       parentRoute: typeof SellPhoneRoute
     }
     '/_authenticated/admin/': {
@@ -698,88 +691,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/sell-phone/$brand/$model': {
-      id: '/sell-phone/$brand/$model'
-      path: '/$brand/$model'
-      fullPath: '/sell-phone/$brand/$model'
-      preLoaderRoute: typeof SellPhoneBrandModelRouteImport
-      parentRoute: typeof SellPhoneRoute
-    }
-    '/_authenticated/receipt/$id': {
-      id: '/_authenticated/receipt/$id'
-      path: '/receipt/$id'
-      fullPath: '/receipt/$id'
-      preLoaderRoute: typeof AuthenticatedReceiptIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/settings': {
-      id: '/_authenticated/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/reservations': {
-      id: '/_authenticated/admin/reservations'
-      path: '/reservations'
-      fullPath: '/admin/reservations'
-      preLoaderRoute: typeof AuthenticatedAdminReservationsRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/reports': {
-      id: '/_authenticated/admin/reports'
-      path: '/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/products': {
-      id: '/_authenticated/admin/products'
-      path: '/products'
-      fullPath: '/admin/products'
-      preLoaderRoute: typeof AuthenticatedAdminProductsRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/pos': {
-      id: '/_authenticated/admin/pos'
-      path: '/pos'
-      fullPath: '/admin/pos'
-      preLoaderRoute: typeof AuthenticatedAdminPosRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/inventory': {
-      id: '/_authenticated/admin/inventory'
-      path: '/inventory'
-      fullPath: '/admin/inventory'
-      preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/customers': {
-      id: '/_authenticated/admin/customers'
-      path: '/customers'
-      fullPath: '/admin/customers'
-      preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/brands': {
-      id: '/_authenticated/admin/brands'
-      path: '/brands'
-      fullPath: '/admin/brands'
-      preLoaderRoute: typeof AuthenticatedAdminBrandsRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
-    '/_authenticated/admin/bills': {
-      id: '/_authenticated/admin/bills'
-      path: '/bills'
-      fullPath: '/admin/bills'
-      preLoaderRoute: typeof AuthenticatedAdminBillsRouteImport
+    '/_authenticated/admin/audit': {
+      id: '/_authenticated/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/banners': {
@@ -789,32 +705,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBannersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/_authenticated/admin/audit': {
-      id: '/_authenticated/admin/audit'
-      path: '/audit'
-      fullPath: '/admin/audit'
-      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
+    '/_authenticated/admin/bills': {
+      id: '/_authenticated/admin/bills'
+      path: '/bills'
+      fullPath: '/admin/bills'
+      preLoaderRoute: typeof AuthenticatedAdminBillsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/api/public/webhooks/razorpay': {
-      id: '/api/public/webhooks/razorpay'
-      path: '/api/public/webhooks/razorpay'
-      fullPath: '/api/public/webhooks/razorpay'
-      preLoaderRoute: typeof ApiPublicWebhooksRazorpayRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/admin/brands': {
+      id: '/_authenticated/admin/brands'
+      path: '/brands'
+      fullPath: '/admin/brands'
+      preLoaderRoute: typeof AuthenticatedAdminBrandsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/api/public/reservations/verify': {
-      id: '/api/public/reservations/verify'
-      path: '/api/public/reservations/verify'
-      fullPath: '/api/public/reservations/verify'
-      preLoaderRoute: typeof ApiPublicReservationsVerifyRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/admin/customers': {
+      id: '/_authenticated/admin/customers'
+      path: '/customers'
+      fullPath: '/admin/customers'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/api/public/reservations/create': {
-      id: '/api/public/reservations/create'
-      path: '/api/public/reservations/create'
-      fullPath: '/api/public/reservations/create'
-      preLoaderRoute: typeof ApiPublicReservationsCreateRouteImport
+    '/_authenticated/admin/inventory': {
+      id: '/_authenticated/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/pos': {
+      id: '/_authenticated/admin/pos'
+      path: '/pos'
+      fullPath: '/admin/pos'
+      preLoaderRoute: typeof AuthenticatedAdminPosRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/products': {
+      id: '/_authenticated/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AuthenticatedAdminProductsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/reports': {
+      id: '/_authenticated/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/reservations': {
+      id: '/_authenticated/admin/reservations'
+      path: '/reservations'
+      fullPath: '/admin/reservations'
+      preLoaderRoute: typeof AuthenticatedAdminReservationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/receipt/$id': {
+      id: '/_authenticated/receipt/$id'
+      path: '/receipt/$id'
+      fullPath: '/receipt/$id'
+      preLoaderRoute: typeof AuthenticatedReceiptIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/sell-phone/$brand/': {
+      id: '/sell-phone/$brand/'
+      path: '/$brand'
+      fullPath: '/sell-phone/$brand/'
+      preLoaderRoute: typeof SellPhoneBrandIndexRouteImport
+      parentRoute: typeof SellPhoneRoute
+    }
+    '/sell-phone/$brand/$model': {
+      id: '/sell-phone/$brand/$model'
+      path: '/$brand/$model'
+      fullPath: '/sell-phone/$brand/$model'
+      preLoaderRoute: typeof SellPhoneBrandModelRouteImport
+      parentRoute: typeof SellPhoneRoute
+    }
+    '/api/public/img/$': {
+      id: '/api/public/img/$'
+      path: '/api/public/img/$'
+      fullPath: '/api/public/img/$'
+      preLoaderRoute: typeof ApiPublicImgSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/reservations/availability': {
@@ -824,11 +810,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicReservationsAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/img/$': {
-      id: '/api/public/img/$'
-      path: '/api/public/img/$'
-      fullPath: '/api/public/img/$'
-      preLoaderRoute: typeof ApiPublicImgSplatRouteImport
+    '/api/public/reservations/create': {
+      id: '/api/public/reservations/create'
+      path: '/api/public/reservations/create'
+      fullPath: '/api/public/reservations/create'
+      preLoaderRoute: typeof ApiPublicReservationsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/reservations/verify': {
+      id: '/api/public/reservations/verify'
+      path: '/api/public/reservations/verify'
+      fullPath: '/api/public/reservations/verify'
+      preLoaderRoute: typeof ApiPublicReservationsVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/razorpay': {
+      id: '/api/public/webhooks/razorpay'
+      path: '/api/public/webhooks/razorpay'
+      fullPath: '/api/public/webhooks/razorpay'
+      preLoaderRoute: typeof ApiPublicWebhooksRazorpayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/reservations/status/$token': {
