@@ -41,7 +41,6 @@ function PublicHeader() {
           {[
             { to: "/", label: "Home" },
             { to: "/catalog", label: "Catalog" },
-    { to: "/sell-phone", label: "Sell Your Phone" },
             { to: "/sell-phone", label: "Sell Phone" },
             { to: "/about", label: "About" },
             { to: "/contact", label: "Contact" },
