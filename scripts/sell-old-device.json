@@ -1,0 +1,140 @@
+{
+  "pageProps": {
+    "address": {
+      "Address": "Dofy Electronics And Solution Private Limited, 112 B2, Eldorado Building, Nungambakkam High Road, Chennai, Tamil Nadu 600034",
+      "Phone": "+91-9344691460",
+      "SellRelatedQueriesPhone": "+91-9344691460",
+      "SellOrderQueriesPhone": "+91-9344691460",
+      "Timing": "",
+      "Email": "customercare@dofy.in",
+      "SellRelatedQueriesEmail": "customercare@dofy.in",
+      "SellOrderQueriesEmail": "info@dofy.in",
+      "BusinessQueriesEmail": "admin@dofy.in",
+      "CorporateTradeIn": {
+        "SellRelatedQueriesPhone": "+91-9988112151",
+        "BusinessQueriesEmail": "info@dofy.in"
+      },
+      "BecomePartner": {
+        "SellRelatedQueriesPhone": "+91-7604991816",
+        "BusinessQueriesEmail": ""
+      },
+      "PromotionLinks": {
+        "FaceBook": "https://www.facebook.com/profile.php?id=61559135460826",
+        "Instagram": "https://www.instagram.com/dofyapp/",
+        "LinkedIn": "https://www.linkedin.com/company/dofyindia/?viewAsMember=true",
+        "TikTok": "",
+        "YouTube": "https://www.youtube.com/@dofy3449",
+        "Twitter": "https://twitter.com/dofyofficial?s=21&t=bB5ZqG8IPXTU1PC8VZrbNw"
+      }
+    },
+    "direction": "ltr",
+    "productList": [
+      {
+        "Id": 12,
+        "Name": "Phone",
+        "DisplayName": "Phone",
+        "EnumName": "Phone",
+        "ThumbnailPath": "devicetypes/Phone_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 15,
+        "Name": "Tablet",
+        "DisplayName": "Tablet",
+        "EnumName": "Tablet",
+        "ThumbnailPath": "devicetypes/Tablet_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 13,
+        "Name": "Laptop",
+        "DisplayName": "Laptop",
+        "EnumName": "Laptop",
+        "ThumbnailPath": "devicetypes/Laptop_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 19,
+        "Name": "Smartwatch",
+        "DisplayName": "Smartwatch",
+        "EnumName": "Smartwatch",
+        "ThumbnailPath": "devicetypes/Smartwatch_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 21,
+        "Name": "Earbuds",
+        "DisplayName": "Earbuds",
+        "EnumName": "Earbuds",
+        "ThumbnailPath": "devicetypes/Earbud_New.png",
+        "DisplayInList": false
+      },
+      {
+        "Id": 16,
+        "Name": "Gaming Console",
+        "DisplayName": "Gaming Console",
+        "EnumName": "Gaming_Console",
+        "ThumbnailPath": "devicetypes/Gaming_Console_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 18,
+        "Name": "TV",
+        "DisplayName": "TV",
+        "EnumName": "TV",
+        "ThumbnailPath": "devicetypes/TV_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 17,
+        "Name": "Desktop",
+        "DisplayName": "Desktop",
+        "EnumName": "Desktop",
+        "ThumbnailPath": "devicetypes/Desktop_New.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 20,
+        "Name": "Camera",
+        "DisplayName": "Camera",
+        "EnumName": "Camera",
+        "ThumbnailPath": "devicetypes/Camera_New.png",
+        "DisplayInList": true
+      }
+    ],
+    "language": "in-en",
+    "metaTags": {
+      "PageName": "Device",
+      "Title": "Sell Old device Online Best Price in india | DOFY",
+      "Description": "Dofy is India\u2019s most trusted platform to get the highest value for your old device. Sell your old & used device online and get the best price, free doorstep pickup, and instant cash payment\u2014fast, secure, and hassle-free. Sell Now!",
+      "Keywords": "sell device, sell gadgets, sell old device online, sell used device, sell old gadgets, sell old gadgets, sell my old device, sell my old gadgets best price",
+      "OGTitle": null,
+      "OGType": null,
+      "OGUrl": null,
+      "OGImage": null,
+      "OGDescription": null,
+      "TwitterCard": null,
+      "TwitterSite": null,
+      "TwitterTitle": null,
+      "TwitterDescription": null,
+      "TwitterImage": null,
+      "SeocontentTitle": "Sell Old <device> Online Best Price | Dofy",
+      "SeoContent": "DOFY is the best platform for getting rid of your outdated device while making some extra cash in the process. Whether you're thinking to upgrade or simply declutter, DOFY provides a seamless and convenient way to sell old <device> online. DOFY is the best platform to sell your used <device> in <Location>, offering you the highest price possible. So don't let your old <device> gather dust in a drawer when you can easily turn it into cash with DOFY. Start exploring this remarkable platform today and unlock its full potential!",
+      "ProductTypeId": 0,
+      "BrandMasterId": 0,
+      "TotalRowsCount": 0,
+      "Id": 2,
+      "Created": "2023-08-04T14:25:05.62",
+      "CreatedBy": 0,
+      "Active": false,
+      "Modified": "2023-08-04T14:25:05.62",
+      "ModifiedBy": 454056,
+      "IsValid": true,
+      "ValidationErrors": {
+        "Items": []
+      }
+    }
+  },
+  "nonce": "7aUtNmK2jisLUcpdxvA/eg==",
+  "__N_SSP": true
+}

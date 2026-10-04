@@ -1,0 +1,244 @@
+{
+  "pageProps": {
+    "address": {
+      "Address": "Dofy Electronics And Solution Private Limited, 112 B2, Eldorado Building, Nungambakkam High Road, Chennai, Tamil Nadu 600034",
+      "Phone": "+91-9344691460",
+      "SellRelatedQueriesPhone": "+91-9344691460",
+      "SellOrderQueriesPhone": "+91-9344691460",
+      "Timing": "",
+      "Email": "customercare@dofy.in",
+      "SellRelatedQueriesEmail": "customercare@dofy.in",
+      "SellOrderQueriesEmail": "info@dofy.in",
+      "BusinessQueriesEmail": "admin@dofy.in",
+      "CorporateTradeIn": {
+        "SellRelatedQueriesPhone": "+91-9988112151",
+        "BusinessQueriesEmail": "info@dofy.in"
+      },
+      "BecomePartner": {
+        "SellRelatedQueriesPhone": "+91-7604991816",
+        "BusinessQueriesEmail": ""
+      },
+      "PromotionLinks": {
+        "FaceBook": "https://www.facebook.com/profile.php?id=61559135460826",
+        "Instagram": "https://www.instagram.com/dofyapp/",
+        "LinkedIn": "https://www.linkedin.com/company/dofyindia/?viewAsMember=true",
+        "TikTok": "",
+        "YouTube": "https://www.youtube.com/@dofy3449",
+        "Twitter": "https://twitter.com/dofyofficial?s=21&t=bB5ZqG8IPXTU1PC8VZrbNw"
+      }
+    },
+    "direction": "ltr",
+    "language": "in-en",
+    "selectBrand": [
+      {
+        "Id": 1,
+        "Name": "Apple",
+        "DisplayName": "Apple",
+        "EnumName": "Apple",
+        "ThumbnailPath": "brand/Apple.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 3,
+        "Name": "Samsung",
+        "DisplayName": "Samsung",
+        "EnumName": "Samsung",
+        "ThumbnailPath": "brand/Samsung.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 5,
+        "Name": "OnePlus",
+        "DisplayName": "OnePlus",
+        "EnumName": "OnePlus",
+        "ThumbnailPath": "brand/OnePlus.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 13,
+        "Name": "Google Pixel",
+        "DisplayName": "Google Pixel",
+        "EnumName": "Google_Pixel",
+        "ThumbnailPath": "brand/Google_Pixel.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 6,
+        "Name": "Oppo",
+        "DisplayName": "Oppo",
+        "EnumName": "Oppo",
+        "ThumbnailPath": "brand/Oppo.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 4,
+        "Name": "Vivo",
+        "DisplayName": "Vivo",
+        "EnumName": "Vivo",
+        "ThumbnailPath": "brand/Vivo.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 2,
+        "Name": "Xiaomi",
+        "DisplayName": "Xiaomi",
+        "EnumName": "Xiaomi",
+        "ThumbnailPath": "brand/MI.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 8,
+        "Name": "motorola",
+        "DisplayName": "motorola",
+        "EnumName": "motorola",
+        "ThumbnailPath": "brand/motorola.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 7,
+        "Name": "Realme",
+        "DisplayName": "Realme",
+        "EnumName": "Realme",
+        "ThumbnailPath": "brand/Realme.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 14,
+        "Name": "POCO",
+        "DisplayName": "POCO",
+        "EnumName": "POCO",
+        "ThumbnailPath": "brand/Poco.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 31,
+        "Name": "IQOO",
+        "DisplayName": "IQOO",
+        "EnumName": "IQOO",
+        "ThumbnailPath": "brand/IQOO.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 149,
+        "Name": "Nothing",
+        "DisplayName": "Nothing",
+        "EnumName": "Nothing",
+        "ThumbnailPath": "brand/nothing.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 27,
+        "Name": "Infinix",
+        "DisplayName": "Infinix",
+        "EnumName": "Infinix",
+        "ThumbnailPath": "brand/Infinix.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 28,
+        "Name": "Tecno",
+        "DisplayName": "Tecno",
+        "EnumName": "Tecno",
+        "ThumbnailPath": "brand/Tecno.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 10,
+        "Name": "Nokia",
+        "DisplayName": "Nokia",
+        "EnumName": "Nokia",
+        "ThumbnailPath": "brand/Nokia.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 25,
+        "Name": "Lava",
+        "DisplayName": "Lava",
+        "EnumName": "Lava",
+        "ThumbnailPath": "brand/Lava.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 11,
+        "Name": "HONOR",
+        "DisplayName": "HONOR",
+        "EnumName": "HONOR",
+        "ThumbnailPath": "brand/HONOR.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 18,
+        "Name": "Huawei",
+        "DisplayName": "Huawei",
+        "EnumName": "Huawei",
+        "ThumbnailPath": "brand/Huawei.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 19,
+        "Name": "LG",
+        "DisplayName": "LG",
+        "EnumName": "LG",
+        "ThumbnailPath": "brand/LG.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 34,
+        "Name": "Nubia",
+        "DisplayName": "Nubia",
+        "EnumName": "Nubia",
+        "ThumbnailPath": "brand/Nubia.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 12,
+        "Name": "Asus",
+        "DisplayName": "Asus",
+        "EnumName": "Asus",
+        "ThumbnailPath": "brand/Asus.png",
+        "DisplayInList": true
+      },
+      {
+        "Id": 157,
+        "Name": "CMF",
+        "DisplayName": "CMF",
+        "EnumName": "CMF",
+        "ThumbnailPath": "brand/CMF.png",
+        "DisplayInList": true
+      }
+    ],
+    "metaTags": {
+      "PageName": "Phone",
+      "Title": "Sell Old Mobile Phones | Get Best Price & Instant Cash | Dofy",
+      "Description": "Sell your old phone in minutes with Dofy. Get instant cash, AI-smart pricing, verified evaluation, and trusted free doorstep pickup. Fast, secure\u2014Sell now for the best price.",
+      "Keywords": "sell old phone online, cash for phones, sell mobile, best value for my phone, sell my mobile, sell my phone, sell a phone near me, quick mobile sell, mobile selling website, sell old phone, sell used phone, quick cash for phone, sell my mobile, instant cash for phone, I want to sell my mobile phone, sell phones, sell used electronics online, mobile selling app, check my phone value, Resale, buyback, Recommerce platform, how to sell phone, where to sell my phone",
+      "OGTitle": null,
+      "OGType": null,
+      "OGUrl": null,
+      "OGImage": null,
+      "OGDescription": null,
+      "TwitterCard": null,
+      "TwitterSite": null,
+      "TwitterTitle": null,
+      "TwitterDescription": null,
+      "TwitterImage": null,
+      "SeocontentTitle": "",
+      "SeoContent": "",
+      "ProductTypeId": 0,
+      "BrandMasterId": 0,
+      "TotalRowsCount": 0,
+      "Id": 21,
+      "Created": "2025-01-09T13:26:45.387",
+      "CreatedBy": 0,
+      "Active": false,
+      "Modified": "2025-01-09T13:26:45.387",
+      "ModifiedBy": 454056,
+      "IsValid": true,
+      "ValidationErrors": {
+        "Items": []
+      }
+    }
+  },
+  "nonce": "sd7H0/cCihBVf7ZsZGQLrg==",
+  "__N_SSP": true
+}
