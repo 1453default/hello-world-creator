@@ -7,7 +7,7 @@ type PriceRecord = {
   full_model_name: string;
   storage: string;
   ram: string;
-  upto_price: number;
+  upto_price: number | null;
 };
 
 export type SellVariant = {
