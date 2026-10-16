@@ -12,10 +12,10 @@ import glob, json, os, re, shutil
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, "UM_2")
+SRC = os.path.join(ROOT, "reference", "source-catalog", "UM_2")
 PUB = os.path.join(ROOT, "public", "sell-phone")
 OUT_JSON = os.path.join(ROOT, "src", "data", "sellPhoneCatalog.generated.json")
-REPORT = os.path.join(ROOT, "SELL_PHONE_IMPORT_REPORT.md")
+REPORT = os.path.join(ROOT, "docs", "SELL_PHONE_IMPORT_REPORT.md")
 MAX_PHONE = 640
 MAX_LOGO = 400
 

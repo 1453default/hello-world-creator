@@ -5,8 +5,8 @@ import re
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-CACHE_DIR = 'dofy_cache/models'
-INPUT_FILE = 'UM_2/all_mobile_phones_by_brand.txt'
+CACHE_DIR = 'reference/source-catalog/dofy_cache/models'
+INPUT_FILE = 'reference/source-catalog/UM_2/all_mobile_phones_by_brand.txt'
 
 brand_slug_map = {
     'APPLE': 'apple',
@@ -62,7 +62,7 @@ print(f"Loaded {len(input_brands)} brand sections, total {total_input_models} mo
 # 2. Load Dofy brand caches for model metadata
 brand_cache_models = {}
 for b_key, b_slug in brand_slug_map.items():
-    b_file = f'dofy_cache/brands/{b_slug}.json'
+    b_file = f'reference/source-catalog/dofy_cache/brands/{b_slug}.json'
     d_list = json.load(open(b_file, encoding='utf-8'))
     m_dict = {}
     for dm in d_list:
@@ -304,13 +304,13 @@ print(f"TOTAL MODELS WITH MULTIPLE VARIANTS: {stat_multi_variants}")
 print(f"TOTAL MODELS WITH SINGLE CONFIGURATION: {stat_single_variant}")
 
 # Save Output A
-out_a_path = 'DOFY_PRICE_RESEARCH_MASTER.txt'
+out_a_path = 'reference/source-catalog/DOFY_PRICE_RESEARCH_MASTER.txt'
 with open(out_a_path, 'w', encoding='utf-8') as f:
     f.write('\n'.join(output_a_lines))
 print(f"Saved Output A to {out_a_path} ({len(output_a_lines)} lines)")
 
 # Save Output B (CSV)
-out_b_csv = 'DOFY_PRICE_RESEARCH_DATASET.csv'
+out_b_csv = 'reference/source-catalog/DOFY_PRICE_RESEARCH_DATASET.csv'
 import csv
 with open(out_b_csv, 'w', encoding='utf-8', newline='') as f:
     writer = csv.writer(f, delimiter='|')

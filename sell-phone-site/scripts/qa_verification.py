@@ -2,9 +2,9 @@ import re
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-INPUT_FILE = r'c:\Users\ADMIN\OneDrive\Desktop\hello-world-creator\UM_2\all_mobile_phones_by_brand.txt'
-MASTER_FILE = r'c:\Users\ADMIN\OneDrive\Desktop\hello-world-creator\DOFY_PRICE_RESEARCH_MASTER.txt'
-CSV_FILE = r'c:\Users\ADMIN\OneDrive\Desktop\hello-world-creator\DOFY_PRICE_RESEARCH_DATASET.csv'
+INPUT_FILE = 'reference/source-catalog/UM_2/all_mobile_phones_by_brand.txt'
+MASTER_FILE = 'reference/source-catalog/DOFY_PRICE_RESEARCH_MASTER.txt'
+CSV_FILE = 'reference/source-catalog/DOFY_PRICE_RESEARCH_DATASET.csv'
 
 # 1. Read input models
 input_models = []

@@ -5,10 +5,10 @@ import re
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-CACHE_DIR = 'dofy_cache/models'
+CACHE_DIR = 'reference/source-catalog/dofy_cache/models'
 
 # Load input file to verify exact mapping and order
-with open('UM_2/all_mobile_phones_by_brand.txt', encoding='utf-8') as f:
+with open('reference/source-catalog/UM_2/all_mobile_phones_by_brand.txt', encoding='utf-8') as f:
     input_lines = [l.strip() for l in f if l.strip()]
 
 brand_map = {
@@ -34,7 +34,7 @@ print(f"Total models in input file: {len(models_ordered)}")
 # Build lookup from dofy_cache/brands
 brand_cache_models = {}
 for b_disp, b_slug in brand_map.items():
-    b_models = json.load(open(f'dofy_cache/brands/{b_slug}.json', encoding='utf-8'))
+    b_models = json.load(open(f'reference/source-catalog/dofy_cache/brands/{b_slug}.json', encoding='utf-8'))
     # Key by normalized model name
     m_dict = {}
     for bm in b_models:

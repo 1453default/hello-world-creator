@@ -30,7 +30,7 @@ brands = [
     ("CMF", "cmf"),
 ]
 
-os.makedirs('dofy_cache/brands', exist_ok=True)
+os.makedirs('reference/source-catalog/dofy_cache/brands', exist_ok=True)
 
 for folder, bslug in brands:
     url = f'https://www.dofy.in/_next/data/{build_id}/in-en/india/sell-old-phone/{bslug}.json'
@@ -40,7 +40,7 @@ for folder, bslug in brands:
             data = json.loads(resp.read().decode('utf-8'))
             models = data.get('pageProps', {}).get('selectModel', [])
             print(f'SUCCESS {bslug:15}: {len(models)} models')
-            with open(f'dofy_cache/brands/{bslug}.json', 'w', encoding='utf-8') as f:
+            with open(f'reference/source-catalog/dofy_cache/brands/{bslug}.json', 'w', encoding='utf-8') as f:
                 json.dump(models, f, indent=2)
     except Exception as e:
         print(f'FAILED  {bslug:15}: {e}')

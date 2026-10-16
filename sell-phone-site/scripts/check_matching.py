@@ -6,7 +6,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Read input file
-with open('UM_2/all_mobile_phones_by_brand.txt', encoding='utf-8') as f:
+with open('reference/source-catalog/UM_2/all_mobile_phones_by_brand.txt', encoding='utf-8') as f:
     lines = [l.strip() for l in f]
 
 brand_models_input = {}
@@ -56,7 +56,7 @@ unmatched = []
 
 for b_disp, in_models in brand_models_input.items():
     slug = brand_map[b_disp]
-    dofy_file = f'dofy_cache/brands/{slug}.json'
+    dofy_file = f'reference/source-catalog/dofy_cache/brands/{slug}.json'
     dofy_list = json.load(open(dofy_file, encoding='utf-8'))
     dofy_names = {m['Name']: m for m in dofy_list}
     dofy_names_lower = {m['Name'].lower(): m for m in dofy_list}

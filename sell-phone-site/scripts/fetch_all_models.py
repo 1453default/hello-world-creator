@@ -9,11 +9,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 sys.stdout.reconfigure(encoding='utf-8')
 
 build_id = 'uQvNXRaRclkFWZB1XAQdK'
-CACHE_DIR = 'dofy_cache/models'
+CACHE_DIR = 'reference/source-catalog/dofy_cache/models'
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 # Brand mappings
-brand_files = sorted(glob.glob('dofy_cache/brands/*.json'))
+brand_files = sorted(glob.glob('reference/source-catalog/dofy_cache/brands/*.json'))
 
 all_tasks = []
 for bf in brand_files:

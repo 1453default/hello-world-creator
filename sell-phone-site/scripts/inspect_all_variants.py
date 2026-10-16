@@ -5,7 +5,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
 variant_names = set()
-for f in glob.glob('dofy_cache/models/*/*.json'):
+for f in glob.glob('reference/source-catalog/dofy_cache/models/*/*.json'):
     data = json.load(open(f, encoding='utf-8'))
     vars = data.get('pageProps', {}).get('selectVariant', [])
     for v in vars:
