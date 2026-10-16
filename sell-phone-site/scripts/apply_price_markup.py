@@ -4,7 +4,7 @@ import sys
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-target_file = r'c:\Users\ADMIN\OneDrive\Desktop\hello-world-creator\src\data\dofyPriceCatalog.generated.json'
+target_file = 'src/data/dofyPriceCatalog.generated.json'
 
 with open(target_file, 'r', encoding='utf-8') as f:
     data = json.load(f)
