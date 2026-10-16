@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Phone, Instagram } from "lucide-react";
-import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, whatsappLink } from "@/lib/shop";
+import { SHOP_PHONE, SHOP_INSTAGRAM, SHOP_INSTAGRAM_HANDLE, mainSite, whatsappLink } from "@/lib/shop";
 import { Dock } from "@/components/public/Dock";
 import { BrandTagline } from "@/components/public/BrandTagline";
 
@@ -21,6 +21,16 @@ export function PublicLayout({ children }: { children: ReactNode }) {
   );
 }
 
+const NAV_CLS = "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition";
+// Catalog, About and Contact live on Website 1 (buy-phones store).
+const NAV: { to?: "/" | "/sell-phone"; href?: string; label: string }[] = [
+  { to: "/", label: "Home" },
+  { to: "/sell-phone", label: "Sell Phone" },
+  { href: mainSite("/catalog"), label: "Buy Phones" },
+  { href: mainSite("/about"), label: "About" },
+  { href: mainSite("/contact"), label: "Contact" },
+];
+
 function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -38,23 +48,23 @@ function PublicHeader() {
         </Link>
 
         <nav className="hidden gap-1 md:flex">
-          {[
-            { to: "/", label: "Home" },
-            { to: "/catalog", label: "Catalog" },
-            { to: "/sell-phone", label: "Sell Phone" },
-            { to: "/about", label: "About" },
-            { to: "/contact", label: "Contact" },
-          ].map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              activeOptions={{ exact: n.to === "/" }}
-              activeProps={{ className: "bg-accent text-foreground" }}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition"
-            >
-              {n.label}
-            </Link>
-          ))}
+          {NAV.map((n) =>
+            n.href ? (
+              <a key={n.label} href={n.href} className={NAV_CLS}>
+                {n.label}
+              </a>
+            ) : (
+              <Link
+                key={n.label}
+                to={n.to!}
+                activeOptions={{ exact: n.to === "/" }}
+                activeProps={{ className: "bg-accent text-foreground" }}
+                className={NAV_CLS}
+              >
+                {n.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <a
@@ -71,18 +81,18 @@ function PublicHeader() {
 }
 
 function PublicFooter() {
-  const explore: { to: "/" | "/catalog" | "/sell-phone" | "/about" | "/contact"; label: string }[] = [
+  const explore: { to?: "/" | "/sell-phone"; href?: string; label: string }[] = [
     { to: "/", label: "Home" },
-    { to: "/catalog", label: "Catalog" },
     { to: "/sell-phone", label: "Sell Your Phone" },
-    { to: "/about", label: "About Us" },
-    { to: "/contact", label: "Contact Us" },
+    { href: mainSite("/catalog"), label: "Buy Phones" },
+    { href: mainSite("/about"), label: "About Us" },
+    { href: mainSite("/contact"), label: "Contact Us" },
   ];
-  const legal: { to: "/privacy" | "/refund-policy" | "/return-policy" | "/disclaimer"; label: string }[] = [
-    { to: "/privacy", label: "Privacy Policy" },
-    { to: "/refund-policy", label: "Refund Policy" },
-    { to: "/return-policy", label: "Return Policy" },
-    { to: "/disclaimer", label: "Disclaimer" },
+  const legal = [
+    { href: mainSite("/privacy"), label: "Privacy Policy" },
+    { href: mainSite("/refund-policy"), label: "Refund Policy" },
+    { href: mainSite("/return-policy"), label: "Return Policy" },
+    { href: mainSite("/disclaimer"), label: "Disclaimer" },
   ];
 
   return (
@@ -114,10 +124,16 @@ function PublicFooter() {
           <h4 className="text-xs font-semibold uppercase tracking-widest mb-3 text-foreground">Explore</h4>
           <ul className="space-y-2">
             {explore.map((l) => (
-              <li key={l.to}>
-                <Link to={l.to} className="text-sm text-muted-foreground hover:text-primary transition">
-                  {l.label}
-                </Link>
+              <li key={l.label}>
+                {l.href ? (
+                  <a href={l.href} className="text-sm text-muted-foreground hover:text-primary transition">
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link to={l.to!} className="text-sm text-muted-foreground hover:text-primary transition">
+                    {l.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -127,10 +143,10 @@ function PublicFooter() {
           <h4 className="text-xs font-semibold uppercase tracking-widest mb-3 text-foreground">Legal</h4>
           <ul className="space-y-2">
             {legal.map((l) => (
-              <li key={l.to}>
-                <Link to={l.to} className="text-sm text-muted-foreground hover:text-primary transition">
+              <li key={l.label}>
+                <a href={l.href} className="text-sm text-muted-foreground hover:text-primary transition">
                   {l.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

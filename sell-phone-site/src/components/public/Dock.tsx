@@ -1,8 +1,8 @@
 import { useRef, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from "framer-motion";
-import { Home, Tag, Search, MapPin, MessageCircle } from "lucide-react";
-import { whatsappLink } from "@/lib/shop";
+import { Home, HandCoins, Tag, MapPin, MessageCircle } from "lucide-react";
+import { SHOP_MAPS_URL, mainSite, whatsappLink } from "@/lib/shop";
 
 type DockItem = {
   to?: string;
@@ -15,11 +15,11 @@ type DockItem = {
 
 const ITEMS: DockItem[] = [
   { to: "/", label: "Home", icon: <Home className="h-5 w-5" />, exact: true },
-  { to: "/catalog", label: "Catalog", icon: <Tag className="h-5 w-5" /> },
-  { to: "/search", label: "Search", icon: <Search className="h-5 w-5" /> },
-  { to: "/contact", label: "Visit", icon: <MapPin className="h-5 w-5" /> },
+  { to: "/sell-phone", label: "Sell Phone", icon: <HandCoins className="h-5 w-5" /> },
+  { href: mainSite("/catalog"), external: true, label: "Buy Phones", icon: <Tag className="h-5 w-5" /> },
+  { href: SHOP_MAPS_URL, external: true, label: "Visit", icon: <MapPin className="h-5 w-5" /> },
   {
-    href: whatsappLink("Hi! I'd like to enquire about a phone."),
+    href: whatsappLink("Hi! I'd like to sell my phone."),
     external: true,
     label: "WhatsApp",
     icon: <MessageCircle className="h-5 w-5" />,
@@ -41,36 +41,20 @@ export function Dock() {
         className="pointer-events-auto flex items-end gap-2 rounded-2xl border border-border bg-card/90 px-3 py-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/70"
       >
         {ITEMS.map((it) => {
-          const active = it.to
-            ? it.exact
-              ? pathname === it.to
-              : pathname.startsWith(it.to)
-            : false;
-          return (
-            <DockIcon key={it.label} mouseX={mouseX} active={active} item={it} />
-          );
+          const active = it.to ? (it.exact ? pathname === it.to : pathname.startsWith(it.to)) : false;
+          return <DockIcon key={it.label} mouseX={mouseX} active={active} item={it} />;
         })}
       </motion.div>
     </div>
   );
 }
 
-function DockIcon({
-  mouseX,
-  item,
-  active,
-}: {
-  mouseX: MotionValue<number>;
-  item: DockItem;
-  active: boolean;
-}) {
+function DockIcon({ mouseX, item, active }: { mouseX: MotionValue<number>; item: DockItem; active: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-
   const distance = useTransform(mouseX, (val) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
     return val - bounds.x - bounds.width / 2;
   });
-
   const widthSync = useTransform(distance, [-120, 0, 120], [44, 64, 44]);
   const width = useSpring(widthSync, { mass: 0.1, stiffness: 180, damping: 14 });
 
@@ -79,9 +63,7 @@ function DockIcon({
       ref={ref}
       style={{ width, height: width }}
       className={`flex aspect-square items-center justify-center rounded-xl transition-colors ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "bg-muted/60 text-foreground hover:bg-muted"
+        active ? "bg-primary text-primary-foreground" : "bg-muted/60 text-foreground hover:bg-muted"
       }`}
       aria-label={item.label}
     >
