@@ -20,14 +20,12 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as ReturnPolicyRouteImport } from './routes/return-policy'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as SellPhoneRouteImport } from './routes/sell-phone'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as BrandSlugRouteImport } from './routes/brand.$slug'
 import { Route as PhoneSlugRouteImport } from './routes/phone.$slug'
 import { Route as ReservationStatusTokenRouteImport } from './routes/reservation-status.$token'
 import { Route as ReservationTokenRouteImport } from './routes/reservation.$token'
-import { Route as SellPhoneIndexRouteImport } from './routes/sell-phone.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin/audit'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
@@ -42,14 +40,11 @@ import { Route as AuthenticatedAdminReservationsRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedReceiptIdRouteImport } from './routes/_authenticated/receipt.$id'
-import { Route as SellPhoneBrandIndexRouteImport } from './routes/sell-phone.$brand.index'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 import { Route as ApiPublicReservationsAvailabilityRouteImport } from './routes/api/public/reservations/availability'
 import { Route as ApiPublicReservationsCreateRouteImport } from './routes/api/public/reservations/create'
 import { Route as ApiPublicReservationsVerifyRouteImport } from './routes/api/public/reservations/verify'
 import { Route as ApiPublicWebhooksRazorpayRouteImport } from './routes/api/public/webhooks/razorpay'
-import { Route as SellPhoneBrandModelIndexRouteImport } from './routes/sell-phone.$brand.$model.index'
-import { Route as SellPhoneBrandModelVariantRouteImport } from './routes/sell-phone.$brand.$model.$variant'
 import { Route as ApiPublicReservationsStatusTokenRouteImport } from './routes/api/public/reservations/status.$token'
 
 const IndexRoute = IndexRouteImport.update({
@@ -106,11 +101,6 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellPhoneRoute = SellPhoneRouteImport.update({
-  id: '/sell-phone',
-  path: '/sell-phone',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -140,11 +130,6 @@ const ReservationTokenRoute = ReservationTokenRouteImport.update({
   id: '/reservation/$token',
   path: '/reservation/$token',
   getParentRoute: () => rootRouteImport,
-} as any)
-const SellPhoneIndexRoute = SellPhoneIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SellPhoneRoute,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
@@ -224,11 +209,6 @@ const AuthenticatedReceiptIdRoute = AuthenticatedReceiptIdRouteImport.update({
   path: '/receipt/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const SellPhoneBrandIndexRoute = SellPhoneBrandIndexRouteImport.update({
-  id: '/$brand/',
-  path: '/$brand/',
-  getParentRoute: () => SellPhoneRoute,
-} as any)
 const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
   id: '/api/public/img/$',
   path: '/api/public/img/$',
@@ -258,18 +238,6 @@ const ApiPublicWebhooksRazorpayRoute =
     path: '/api/public/webhooks/razorpay',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SellPhoneBrandModelIndexRoute =
-  SellPhoneBrandModelIndexRouteImport.update({
-    id: '/$brand/$model/',
-    path: '/$brand/$model/',
-    getParentRoute: () => SellPhoneRoute,
-  } as any)
-const SellPhoneBrandModelVariantRoute =
-  SellPhoneBrandModelVariantRouteImport.update({
-    id: '/$brand/$model/$variant',
-    path: '/$brand/$model/$variant',
-    getParentRoute: () => SellPhoneRoute,
-  } as any)
 const ApiPublicReservationsStatusTokenRoute =
   ApiPublicReservationsStatusTokenRouteImport.update({
     id: '/api/public/reservations/status/$token',
@@ -288,14 +256,12 @@ export interface FileRoutesByFullPath {
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/search': typeof SearchRoute
-  '/sell-phone': typeof SellPhoneRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/reservation-status/$token': typeof ReservationStatusTokenRoute
   '/reservation/$token': typeof ReservationTokenRoute
-  '/sell-phone/': typeof SellPhoneIndexRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -310,14 +276,11 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
-  '/sell-phone/$brand/': typeof SellPhoneBrandIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
-  '/sell-phone/$brand/$model/$variant': typeof SellPhoneBrandModelVariantRoute
-  '/sell-phone/$brand/$model/': typeof SellPhoneBrandModelIndexRoute
   '/api/public/reservations/status/$token': typeof ApiPublicReservationsStatusTokenRoute
 }
 export interface FileRoutesByTo {
@@ -336,7 +299,6 @@ export interface FileRoutesByTo {
   '/phone/$slug': typeof PhoneSlugRoute
   '/reservation-status/$token': typeof ReservationStatusTokenRoute
   '/reservation/$token': typeof ReservationTokenRoute
-  '/sell-phone': typeof SellPhoneIndexRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -351,14 +313,11 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
-  '/sell-phone/$brand': typeof SellPhoneBrandIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
-  '/sell-phone/$brand/$model/$variant': typeof SellPhoneBrandModelVariantRoute
-  '/sell-phone/$brand/$model': typeof SellPhoneBrandModelIndexRoute
   '/api/public/reservations/status/$token': typeof ApiPublicReservationsStatusTokenRoute
 }
 export interface FileRoutesById {
@@ -374,14 +333,12 @@ export interface FileRoutesById {
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/search': typeof SearchRoute
-  '/sell-phone': typeof SellPhoneRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/brand/$slug': typeof BrandSlugRoute
   '/phone/$slug': typeof PhoneSlugRoute
   '/reservation-status/$token': typeof ReservationStatusTokenRoute
   '/reservation/$token': typeof ReservationTokenRoute
-  '/sell-phone/': typeof SellPhoneIndexRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/bills': typeof AuthenticatedAdminBillsRoute
@@ -396,14 +353,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/receipt/$id': typeof AuthenticatedReceiptIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
-  '/sell-phone/$brand/': typeof SellPhoneBrandIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/api/public/reservations/availability': typeof ApiPublicReservationsAvailabilityRoute
   '/api/public/reservations/create': typeof ApiPublicReservationsCreateRoute
   '/api/public/reservations/verify': typeof ApiPublicReservationsVerifyRoute
   '/api/public/webhooks/razorpay': typeof ApiPublicWebhooksRazorpayRoute
-  '/sell-phone/$brand/$model/$variant': typeof SellPhoneBrandModelVariantRoute
-  '/sell-phone/$brand/$model/': typeof SellPhoneBrandModelIndexRoute
   '/api/public/reservations/status/$token': typeof ApiPublicReservationsStatusTokenRoute
 }
 export interface FileRouteTypes {
@@ -419,14 +373,12 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/return-policy'
     | '/search'
-    | '/sell-phone'
     | '/sitemap.xml'
     | '/admin'
     | '/brand/$slug'
     | '/phone/$slug'
     | '/reservation-status/$token'
     | '/reservation/$token'
-    | '/sell-phone/'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/bills'
@@ -441,14 +393,11 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/receipt/$id'
     | '/admin/'
-    | '/sell-phone/$brand/'
     | '/api/public/img/$'
     | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
-    | '/sell-phone/$brand/$model/$variant'
-    | '/sell-phone/$brand/$model/'
     | '/api/public/reservations/status/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -467,7 +416,6 @@ export interface FileRouteTypes {
     | '/phone/$slug'
     | '/reservation-status/$token'
     | '/reservation/$token'
-    | '/sell-phone'
     | '/admin/audit'
     | '/admin/banners'
     | '/admin/bills'
@@ -482,14 +430,11 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/receipt/$id'
     | '/admin'
-    | '/sell-phone/$brand'
     | '/api/public/img/$'
     | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
-    | '/sell-phone/$brand/$model/$variant'
-    | '/sell-phone/$brand/$model'
     | '/api/public/reservations/status/$token'
   id:
     | '__root__'
@@ -504,14 +449,12 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/return-policy'
     | '/search'
-    | '/sell-phone'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/brand/$slug'
     | '/phone/$slug'
     | '/reservation-status/$token'
     | '/reservation/$token'
-    | '/sell-phone/'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/bills'
@@ -526,14 +469,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/receipt/$id'
     | '/_authenticated/admin/'
-    | '/sell-phone/$brand/'
     | '/api/public/img/$'
     | '/api/public/reservations/availability'
     | '/api/public/reservations/create'
     | '/api/public/reservations/verify'
     | '/api/public/webhooks/razorpay'
-    | '/sell-phone/$brand/$model/$variant'
-    | '/sell-phone/$brand/$model/'
     | '/api/public/reservations/status/$token'
   fileRoutesById: FileRoutesById
 }
@@ -549,7 +489,6 @@ export interface RootRouteChildren {
   RefundPolicyRoute: typeof RefundPolicyRoute
   ReturnPolicyRoute: typeof ReturnPolicyRoute
   SearchRoute: typeof SearchRoute
-  SellPhoneRoute: typeof SellPhoneRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BrandSlugRoute: typeof BrandSlugRoute
   PhoneSlugRoute: typeof PhoneSlugRoute
@@ -642,13 +581,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sell-phone': {
-      id: '/sell-phone'
-      path: '/sell-phone'
-      fullPath: '/sell-phone'
-      preLoaderRoute: typeof SellPhoneRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -690,13 +622,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/reservation/$token'
       preLoaderRoute: typeof ReservationTokenRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/sell-phone/': {
-      id: '/sell-phone/'
-      path: '/'
-      fullPath: '/sell-phone/'
-      preLoaderRoute: typeof SellPhoneIndexRouteImport
-      parentRoute: typeof SellPhoneRoute
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -796,13 +721,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReceiptIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/sell-phone/$brand/': {
-      id: '/sell-phone/$brand/'
-      path: '/$brand'
-      fullPath: '/sell-phone/$brand/'
-      preLoaderRoute: typeof SellPhoneBrandIndexRouteImport
-      parentRoute: typeof SellPhoneRoute
-    }
     '/api/public/img/$': {
       id: '/api/public/img/$'
       path: '/api/public/img/$'
@@ -837,20 +755,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/webhooks/razorpay'
       preLoaderRoute: typeof ApiPublicWebhooksRazorpayRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/sell-phone/$brand/$model/': {
-      id: '/sell-phone/$brand/$model/'
-      path: '/$brand/$model'
-      fullPath: '/sell-phone/$brand/$model/'
-      preLoaderRoute: typeof SellPhoneBrandModelIndexRouteImport
-      parentRoute: typeof SellPhoneRoute
-    }
-    '/sell-phone/$brand/$model/$variant': {
-      id: '/sell-phone/$brand/$model/$variant'
-      path: '/$brand/$model/$variant'
-      fullPath: '/sell-phone/$brand/$model/$variant'
-      preLoaderRoute: typeof SellPhoneBrandModelVariantRouteImport
-      parentRoute: typeof SellPhoneRoute
     }
     '/api/public/reservations/status/$token': {
       id: '/api/public/reservations/status/$token'
@@ -913,24 +817,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface SellPhoneRouteChildren {
-  SellPhoneIndexRoute: typeof SellPhoneIndexRoute
-  SellPhoneBrandIndexRoute: typeof SellPhoneBrandIndexRoute
-  SellPhoneBrandModelVariantRoute: typeof SellPhoneBrandModelVariantRoute
-  SellPhoneBrandModelIndexRoute: typeof SellPhoneBrandModelIndexRoute
-}
-
-const SellPhoneRouteChildren: SellPhoneRouteChildren = {
-  SellPhoneIndexRoute: SellPhoneIndexRoute,
-  SellPhoneBrandIndexRoute: SellPhoneBrandIndexRoute,
-  SellPhoneBrandModelVariantRoute: SellPhoneBrandModelVariantRoute,
-  SellPhoneBrandModelIndexRoute: SellPhoneBrandModelIndexRoute,
-}
-
-const SellPhoneRouteWithChildren = SellPhoneRoute._addFileChildren(
-  SellPhoneRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -943,7 +829,6 @@ const rootRouteChildren: RootRouteChildren = {
   RefundPolicyRoute: RefundPolicyRoute,
   ReturnPolicyRoute: ReturnPolicyRoute,
   SearchRoute: SearchRoute,
-  SellPhoneRoute: SellPhoneRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BrandSlugRoute: BrandSlugRoute,
   PhoneSlugRoute: PhoneSlugRoute,

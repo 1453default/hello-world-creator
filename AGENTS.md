@@ -1,4 +1,3 @@
-
-- Sell Phone catalog is static: generated JSON in src/data from scripts/import-sell-phone.py, images in public/sell-phone; no database or cloud storage — keeps it host-independent and fast.
-- Sell Phone prices come only from src/data/dofyPriceCatalog.generated.json via src/data/sellPhonePricing.ts (exact brand+model+storage/RAM match, indexed once) — no hardcoded or derived prices.
-- sell-phone-site/ is a fully independent copy of the Sell Phone site (own package.json, config, data, assets); it must never import from the parent repo, and new Sell Phone work goes there — so it can move to its own repository.
+- hello-world-creator is the primary store website (Website 1) dedicated exclusively to buying used phones (Used Mobiles catalog, phone details, reservations, POS, inventory, bills, customers, reports).
+- sell-phone-site/ (Website 2) is a fully independent separate project located outside this repository.
+- All product inventory and catalog data in this site comes from Supabase database tables; no static sell-phone catalog files belong here.
